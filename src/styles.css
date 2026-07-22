@@ -109,3 +109,24 @@ html[dir="rtl"] body {
   50% { opacity: 1; }
 }
 @utility animate-soft-pulse { animation: soft-pulse 2.5s ease-in-out infinite; }
+
+@keyframes gold-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: -200% 50%; }
+}
+@utility gold-flow-text {
+  background: linear-gradient(110deg, #9C7E43 0%, #C8A96A 25%, #E8CB8A 50%, #C8A96A 75%, #9C7E43 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-flow 8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

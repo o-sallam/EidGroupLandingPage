@@ -14,6 +14,7 @@ import { Route as AccessRouteImport } from './routes/access'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DocumentsRouteImport } from './routes/documents'
+import { Route as IntroRouteImport } from './routes/intro'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as VideoNRouteImport } from './routes/video.$n'
 
@@ -42,6 +43,11 @@ const DocumentsRoute = DocumentsRouteImport.update({
   path: '/documents',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IntroRoute = IntroRouteImport.update({
+  id: '/intro',
+  path: '/intro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/documents': typeof DocumentsRoute
+  '/intro': typeof IntroRoute
   '/portal': typeof PortalRoute
   '/video/$n': typeof VideoNRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/documents': typeof DocumentsRoute
+  '/intro': typeof IntroRoute
   '/portal': typeof PortalRoute
   '/video/$n': typeof VideoNRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/documents': typeof DocumentsRoute
+  '/intro': typeof IntroRoute
   '/portal': typeof PortalRoute
   '/video/$n': typeof VideoNRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/documents'
+    | '/intro'
     | '/portal'
     | '/video/$n'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/documents'
+    | '/intro'
     | '/portal'
     | '/video/$n'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/documents'
+    | '/intro'
     | '/portal'
     | '/video/$n'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRoute
   DocumentsRoute: typeof DocumentsRoute
+  IntroRoute: typeof IntroRoute
   PortalRoute: typeof PortalRoute
   VideoNRoute: typeof VideoNRoute
 }
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocumentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/intro': {
+      id: '/intro'
+      path: '/intro'
+      fullPath: '/intro'
+      preLoaderRoute: typeof IntroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal': {
       id: '/portal'
       path: '/portal'
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   ContactRoute: ContactRoute,
   DocumentsRoute: DocumentsRoute,
+  IntroRoute: IntroRoute,
   PortalRoute: PortalRoute,
   VideoNRoute: VideoNRoute,
 }

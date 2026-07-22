@@ -71,7 +71,7 @@ function Landing() {
             </div>
 
             <button
-              onClick={() => navigate({ to: "/access" })}
+              onClick={() => navigate({ to: "/intro" })}
               className="group inline-flex items-center gap-3 rounded-full bg-[color:var(--gold)] px-8 py-3.5 text-sm font-semibold tracking-wide text-[color:var(--bg-raw)] shadow-[0_10px_40px_-10px_rgba(200,169,106,0.6)] transition hover:brightness-110"
             >
               {t("welcome.cta")}
