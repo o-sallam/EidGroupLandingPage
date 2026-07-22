@@ -1,0 +1,111 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));
+
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--card);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--card);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--primary);
+  --color-accent-foreground: var(--primary-foreground);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(0.984 0 0);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --font-sans: "Tajawal", "Inter", "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Tajawal", "Playfair Display", "Cairo", ui-serif, Georgia, serif;
+  --font-arabic: "Tajawal", "Cairo", "Inter", sans-serif;
+}
+
+:root {
+  --radius: 0.5rem;
+  /* Eid Group luxury dark palette */
+  --background: oklch(0.16 0.012 240);  /* #0B0F14 */
+  --foreground: oklch(0.97 0 0);         /* #F5F5F5 */
+  --card: oklch(0.21 0.014 240);         /* #171C22 */
+  --card-foreground: oklch(0.97 0 0);
+  --primary: oklch(0.75 0.09 82);        /* #C8A96A gold */
+  --primary-foreground: oklch(0.16 0.012 240);
+  --muted-foreground: oklch(0.71 0.008 260); /* #A3A8AE */
+  --border: oklch(0.28 0.012 240);
+  --gold: #C8A96A;
+  --gold-soft: rgba(200, 169, 106, 0.15);
+  --bg-raw: #0B0F14;
+  --card-raw: #171C22;
+}
+
+html, body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+html[dir="rtl"] body {
+  font-family: var(--font-arabic);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  h1, h2, h3, h4 { font-family: var(--font-serif); letter-spacing: -0.01em; }
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4 { font-family: var(--font-arabic); }
+}
+
+@utility gold-gradient-text {
+  background: linear-gradient(135deg, #E8CB8A 0%, #C8A96A 50%, #9C7E43 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility gold-border {
+  border: 1px solid rgba(200, 169, 106, 0.35);
+}
+
+@utility card-luxe {
+  background: linear-gradient(180deg, #1a2028 0%, #141a20 100%);
+  border: 1px solid rgba(200, 169, 106, 0.12);
+  box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@utility shimmer {
+  background: linear-gradient(90deg, transparent, rgba(200,169,106,0.15), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@utility animate-fade-up { animation: fade-up 0.7s ease-out both; }
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@utility animate-soft-pulse { animation: soft-pulse 2.5s ease-in-out infinite; }
