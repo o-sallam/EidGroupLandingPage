@@ -48,7 +48,7 @@ export function DocumentsGallery({ videoNum, onClose }: Props) {
               alt=""
               className="hidden"
               onLoad={() => handleLoad(src)}
-              onError={() => {}}
+              onError={() => console.warn(`[DocumentsGallery] Failed to load: ${src} for video ${videoNum}`)}
             />
           ))}
           <p className="text-xs text-[color:var(--muted-foreground)]">
