@@ -123,6 +123,44 @@ html[dir="rtl"] body {
   animation: gold-flow 8s linear infinite;
 }
 
+/* Slow ambient shimmer for premium brand text */
+@keyframes eid-ambient-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Gold glow frame around the logo ── */
+.gold-glow-frame {
+  position: absolute;
+  inset: -10px;
+  border-radius: 28px;
+  padding: 14px;
+  box-sizing: border-box;
+  mask: conic-gradient(#000 0 0) content-box exclude,
+        conic-gradient(#000 0 0);
+  -webkit-mask: conic-gradient(#000 0 0) content-box exclude,
+        conic-gradient(#000 0 0);
+  filter: blur(14px);
+  pointer-events: none;
+}
+.gold-glow-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: repeating-conic-gradient(
+    #0000 0 4%,
+    #C8A96A 6%,
+    #E8CB8A 10%,
+    #D4AF37 14%,
+    #0000 17% 50%
+  );
+  animation: gold-glow-rotate 2s linear infinite;
+}
+@keyframes gold-glow-rotate {
+  to { rotate: 1turn; }
+}
+
 /* Periodic "Questions" prompt: fades in for ~3-4s, hides for ~8-10s, loops. */
 @keyframes questions-pulse {
   0%   { opacity: 0; transform: translateY(2px); }
@@ -147,80 +185,6 @@ html[dir="rtl"] body {
     opacity: 1 !important;
     transform: none !important;
   }
-  .pyramid-loader .wrapper {
-    animation: none !important;
-  }
-}
-
-/* ── Pyramid loader (provided spec) ── */
-.pyramid-loader {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  display: block;
-  transform-style: preserve-3d;
-  transform: rotateX(-20deg);
-}
-
-.pyramid-loader .wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  animation: spin 4s linear infinite;
-}
-
-@keyframes spin {
-  100% {
-    transform: rotateY(360deg);
-  }
-}
-
-.pyramid-loader .wrapper .side {
-  width: 70px;
-  height: 70px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  transform-origin: center top;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}
-
-.pyramid-loader .wrapper .side1 {
-  transform: rotateZ(-30deg) rotateY(90deg);
-  background: conic-gradient(#2BDEAC, #F028FD, #D8CCE6, #2F2585);
-}
-
-.pyramid-loader .wrapper .side2 {
-  transform: rotateZ(30deg) rotateY(90deg);
-  background: conic-gradient(#2F2585, #D8CCE6, #F028FD, #2BDEAC);
-}
-
-.pyramid-loader .wrapper .side3 {
-  transform: rotateX(30deg);
-  background: conic-gradient(#2F2585, #D8CCE6, #F028FD, #2BDEAC);
-}
-
-.pyramid-loader .wrapper .side4 {
-  transform: rotateX(-30deg);
-  background: conic-gradient(#2BDEAC, #F028FD, #D8CCE6, #2F2585);
-}
-
-.pyramid-loader .wrapper .shadow {
-  width: 60px;
-  height: 60px;
-  background: #8B5AD5;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  transform: rotateX(90deg) translateZ(-40px);
-  filter: blur(12px);
 }
 
 /* ── CTA arrow subtle nudge ── */

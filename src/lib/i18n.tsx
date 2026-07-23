@@ -198,11 +198,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("ar");
 
   useEffect(() => {
-    const saved = (typeof window !== "undefined" && localStorage.getItem("eid_lang")) as Lang | null;
-    if (saved && (saved === "ar" || saved === "en" || saved === "nl")) setLangState(saved);
-  }, []);
-
-  useEffect(() => {
     const dir = lang === "ar" ? "rtl" : "ltr";
     document.documentElement.setAttribute("lang", lang);
     document.documentElement.setAttribute("dir", dir);
@@ -210,7 +205,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = (l: Lang) => {
     setLangState(l);
-    try { localStorage.setItem("eid_lang", l); } catch {}
   };
 
   const t = (key: string, vars?: Record<string, string | number>) => {

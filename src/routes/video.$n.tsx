@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, QUESTIONS_DATA } from "@/lib/i18n";
 import { isUnlocked } from "@/lib/access";
@@ -158,7 +158,7 @@ function VideoPage() {
         ))}
       </div>
 
-      {/* Questions button (always English) */}
+      {/* Questions button (position/animation always LTR geometry) */}
       <div className="absolute top-6 left-4 z-30">
         <button
           onClick={() => setShowQuestions(true)}
@@ -169,42 +169,36 @@ function VideoPage() {
             <HelpCircle className="h-5 w-5" />
           </span>
           <span
-            className={`absolute overflow-hidden whitespace-nowrap ${
-              dir === "rtl"
-                ? "right-full mr-2 origin-right"
-                : "left-full ml-2 origin-left"
-            }`}
-            style={{
-              animation: `emerge-icon-${dir === "rtl" ? "rtl" : "ltr"} 8s ease-in-out infinite`,
-            }}
+            className="absolute overflow-hidden whitespace-nowrap left-full ml-2 origin-left"
+            style={{ animation: "emerge-icon-ltr 8s ease-in-out infinite" }}
           >
-            <span className="rounded-full bg-black/40 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
-              Questions You May Have
+            <span
+              dir="auto"
+              className="rounded-full bg-black/40 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md"
+            >
+              {t("questions.prompt")}
             </span>
           </span>
         </button>
       </div>
 
-      {/* Brand logo */}
-      <Link
-        to="/portal"
-        aria-label={t("brand.name")}
-        className="absolute top-6 right-4 z-30 flex items-center gap-2 rounded-full border border-[rgba(200,169,106,0.35)] bg-black/35 px-3 py-1.5 backdrop-blur-md transition hover:border-[color:var(--gold)]"
+      {/* Mute/unmute — icon only, below questions */}
+      <button
+        onClick={() => setIsMuted((m) => !m)}
+        className="absolute top-[calc(6px+36px+28px)] left-4 z-30 grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white/70 backdrop-blur-md transition hover:border-white/30"
+        aria-label={isMuted ? "Unmute" : "Mute"}
       >
-        <img src="/logo.webp" alt={t("brand.name")} className="h-7 w-auto" />
-        <span className="text-xs font-semibold tracking-wide text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-          {t("brand.name")}
-        </span>
-      </Link>
+        {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+      </button>
 
-      {/* Social bar above title */}
+      {/* Social bar above brand + title */}
       <div
         className={`absolute left-1/2 z-30 -translate-x-1/2 transition-all duration-500 ${
           isPlaying
             ? "pointer-events-none translate-y-2 opacity-0"
             : "translate-y-0 opacity-100"
         }`}
-        style={{ bottom: "calc(36px + 3.5rem + 16px)" }}
+        style={{ bottom: "calc(36px + 13rem)" }}
       >
         <div className="flex items-center gap-3 rounded-full border border-[rgba(200,169,106,0.3)] bg-black/45 px-4 py-2.5 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)]">
           {SOCIALS.map(({ href, Icon, label }) => (
@@ -222,8 +216,16 @@ function VideoPage() {
         </div>
       </div>
 
-      {/* Title */}
-      <div className="absolute bottom-36 left-4 right-4 z-20 rtl:text-right">
+      {/* Title + channel-identity block */}
+      <div className="absolute bottom-36 left-4 right-4 z-20 flex flex-col rtl:text-right">
+        <div className="mb-2.5 flex flex-row items-center gap-3 rtl:flex-row-reverse pointer-events-none select-none">
+          <span className="text-sm font-semibold tracking-wide text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+            {t("brand.name")}
+          </span>
+          <span className="inline-flex rounded-xl border border-[rgba(200,169,106,0.3)]">
+            <img src="/logo.webp" alt="" className="h-14 w-auto" />
+          </span>
+        </div>
         <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)] drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
           {String(num).padStart(2, "0")} — {t("brand.tag")}
         </p>
@@ -231,15 +233,6 @@ function VideoPage() {
           {title}
         </h2>
       </div>
-
-      {/* Unmute */}
-      <button
-        onClick={() => setIsMuted((m) => !m)}
-        className="absolute bottom-44 right-4 z-30 grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-md transition hover:text-white"
-        aria-label={isMuted ? "Unmute" : "Mute"}
-      >
-        {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-      </button>
 
       {/* Tap zones */}
       {!isFirst && (

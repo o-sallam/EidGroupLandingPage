@@ -17,8 +17,8 @@ function Landing() {
       return;
     }
     setPhase("loading");
-    const t1 = setTimeout(() => setTransition(true), 1400);
-    const t2 = setTimeout(() => setPhase("welcome"), 2100);
+    const t1 = setTimeout(() => setTransition(true), 2200);
+    const t2 = setTimeout(() => setPhase("welcome"), 2900);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [navigate]);
 
@@ -28,7 +28,6 @@ function Landing() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      {/* Ambient gold glow */}
       <div
         className="pointer-events-none absolute inset-0 opacity-70"
         style={{
@@ -37,7 +36,6 @@ function Landing() {
         }}
       />
 
-      {/* Top bar — confidential badge only */}
       <div className="absolute top-4 right-4 left-4 z-20 flex items-center justify-between">
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[color:var(--muted-foreground)]">
           <Lock className="h-3 w-3 text-[color:var(--gold)]" />
@@ -46,37 +44,79 @@ function Landing() {
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 text-center">
-        {phase === "loading" ? (
-          <div className="flex flex-col items-center gap-12">
+        {/* ─── Shared branding block (never unmounts) ─── */}
+        <div
+          className={`flex flex-col items-center gap-4 transition-all duration-700 ease-out ${
+            transition
+              ? "scale-[0.45] -translate-y-6"
+              : "scale-100 translate-y-0"
+          }`}
+        >
+          {/* Logo + gold glow frame */}
+          <div className="relative inline-flex">
+            {phase !== "welcome" && (
+              <div
+                className={`gold-glow-frame transition-all duration-500 ease-out ${
+                  transition
+                    ? "opacity-0 scale-90 blur-sm"
+                    : "opacity-100 scale-100 blur-0"
+                }`}
+              />
+            )}
             <img
               src="/logo.webp"
               alt="Eid Group"
-               className={`w-96 h-auto transition-all duration-700 ease-out ${
-                 transition ? "scale-[0.55] -translate-y-20 opacity-90" : "scale-100 translate-y-0 opacity-100"
-              }`}
+              className="h-64 w-auto"
             />
-            <div className={`transition-all duration-500 ease-out ${
-              transition ? "opacity-0 scale-90 blur-sm" : "opacity-100 scale-100 blur-0"
-            }`}>
-              <div className="pyramid-loader" aria-label="Loading">
-                <div className="wrapper">
-                  <span className="side side1" />
-                  <span className="side side2" />
-                  <span className="side side3" />
-                  <span className="side side4" />
-                  <span className="shadow" />
-                </div>
-              </div>
-            </div>
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-8 animate-fade-up">
-            <img
-              src="/logo.webp"
-              alt="Eid Group"
-              className="w-48 h-auto"
-            />
 
+          {/* Branding text */}
+          <div
+            className={`flex flex-col items-center gap-1 transition-all duration-500 ease-out ${
+              phase === "welcome"
+                ? "opacity-0"
+                : transition
+                  ? "opacity-60"
+                  : "opacity-100"
+            }`}
+          >
+            <h1
+              className="gold-gradient-text font-['Poppins',sans-serif] text-5xl font-bold tracking-wider sm:text-6xl"
+              style={{
+                filter:
+                  "drop-shadow(0 0 30px rgba(200,169,106,0.12)) drop-shadow(0 0 60px rgba(200,169,106,0.05))",
+              }}
+            >
+              <span
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent 0%, rgba(200,169,106,0.05) 35%, rgba(200,169,106,0.09) 50%, rgba(200,169,106,0.05) 65%, transparent 100%)",
+                  backgroundSize: "200% 100%",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  animation: "eid-ambient-shimmer 8s ease-in-out infinite",
+                }}
+              >
+                Eid Group
+              </span>
+            </h1>
+            <p className="text-[10px] uppercase tracking-[0.5em] text-[color:var(--muted-foreground)]">
+              Since 2023
+            </p>
+          </div>
+        </div>
+
+        {/* ─── Welcome content — only in DOM once transition begins,
+              so the branding block sits alone at center during loading ─── */}
+        {(transition || phase === "welcome") && (
+          <div
+            className={`flex flex-col items-center gap-8 mt-8 ${
+              phase === "welcome"
+                ? "animate-fade-up"
+                : "opacity-0 pointer-events-none"
+            }`}
+          >
             <div className="space-y-4">
               <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)]">
                 {t("brand.tag")}
