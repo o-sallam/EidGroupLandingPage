@@ -25,7 +25,7 @@ function LangSelect() {
     if (selected) return;
     const interval = setInterval(() => {
       setLeaving(true);
-    }, 2800);
+    }, 3200);
     return () => clearInterval(interval);
   }, [selected]);
 
@@ -34,7 +34,7 @@ function LangSelect() {
     const t = setTimeout(() => {
       setPhraseIdx((i) => (i + 1) % PHRASES.length);
       setLeaving(false);
-    }, 700);
+    }, 800);
     return () => clearTimeout(t);
   }, [leaving]);
 
@@ -64,42 +64,44 @@ function LangSelect() {
             className="h-24 w-auto"
           />
 
-          <div>
-            <h1
-              className="gold-gradient-text font-['Poppins',sans-serif] text-3xl font-bold tracking-wide"
-              style={{
-                textShadow:
-                  "0 1px 2px rgba(0,0,0,0.8), 0 2px 4px rgba(200,169,106,0.3), 0 4px 8px rgba(200,169,106,0.15)",
-              }}
-            >
-              <span className="shimmer">Eid Group</span>
-            </h1>
-            <p className="mt-1.5 text-[10px] uppercase tracking-[0.5em] text-[color:var(--muted-foreground)]">
-              Since 2023
-            </p>
-          </div>
-
-          <div className="relative h-12 w-full flex items-center justify-center overflow-hidden">
-            <p
-              dir={DIRS[(phraseIdx + 1) % PHRASES.length]}
-              className={`absolute font-serif text-2xl gold-flow-text transition-all duration-700 ease-in-out ${
-                leaving
-                  ? "opacity-100 translate-y-0 blur-0 [transform:rotateX(0deg)]"
-                  : "opacity-0 translate-y-8 blur-sm [transform:rotateX(10deg)]"
-              }`}
-            >
-              {PHRASES[(phraseIdx + 1) % PHRASES.length]}
-            </p>
-            <p
-              dir={DIRS[phraseIdx]}
-              className={`font-serif text-2xl gold-flow-text transition-all duration-700 ease-in-out ${
-                leaving
-                  ? "opacity-0 -translate-y-8 blur-sm [transform:rotateX(-10deg)]"
-                  : "opacity-100 translate-y-0 blur-0 [transform:rotateX(0deg)]"
-              }`}
-            >
-              {PHRASES[phraseIdx]}
-            </p>
+          <div
+            className="relative flex items-center justify-center pointer-events-none select-none"
+            style={{ width: "300px", height: "48px" }}
+          >
+            {[phraseIdx, (phraseIdx + 1) % PHRASES.length].map((idx, layer) => {
+              const isCurrent = layer === 0;
+              return (
+                <p
+                  key={idx}
+                  dir={DIRS[idx]}
+                  className="absolute whitespace-nowrap font-['Tajawal',sans-serif] text-2xl font-bold tracking-wide"
+                  style={{
+                    color: "var(--gold)",
+                    backgroundImage:
+                      "linear-gradient(90deg, var(--gold) 0%, #F5D998 50%, var(--gold) 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    textShadow:
+                      "0 1px 2px rgba(0,0,0,0.6), 0 2px 6px rgba(200,169,106,0.25)",
+                    animation: "eid-ambient-shimmer 6s ease-in-out infinite",
+                    transition:
+                      "opacity 800ms cubic-bezier(0.22,1,0.36,1), transform 800ms cubic-bezier(0.22,1,0.36,1)",
+                    opacity: isCurrent ? (leaving ? 0 : 1) : (leaving ? 1 : 0),
+                    transform: isCurrent
+                      ? leaving
+                        ? "translateY(-12px) scale(0.97)"
+                        : "translateY(0) scale(1)"
+                      : leaving
+                        ? "translateY(0) scale(1)"
+                        : "translateY(12px) scale(0.97)",
+                  }}
+                >
+                  {PHRASES[idx]}
+                </p>
+              );
+            })}
           </div>
         </div>
 

@@ -8,12 +8,13 @@ type Props = {
   immersive?: boolean;
   autoPlay?: boolean;
   muted?: boolean;
+  paused?: boolean;
   onPlay?: () => void;
   onPause?: () => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
 };
 
-export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, onPlay, onPause, onTimeUpdate }: Props) {
+export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onTimeUpdate }: Props) {
   const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -34,6 +35,16 @@ export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, on
     if (!v || !videoUrl) return;
     v.muted = muted ?? true;
   }, [muted, videoUrl]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !videoUrl) return;
+    if (paused) {
+      v.pause();
+    } else if (!v.ended) {
+      v.play().catch(() => {});
+    }
+  }, [paused, videoUrl]);
 
   if (videoUrl) {
     return (

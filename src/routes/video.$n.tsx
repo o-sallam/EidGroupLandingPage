@@ -12,6 +12,8 @@ import {
   X,
   VolumeX,
   Volume2,
+  Play,
+  Pause,
 } from "lucide-react";
 
 export const Route = createFileRoute("/video/$n")({ component: VideoPage });
@@ -36,9 +38,14 @@ function VideoPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingNav, setPendingNav] = useState<"prev" | "next" | null>(null);
   const [toast, setToast] = useState("");
+  const [modalClosing, setModalClosing] = useState(false);
+  const [manuallyPaused, setManuallyPaused] = useState(false);
+  const [tapFeedback, setTapFeedback] = useState<"play" | "pause" | null>(null);
 
   const touchStartX = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
+  const wasSwiping = useRef(false);
+  const touchHandled = useRef(false);
 
   const isFirst = num === 1;
   const isLast = num === TOTAL_VIDEOS;
@@ -56,6 +63,8 @@ function VideoPage() {
     setProgress(0);
     setIsPlaying(false);
     setShowQuestions(false);
+    setModalClosing(false);
+    setManuallyPaused(false);
     setShowConfirm(false);
     setPendingNav(null);
     setToast("");
@@ -98,6 +107,14 @@ function VideoPage() {
     setPendingNav(null);
   };
 
+  const closeQuestions = useCallback(() => {
+    setModalClosing(true);
+    setTimeout(() => {
+      setShowQuestions(false);
+      setModalClosing(false);
+    }, 400);
+  }, []);
+
   const handleTimeUpdate = (currentTime: number, duration: number) => {
     if (duration > 0) setProgress((currentTime / duration) * 100);
   };
@@ -107,16 +124,36 @@ function VideoPage() {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchHandled.current = false;
   };
   const handleTouchEnd = (e: React.TouchEvent) => {
     const delta = e.changedTouches[0].clientX - touchStartX.current;
     if (Math.abs(delta) > 50) {
+      wasSwiping.current = true;
       if (dir === "rtl") attemptNavigate(delta > 0 ? "next" : "prev");
       else attemptNavigate(delta > 0 ? "prev" : "next");
+      return;
+    }
+    wasSwiping.current = false;
+    const touchX = e.changedTouches[0].clientX;
+    const target = e.target as HTMLElement;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const relX = touchX - rect.left;
+    const width = rect.width;
+    if (relX > width * 0.25 && relX < width * 0.75 && !target.closest("button, a, [role=\"button\"]")) {
+      touchHandled.current = true;
+      togglePlayback();
     }
   };
 
   const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
+  const effectivePaused = manuallyPaused || showQuestions;
+
+  const togglePlayback = useCallback(() => {
+    setManuallyPaused((p) => !p);
+    setTapFeedback(isPlaying ? "play" : "pause");
+    setTimeout(() => setTapFeedback(null), 600);
+  }, [isPlaying]);
 
   return (
     <div
@@ -130,6 +167,7 @@ function VideoPage() {
         immersive
         autoPlay
         muted={isMuted}
+        paused={effectivePaused}
         onPlay={handlePlay}
         onPause={handlePause}
         onTimeUpdate={handleTimeUpdate}
@@ -138,25 +176,6 @@ function VideoPage() {
       {/* Scrims */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-black/55 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-56 bg-gradient-to-t from-black/75 to-transparent" />
-
-      {/* Instagram Stories progress bar */}
-      <div className="absolute top-2 left-2 right-2 z-40 flex gap-1">
-        {Array.from({ length: TOTAL_VIDEOS }).map((_, i) => (
-          <div key={i} className="h-1 flex-1 overflow-hidden rounded-full bg-white/20">
-            <div
-              className="h-full rounded-full bg-[color:var(--gold)] transition-all duration-300 ease-out"
-              style={{
-                width:
-                  i < num - 1
-                    ? "100%"
-                    : i === num - 1
-                      ? `${Math.min(progress, 100)}%`
-                      : "0%",
-              }}
-            />
-          </div>
-        ))}
-      </div>
 
       {/* Questions button (position/animation always LTR geometry) */}
       <div className="absolute top-6 left-4 z-30">
@@ -198,7 +217,7 @@ function VideoPage() {
             ? "pointer-events-none invisible translate-y-2 opacity-0"
             : "translate-y-0 opacity-100"
         }`}
-        style={{ bottom: "calc(36px + 13rem)" }}
+        style={{ bottom: "calc(36px + 11rem)" }}
       >
         <div className="flex items-center gap-3 rounded-full border border-[rgba(200,169,106,0.3)] bg-black/45 px-4 py-2.5 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)]">
           {SOCIALS.map(({ href, Icon, label }) => (
@@ -216,8 +235,52 @@ function VideoPage() {
         </div>
       </div>
 
+      {/* YouTube-style bottom progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 z-40 pointer-events-none">
+        <div
+          className="transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+          style={{
+            marginLeft: isPlaying ? 0 : 8,
+            marginRight: isPlaying ? 0 : 8,
+            marginBottom: isPlaying ? 0 : 4,
+          }}
+        >
+          <div
+            className="relative overflow-hidden transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{
+              height: isPlaying ? 2 : 4,
+              backgroundColor: "rgba(255,255,255,0.2)",
+              borderRadius: isPlaying ? 0 : 2,
+            }}
+          >
+            <div
+              className="h-full transition-all duration-300 ease-out"
+              style={{
+                width: `${Math.min(progress, 100)}%`,
+                backgroundColor: "var(--gold)",
+                borderRadius: isPlaying ? 0 : "0 2px 2px 0",
+              }}
+            />
+            {!isPlaying && (
+              <div
+                className="absolute top-1/2 -translate-y-1/2 transition-all duration-300 ease-out"
+                style={{
+                  left: `${Math.min(progress, 100)}%`,
+                  width: 12,
+                  height: 12,
+                  borderRadius: "50%",
+                  backgroundColor: "var(--gold)",
+                  transform: "translate(-50%, -50%)",
+                  boxShadow: "0 0 6px rgba(200,169,106,0.5)",
+                }}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Title + channel-identity block */}
-      <div className="absolute bottom-36 left-4 right-4 z-20 rtl:text-right">
+      <div className="absolute bottom-28 left-4 right-4 z-20 rtl:text-right">
         <div dir="ltr" className="flex justify-end items-center gap-3 mb-2.5 pointer-events-none select-none">
           <span
             className="text-sm font-semibold tracking-wide text-white/90"
@@ -257,6 +320,37 @@ function VideoPage() {
         />
       )}
 
+      {/* Center tap-to-toggle zone (below interactive elements) */}
+      <div
+        className="absolute inset-y-0 left-1/4 right-1/4 z-15"
+        onClick={(e) => {
+          if (touchHandled.current) {
+            touchHandled.current = false;
+            return;
+          }
+          if (wasSwiping.current) {
+            wasSwiping.current = false;
+            return;
+          }
+          const target = e.target as HTMLElement;
+          if (target.closest("a, button, [role=\"button\"]")) return;
+          togglePlayback();
+        }}
+      />
+
+      {/* Tap feedback overlay */}
+      {tapFeedback && (
+        <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center">
+          <div className="animate-tap-feedback grid h-16 w-16 place-items-center rounded-full bg-black/50 backdrop-blur-sm">
+            {tapFeedback === "play" ? (
+              <Play className="h-8 w-8 text-white" fill="white" />
+            ) : (
+              <Pause className="h-8 w-8 text-white" fill="white" />
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Toast */}
       {toast && (
         <div className="absolute bottom-24 left-1/2 z-50 -translate-x-1/2 animate-fade-up">
@@ -293,15 +387,23 @@ function VideoPage() {
       )}
 
       {/* Questions glassmorphism modal */}
-      {showQuestions && (
+      {(showQuestions || modalClosing) && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setShowQuestions(false)}
+            className={`absolute inset-0 bg-black/60 transition-opacity duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              modalClosing ? "opacity-0" : "opacity-100"
+            }`}
+            onClick={closeQuestions}
           />
-          <div className="relative max-h-[70vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl sm:rounded-2xl">
+          <div
+            className={`relative max-h-[70vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl sm:rounded-2xl ${
+              modalClosing
+                ? "translate-y-full opacity-0 transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:translate-y-8"
+                : "animate-slide-up"
+            }`}
+          >
             <button
-              onClick={() => setShowQuestions(false)}
+              onClick={closeQuestions}
               className="absolute right-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 transition hover:text-white"
             >
               <X className="h-4 w-4" />

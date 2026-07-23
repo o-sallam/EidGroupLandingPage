@@ -223,6 +223,26 @@ html[dir="rtl"] body {
 }
 @utility animate-shake { animation: shake 0.4s ease-in-out; }
 
+/* ── Modal slide-up entrance ── */
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@utility animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Tap feedback overlay ── */
+@keyframes tap-feedback {
+  0% { opacity: 0; transform: scale(0.7); }
+  15% { opacity: 1; transform: scale(1); }
+  45% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+@utility animate-tap-feedback {
+  animation: tap-feedback 0.6s ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [style*="emerge-icon"] {
     animation: none !important;
