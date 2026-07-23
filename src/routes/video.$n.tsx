@@ -207,7 +207,7 @@ function VideoPage() {
       </div>
 
       {/* Circular progress ring — overall completion across all videos */}
-      <div className="absolute top-3 right-3 z-45">
+      <div className="absolute top-6 right-3 z-45">
         <CircularProgressRing
           percent={overallProgress}
           current={num}
