@@ -195,7 +195,7 @@ function VideoPage() {
       <div
         className={`absolute left-1/2 z-30 -translate-x-1/2 transition-all duration-500 ${
           isPlaying
-            ? "pointer-events-none translate-y-2 opacity-0"
+            ? "pointer-events-none invisible translate-y-2 opacity-0"
             : "translate-y-0 opacity-100"
         }`}
         style={{ bottom: "calc(36px + 13rem)" }}
@@ -217,19 +217,28 @@ function VideoPage() {
       </div>
 
       {/* Title + channel-identity block */}
-      <div className="absolute bottom-36 left-4 right-4 z-20 flex flex-col rtl:text-right">
-        <div className="mb-2.5 flex flex-row items-center gap-3 rtl:flex-row-reverse pointer-events-none select-none">
-          <span className="text-sm font-semibold tracking-wide text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+      <div className="absolute bottom-36 left-4 right-4 z-20 rtl:text-right">
+        <div dir="ltr" className="flex justify-end items-center gap-3 mb-2.5 pointer-events-none select-none">
+          <span
+            className="text-sm font-semibold tracking-wide text-white/90"
+            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.7), 0 2px 12px rgba(0,0,0,0.4)" }}
+          >
             {t("brand.name")}
           </span>
-          <span className="inline-flex rounded-xl border border-[rgba(200,169,106,0.3)]">
+          <span
+            className="inline-flex rounded-xl border-2 border-[rgba(200,169,106,0.5)] bg-white"
+            style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
+          >
             <img src="/logo.webp" alt="" className="h-14 w-auto" />
           </span>
         </div>
         <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)] drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
           {String(num).padStart(2, "0")} — {t("brand.tag")}
         </p>
-        <h2 className="mt-1 font-serif text-xl leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] sm:text-2xl">
+        <h2
+          className="mt-1 font-serif text-xl leading-tight text-white sm:text-2xl"
+          style={{ textShadow: "0 2px 8px rgba(0,0,0,0.7), 0 4px 20px rgba(0,0,0,0.4)" }}
+        >
           {title}
         </h2>
       </div>

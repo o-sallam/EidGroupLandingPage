@@ -24,14 +24,10 @@ export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, on
       if (v.duration && onTimeUpdate) onTimeUpdate(v.currentTime, v.duration);
     };
     v.addEventListener("timeupdate", handleTime);
-    if (onPlay) v.addEventListener("play", onPlay);
-    if (onPause) v.addEventListener("pause", onPause);
     return () => {
       v.removeEventListener("timeupdate", handleTime);
-      if (onPlay) v.removeEventListener("play", onPlay);
-      if (onPause) v.removeEventListener("pause", onPause);
     };
-  }, [videoUrl, onTimeUpdate, onPlay, onPause]);
+  }, [videoUrl, onTimeUpdate]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -55,6 +51,8 @@ export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, on
         muted={muted ?? true}
         preload={autoPlay ? "auto" : "none"}
         poster={posterUrl ?? undefined}
+        onPlay={onPlay}
+        onPause={onPause}
       >
         <source src={videoUrl} />
       </video>
