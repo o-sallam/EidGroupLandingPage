@@ -347,10 +347,10 @@ function VideoPage() {
             {t("brand.name")}
           </span>
           <span
-            className="inline-flex rounded-xl border-2 border-[rgba(200,169,106,0.5)] bg-white"
+            className="inline-flex rounded-2xl border-2 border-[rgba(200,169,106,0.5)] bg-white"
             style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
           >
-            <img src="/logo.webp" alt="" className="h-16 w-auto" />
+            <img src="/logo.webp" alt="" className="h-14 w-auto" />
           </span>
         </div>
         <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)] drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
