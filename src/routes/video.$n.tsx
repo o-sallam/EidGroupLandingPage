@@ -14,6 +14,9 @@ import {
   Volume2,
   Play,
   Pause,
+  FileText,
+  ArrowRight,
+  Check,
 } from "lucide-react";
 
 export const Route = createFileRoute("/video/$n")({ component: VideoPage });
@@ -41,6 +44,7 @@ function VideoPage() {
   const [modalClosing, setModalClosing] = useState(false);
   const [manuallyPaused, setManuallyPaused] = useState(false);
   const [tapFeedback, setTapFeedback] = useState<"play" | "pause" | null>(null);
+  const [videoEnded, setVideoEnded] = useState(false);
 
   const touchStartX = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -68,6 +72,7 @@ function VideoPage() {
     setShowConfirm(false);
     setPendingNav(null);
     setToast("");
+    setVideoEnded(false);
   }, [num]);
 
   const showToastMsg = useCallback((msg: string) => {
@@ -119,8 +124,9 @@ function VideoPage() {
     if (duration > 0) setProgress((currentTime / duration) * 100);
   };
 
-  const handlePlay = () => setIsPlaying(true);
+  const handlePlay = () => { setIsPlaying(true); setVideoEnded(false); };
   const handlePause = () => setIsPlaying(false);
+  const handleEnded = () => { setVideoEnded(true); setManuallyPaused(true); setIsPlaying(false); };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -147,7 +153,7 @@ function VideoPage() {
   };
 
   const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
-  const effectivePaused = manuallyPaused || showQuestions;
+  const effectivePaused = manuallyPaused || showQuestions || videoEnded;
 
   const togglePlayback = useCallback(() => {
     setManuallyPaused((p) => !p);
@@ -170,6 +176,7 @@ function VideoPage() {
         paused={effectivePaused}
         onPlay={handlePlay}
         onPause={handlePause}
+        onEnded={handleEnded}
         onTimeUpdate={handleTimeUpdate}
       />
 
@@ -298,6 +305,38 @@ function VideoPage() {
         </div>
       </div>
 
+      {/* End-screen overlay — darker scrim + center action buttons */}
+      {videoEnded && (
+        <div className="absolute inset-0 z-35 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px]">
+          <div className="flex w-64 flex-col gap-4 animate-slide-up">
+            <button
+              onClick={() => setShowQuestions(true)}
+              className="flex items-center justify-center gap-2.5 rounded-full bg-[color:var(--gold)] py-3 text-sm font-semibold text-[color:var(--bg-raw)] shadow-lg transition active:scale-95"
+            >
+              <HelpCircle className="h-4 w-4" />
+              {t("questions.title")}
+            </button>
+            <button
+              onClick={() => navigate({ to: "/documents" })}
+              className="flex items-center justify-center gap-2.5 rounded-full border border-[rgba(200,169,106,0.4)] bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
+            >
+              <FileText className="h-4 w-4" />
+              {t("docs.title")}
+            </button>
+            <button
+              onClick={() => {
+                if (isLast) navigate({ to: "/documents" });
+                else attemptNavigate("next");
+              }}
+              className="flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
+            >
+              {isLast ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+              {isLast ? t("nav.finish") : t("nav.next")}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Title + channel-identity block */}
       <div className="absolute bottom-16 left-4 right-4 z-20 rtl:text-right">
         <div dir="ltr" className="flex justify-end items-center gap-3 mb-2.5 pointer-events-none select-none">
@@ -339,10 +378,11 @@ function VideoPage() {
         />
       )}
 
-      {/* Center tap-to-toggle zone (below interactive elements) */}
+      {/* Center tap-to-toggle zone (below interactive elements) — disabled during end-screen */}
       <div
-        className="absolute inset-y-0 left-1/4 right-1/4 z-15"
+        className={`absolute inset-y-0 left-1/4 right-1/4 ${videoEnded ? "z-0" : "z-15"}`}
         onClick={(e) => {
+          if (videoEnded) return;
           if (touchHandled.current) {
             touchHandled.current = false;
             return;

@@ -11,10 +11,11 @@ type Props = {
   paused?: boolean;
   onPlay?: () => void;
   onPause?: () => void;
+  onEnded?: () => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
 };
 
-export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onTimeUpdate }: Props) {
+export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onEnded, onTimeUpdate }: Props) {
   const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -64,6 +65,7 @@ export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, pa
         poster={posterUrl ?? undefined}
         onPlay={onPlay}
         onPause={onPause}
+        onEnded={onEnded}
       >
         <source src={videoUrl} />
       </video>
