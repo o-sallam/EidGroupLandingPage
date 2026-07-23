@@ -49,6 +49,10 @@ const dicts: Record<Lang, Dict> = {
     "footer.rights": "© مجموعة عيد — جميع الحقوق محفوظة",
     "lang.label": "اللغة",
     "questions.prompt": "أسئلة قد تدور في ذهنك",
+    "questions.confirm": "هل أنت متأكد أنك تريد الانتقال إلى الفيديو التالي؟",
+    "questions.confirmYes": "نعم",
+    "questions.confirmNo": "لا",
+    "questions.blocked": "شاهد المزيد من هذا الفيديو للمتابعة",
   },
   en: {
     "brand.name": "Eid Group",
@@ -94,6 +98,10 @@ const dicts: Record<Lang, Dict> = {
     "footer.rights": "© Eid Group — All rights reserved",
     "lang.label": "Language",
     "questions.prompt": "Questions you may have",
+    "questions.confirm": "Are you sure you want to move to the next video?",
+    "questions.confirmYes": "Yes",
+    "questions.confirmNo": "No",
+    "questions.blocked": "Watch more of this video to continue",
   },
   nl: {
     "brand.name": "Eid Group",
@@ -139,6 +147,10 @@ const dicts: Record<Lang, Dict> = {
     "footer.rights": "© Eid Group — Alle rechten voorbehouden",
     "lang.label": "Taal",
     "questions.prompt": "Vragen die u misschien heeft",
+    "questions.confirm": "Weet u zeker dat u naar de volgende video wilt gaan?",
+    "questions.confirmYes": "Ja",
+    "questions.confirmNo": "Nee",
+    "questions.blocked": "Bekijk meer van deze video om door te gaan",
   },
 };
 
@@ -241,4 +253,88 @@ export const VIDEO_URLS: Record<number, string | null> = {
   5: null,
   6: null,
   7: null,
+};
+
+export type QAPair = { q: string; a: string };
+export const QUESTIONS_DATA: Record<string, Record<Lang, QAPair[]>> = {
+  "1": {
+    ar: [
+      { q: "ما هي مجموعة عيد؟", a: "مجموعة عيد هي مجموعة استثمارية تعمل في السوق السورية. نقدم لمحة شاملة عن المجموعة، رسالتها، ورؤيتها الاستثمارية من خلال هذا العرض السرّي." },
+      { q: "كم عدد الفيديوهات في هذا العرض؟", a: "يتكوّن العرض من 7 فيديوهات قصيرة تغطي مختلف جوانب المشروع الاستثماري." },
+    ],
+    en: [
+      { q: "What is Eid Group?", a: "Eid Group is an investment group operating in the Syrian market. This confidential presentation provides a comprehensive overview of the group, its mission, and investment vision." },
+      { q: "How many videos are in this presentation?", a: "The presentation consists of 7 short videos covering various aspects of the investment opportunity." },
+    ],
+    nl: [
+      { q: "Wat is Eid Group?", a: "Eid Group is een investeringsgroep actief op de Syrische markt. Deze vertrouwelijke presentatie geeft een uitgebreid overzicht van de groep, haar missie en investeringsvisie." },
+      { q: "Hoeveel video's bevat deze presentatie?", a: "De presentatie bestaat uit 7 korte video's die verschillende aspecten van de investeringskans behandelen." },
+    ],
+  },
+  "2": {
+    ar: [
+      { q: "لماذا سوريا؟", a: "نرى فرصة استثمارية واعدة في سوريا نظرًا للإمكانات الاقتصادية الكبيرة وحاجة السوق إلى التطوير وإعادة البناء." },
+    ],
+    en: [
+      { q: "Why Syria?", a: "We see a promising investment opportunity in Syria due to its significant economic potential and the market's need for development and reconstruction." },
+    ],
+    nl: [
+      { q: "Waarom Syrië?", a: "We zien een veelbelovende investeringskans in Syrië vanwege het aanzienlijke economische potentieel en de behoefte van de markt aan ontwikkeling en wederopbouw." },
+    ],
+  },
+  "3": {
+    ar: [
+      { q: "ما هي القطاعات التي تركز عليها المجموعة؟", a: "تركز المجموعة على قطاعات متعددة تشمل التطوير العقاري والخدمات المالية والتجارة." },
+    ],
+    en: [
+      { q: "Which sectors does the group focus on?", a: "The group focuses on multiple sectors including real estate development, financial services, and trade." },
+    ],
+    nl: [
+      { q: "Op welke sectoren richt de groep zich?", a: "De groep richt zich op meerdere sectoren, waaronder vastgoedontwikkeling, financiële dienstverlening en handel." },
+    ],
+  },
+  "4": {
+    ar: [
+      { q: "ما هي الخبرة التي تمتلكها المجموعة؟", a: "تمتلك المجموعة خبرة واسعة في تحويل الأفكار إلى مشاريع ناجحة من خلال فريق إدارة ذو كفاءة عالية." },
+    ],
+    en: [
+      { q: "What expertise does the group have?", a: "The group has extensive experience in turning ideas into successful ventures through a highly capable management team." },
+    ],
+    nl: [
+      { q: "Welke expertise heeft de groep?", a: "De groep heeft uitgebreide ervaring in het omzetten van ideeën in succesvolle ondernemingen via een zeer bekwaam managementteam." },
+    ],
+  },
+  "5": {
+    ar: [
+      { q: "ما هي المشاريع الحالية؟", a: "لدينا عدة مشاريع نشطة في مراحل تنفيذ مختلفة، ويتم استعراضها بالتفصيل في هذا الفيديو." },
+    ],
+    en: [
+      { q: "What are the current projects?", a: "We have several active projects at various stages of execution, detailed in this video." },
+    ],
+    nl: [
+      { q: "Wat zijn de huidige projecten?", a: "We hebben verschillende actieve projecten in verschillende uitvoeringsfasen, gedetailleerd in deze video." },
+    ],
+  },
+  "6": {
+    ar: [
+      { q: "ما هي خطة النمو المستقبلية؟", a: "نخطط للنمو والتوسع خلال السنوات الخمس القادمة وفق خارطة طريق محددة تشمل التوسع الجغرافي والقطاعي." },
+    ],
+    en: [
+      { q: "What is the future growth plan?", a: "We plan to grow and expand over the next five years according to a specific roadmap that includes geographic and sectoral expansion." },
+    ],
+    nl: [
+      { q: "Wat is het toekomstige groeiplan?", a: "We plannen om de komende vijf jaar te groeien en uit te breiden volgens een specifieke routekaart die geografische en sectorale uitbreiding omvat." },
+    ],
+  },
+  "7": {
+    ar: [
+      { q: "كيف يمكنني الاستثمار؟", a: "يتم تفصيل هيكل الفرصة والشروط الأولية والعائد المتوقع في هذا الفيديو. للاستفسار، يرجى التواصل مع فريق علاقات المستثمرين." },
+    ],
+    en: [
+      { q: "How can I invest?", a: "The deal structure, indicative terms, and expected returns are detailed in this video. For inquiries, please contact our investor relations team." },
+    ],
+    nl: [
+      { q: "Hoe kan ik investeren?", a: "De dealstructuur, indicatieve voorwaarden en verwachte rendementen worden in deze video gedetailleerd. Neem voor vragen contact op met ons investor relations-team." },
+    ],
+  },
 };

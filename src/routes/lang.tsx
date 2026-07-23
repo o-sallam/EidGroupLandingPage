@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useI18n, markLangChosen, type Lang } from "@/lib/i18n";
-import { Check, Globe } from "lucide-react";
+import { Check } from "lucide-react";
 
 export const Route = createFileRoute("/lang")({ component: LangSelect });
 
@@ -58,9 +58,27 @@ function LangSelect() {
 
       <div className="relative z-10 w-full max-w-sm">
         <div className="mb-10 flex flex-col items-center gap-5 text-center animate-fade-up">
-          <div className="grid h-20 w-20 place-items-center rounded-full border border-[rgba(200,169,106,0.4)] shadow-[0_0_60px_rgba(200,169,106,0.25)]">
-            <Globe className="h-9 w-9 text-[color:var(--gold)]" />
+          <img
+            src="/logo.webp"
+            alt="Eid Group"
+            className="h-24 w-auto"
+          />
+
+          <div>
+            <h1
+              className="gold-gradient-text font-['Poppins',sans-serif] text-3xl font-bold tracking-wide"
+              style={{
+                textShadow:
+                  "0 1px 2px rgba(0,0,0,0.8), 0 2px 4px rgba(200,169,106,0.3), 0 4px 8px rgba(200,169,106,0.15)",
+              }}
+            >
+              <span className="shimmer">Eid Group</span>
+            </h1>
+            <p className="mt-1.5 text-[10px] uppercase tracking-[0.5em] text-[color:var(--muted-foreground)]">
+              Since 2023
+            </p>
           </div>
+
           <div className="relative h-12 w-full flex items-center justify-center overflow-hidden">
             <p
               dir={DIRS[(phraseIdx + 1) % PHRASES.length]}

@@ -1,28 +1,59 @@
+import { useEffect, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Play } from "lucide-react";
 
 type Props = {
   videoUrl?: string | null;
   posterUrl?: string | null;
-  /** Fill the parent container edge-to-edge (immersive full-screen). */
   immersive?: boolean;
+  autoPlay?: boolean;
+  muted?: boolean;
+  onPlay?: () => void;
+  onPause?: () => void;
+  onTimeUpdate?: (currentTime: number, duration: number) => void;
 };
 
-export function VideoStage({ videoUrl, posterUrl, immersive }: Props) {
+export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, onPlay, onPause, onTimeUpdate }: Props) {
   const { t } = useI18n();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !videoUrl) return;
+    const handleTime = () => {
+      if (v.duration && onTimeUpdate) onTimeUpdate(v.currentTime, v.duration);
+    };
+    v.addEventListener("timeupdate", handleTime);
+    if (onPlay) v.addEventListener("play", onPlay);
+    if (onPause) v.addEventListener("pause", onPause);
+    return () => {
+      v.removeEventListener("timeupdate", handleTime);
+      if (onPlay) v.removeEventListener("play", onPlay);
+      if (onPause) v.removeEventListener("pause", onPause);
+    };
+  }, [videoUrl, onTimeUpdate, onPlay, onPause]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !videoUrl) return;
+    v.muted = muted ?? true;
+  }, [muted, videoUrl]);
 
   if (videoUrl) {
     return (
       <video
+        ref={videoRef}
         key={videoUrl}
         className={
           immersive
             ? "absolute inset-0 h-full w-full object-cover"
             : "aspect-[9/16] w-full object-cover"
         }
-        controls
+        controls={false}
         playsInline
-        preload="none"
+        autoPlay={autoPlay}
+        muted={muted ?? true}
+        preload={autoPlay ? "auto" : "none"}
         poster={posterUrl ?? undefined}
       >
         <source src={videoUrl} />
@@ -30,7 +61,6 @@ export function VideoStage({ videoUrl, posterUrl, immersive }: Props) {
     );
   }
 
-  // "Coming soon" placeholder — fills the container in immersive mode.
   const wrap = immersive
     ? "absolute inset-0 h-full w-full"
     : "relative aspect-[9/16] w-full";
