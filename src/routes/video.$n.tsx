@@ -299,7 +299,7 @@ function VideoPage() {
       </div>
 
       {/* Title + channel-identity block */}
-      <div className="absolute bottom-24 left-4 right-4 z-20 rtl:text-right">
+      <div className="absolute bottom-16 left-4 right-4 z-20 rtl:text-right">
         <div dir="ltr" className="flex justify-end items-center gap-3 mb-2.5 pointer-events-none select-none">
           <span
             className="text-sm font-semibold tracking-wide text-white/90"
@@ -311,7 +311,7 @@ function VideoPage() {
             className="inline-flex rounded-xl border-2 border-[rgba(200,169,106,0.5)] bg-white"
             style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
           >
-            <img src="/logo.webp" alt="" className="h-14 w-auto" />
+            <img src="/logo.webp" alt="" className="h-16 w-auto" />
           </span>
         </div>
         <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)] drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
@@ -423,12 +423,12 @@ function VideoPage() {
           >
             <button
               onClick={closeQuestions}
-              className="absolute right-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 transition hover:text-white"
+              className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 transition hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
             <h3 className="mb-5 font-serif text-lg text-[color:var(--gold)]">
-              Questions & Answers
+              {t("questions.title")}
             </h3>
             {questions.length > 0 ? (
               <div className="space-y-4">
