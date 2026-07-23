@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DocumentsRouteImport } from './routes/documents'
 import { Route as IntroRouteImport } from './routes/intro'
+import { Route as LangRouteImport } from './routes/lang'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as VideoNRouteImport } from './routes/video.$n'
 
@@ -48,6 +49,11 @@ const IntroRoute = IntroRouteImport.update({
   path: '/intro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LangRoute = LangRouteImport.update({
+  id: '/lang',
+  path: '/lang',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/documents': typeof DocumentsRoute
   '/intro': typeof IntroRoute
+  '/lang': typeof LangRoute
   '/portal': typeof PortalRoute
   '/video/$n': typeof VideoNRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/documents': typeof DocumentsRoute
   '/intro': typeof IntroRoute
+  '/lang': typeof LangRoute
   '/portal': typeof PortalRoute
   '/video/$n': typeof VideoNRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/documents': typeof DocumentsRoute
   '/intro': typeof IntroRoute
+  '/lang': typeof LangRoute
   '/portal': typeof PortalRoute
   '/video/$n': typeof VideoNRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/documents'
     | '/intro'
+    | '/lang'
     | '/portal'
     | '/video/$n'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/documents'
     | '/intro'
+    | '/lang'
     | '/portal'
     | '/video/$n'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/documents'
     | '/intro'
+    | '/lang'
     | '/portal'
     | '/video/$n'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DocumentsRoute: typeof DocumentsRoute
   IntroRoute: typeof IntroRoute
+  LangRoute: typeof LangRoute
   PortalRoute: typeof PortalRoute
   VideoNRoute: typeof VideoNRoute
 }
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IntroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lang': {
+      id: '/lang'
+      path: '/lang'
+      fullPath: '/lang'
+      preLoaderRoute: typeof LangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal': {
       id: '/portal'
       path: '/portal'
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DocumentsRoute: DocumentsRoute,
   IntroRoute: IntroRoute,
+  LangRoute: LangRoute,
   PortalRoute: PortalRoute,
   VideoNRoute: VideoNRoute,
 }

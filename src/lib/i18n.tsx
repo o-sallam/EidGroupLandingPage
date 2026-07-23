@@ -48,6 +48,7 @@ const dicts: Record<Lang, Dict> = {
     "contact.linkedin": "لينكدإن",
     "footer.rights": "© مجموعة عيد — جميع الحقوق محفوظة",
     "lang.label": "اللغة",
+    "questions.prompt": "أسئلة قد تدور في ذهنك",
   },
   en: {
     "brand.name": "Eid Group",
@@ -92,6 +93,7 @@ const dicts: Record<Lang, Dict> = {
     "contact.linkedin": "LinkedIn",
     "footer.rights": "© Eid Group — All rights reserved",
     "lang.label": "Language",
+    "questions.prompt": "Questions you may have",
   },
   nl: {
     "brand.name": "Eid Group",
@@ -136,6 +138,7 @@ const dicts: Record<Lang, Dict> = {
     "contact.linkedin": "LinkedIn",
     "footer.rights": "© Eid Group — Alle rechten voorbehouden",
     "lang.label": "Taal",
+    "questions.prompt": "Vragen die u misschien heeft",
   },
 };
 
@@ -218,6 +221,16 @@ export function useI18n() {
 }
 
 export const TOTAL_VIDEOS = 7;
+
+// Tracks whether the user has chosen a language on the first-run Language screen.
+const LANG_CHOSEN_KEY = "eid_lang_chosen";
+export function isLangChosen(): boolean {
+  if (typeof window === "undefined") return false;
+  try { return localStorage.getItem(LANG_CHOSEN_KEY) === "1"; } catch { return false; }
+}
+export function markLangChosen() {
+  try { localStorage.setItem(LANG_CHOSEN_KEY, "1"); } catch {}
+}
 
 // Hardcoded fallback video URLs (RunASP-hosted)
 export const VIDEO_URLS: Record<number, string | null> = {

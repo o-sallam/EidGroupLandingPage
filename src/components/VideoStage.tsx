@@ -4,32 +4,41 @@ import { Play } from "lucide-react";
 type Props = {
   videoUrl?: string | null;
   posterUrl?: string | null;
+  /** Fill the parent container edge-to-edge (immersive full-screen). */
+  immersive?: boolean;
 };
 
-export function VideoStage({ videoUrl, posterUrl }: Props) {
+export function VideoStage({ videoUrl, posterUrl, immersive }: Props) {
   const { t } = useI18n();
 
   if (videoUrl) {
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-[rgba(200,169,106,0.15)] bg-black shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]">
-        <video
-          key={videoUrl}
-          className="aspect-[9/16] w-full object-cover"
-          controls
-          playsInline
-          preload="none"
-          poster={posterUrl ?? undefined}
-        >
-          <source src={videoUrl} />
-        </video>
-      </div>
+      <video
+        key={videoUrl}
+        className={
+          immersive
+            ? "absolute inset-0 h-full w-full object-cover"
+            : "aspect-[9/16] w-full object-cover"
+        }
+        controls
+        playsInline
+        preload="none"
+        poster={posterUrl ?? undefined}
+      >
+        <source src={videoUrl} />
+      </video>
     );
   }
 
+  // "Coming soon" placeholder — fills the container in immersive mode.
+  const wrap = immersive
+    ? "absolute inset-0 h-full w-full"
+    : "relative aspect-[9/16] w-full";
+
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-[rgba(200,169,106,0.15)] bg-black shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]">
+    <div className={wrap}>
       <div
-        className="aspect-[9/16] w-full bg-cover bg-center"
+        className="h-full w-full bg-cover bg-center"
         style={posterUrl ? { backgroundImage: `url(${posterUrl})` } : undefined}
       >
         <div className="relative flex h-full w-full items-center justify-center">

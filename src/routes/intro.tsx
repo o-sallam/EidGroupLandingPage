@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/intro")({ component: IntroPage });
@@ -30,16 +29,13 @@ function IntroPage() {
         >
           <Prev className="h-3.5 w-3.5 rtl:rotate-180" />
         </Link>
-        <LanguageSwitcher />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6">
         <div className="w-full card-luxe rounded-2xl p-8 animate-fade-up">
           {/* Brand mark */}
           <div className="mb-7 flex flex-col items-center gap-4 text-center">
-            <div className="grid h-16 w-16 place-items-center rounded-full border border-[rgba(200,169,106,0.4)] shadow-[0_0_50px_rgba(200,169,106,0.2)]">
-              <span className="font-serif text-3xl gold-gradient-text">E</span>
-            </div>
+            <img src="/logo.webp" alt="Eid Group" className="h-16 w-auto" />
             <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)]">
               {t("brand.tag")}
             </p>
@@ -64,7 +60,7 @@ function IntroPage() {
 
           {/* Continue */}
           <button
-            onClick={() => navigate({ to: "/access" })}
+            onClick={() => navigate({ to: "/video/$n", params: { n: "1" } })}
             className="group mt-8 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--gold)] px-6 py-3.5 text-sm font-semibold tracking-wide text-[color:var(--bg-raw)] shadow-[0_10px_30px_-10px_rgba(200,169,106,0.6)] transition hover:brightness-110"
           >
             {t("introPage.continue")}

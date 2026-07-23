@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ShieldCheck, Facebook, Instagram, Youtube } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -17,9 +16,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-[rgba(200,169,106,0.12)] bg-[rgba(11,15,20,0.75)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/portal" className="flex min-w-0 items-center gap-2">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[rgba(200,169,106,0.35)] bg-[color:var(--card-raw)]">
-              <span className="font-serif text-lg text-[color:var(--gold)]">E</span>
-            </span>
+            <img src="/logo.webp" alt={t("brand.name")} className="h-9 w-auto shrink-0" />
             <div className="min-w-0 leading-tight">
               <div className="truncate text-sm font-semibold tracking-wide text-[color:var(--foreground)]">
                 {t("brand.name")}
@@ -29,7 +26,6 @@ export function PortalShell({ children }: { children: ReactNode }) {
               </div>
             </div>
           </Link>
-          <LanguageSwitcher />
         </div>
       </header>
 

@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ACCESS_CODE, unlock } from "@/lib/access";
 import { KeyRound, Lock, ArrowLeft } from "lucide-react";
 
@@ -17,7 +16,7 @@ function AccessPage() {
     e.preventDefault();
     if (code.trim().toUpperCase() === ACCESS_CODE) {
       unlock();
-      navigate({ to: "/video/$n", params: { n: "1" } });
+      navigate({ to: "/intro" });
     } else {
       setError(true);
     }
@@ -39,7 +38,6 @@ function AccessPage() {
         >
           <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
         </Link>
-        <LanguageSwitcher />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6">
