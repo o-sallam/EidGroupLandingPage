@@ -177,6 +177,25 @@ function VideoPage() {
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-black/55 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-56 bg-gradient-to-t from-black/75 to-transparent" />
 
+      {/* Instagram Stories progress bar — overall sequence progress across all videos */}
+      <div className="absolute top-2 left-2 right-2 z-40 flex gap-1">
+        {Array.from({ length: TOTAL_VIDEOS }).map((_, i) => (
+          <div key={i} className="h-1 flex-1 overflow-hidden rounded-full bg-white/20">
+            <div
+              className="h-full rounded-full bg-[color:var(--gold)] transition-all duration-300 ease-out"
+              style={{
+                width:
+                  i < num - 1
+                    ? "100%"
+                    : i === num - 1
+                      ? `${Math.min(progress, 100)}%`
+                      : "0%",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
       {/* Questions button (position/animation always LTR geometry) */}
       <div className="absolute top-6 left-4 z-30">
         <button
@@ -217,7 +236,7 @@ function VideoPage() {
             ? "pointer-events-none invisible translate-y-2 opacity-0"
             : "translate-y-0 opacity-100"
         }`}
-        style={{ bottom: "calc(36px + 11rem)" }}
+        style={{ bottom: "calc(36px + 10rem)" }}
       >
         <div className="flex items-center gap-3 rounded-full border border-[rgba(200,169,106,0.3)] bg-black/45 px-4 py-2.5 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)]">
           {SOCIALS.map(({ href, Icon, label }) => (
@@ -280,7 +299,7 @@ function VideoPage() {
       </div>
 
       {/* Title + channel-identity block */}
-      <div className="absolute bottom-28 left-4 right-4 z-20 rtl:text-right">
+      <div className="absolute bottom-24 left-4 right-4 z-20 rtl:text-right">
         <div dir="ltr" className="flex justify-end items-center gap-3 mb-2.5 pointer-events-none select-none">
           <span
             className="text-sm font-semibold tracking-wide text-white/90"
