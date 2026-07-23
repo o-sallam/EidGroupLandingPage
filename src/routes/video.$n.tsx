@@ -1,9 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, QUESTIONS_DATA } from "@/lib/i18n";
+import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, QUESTIONS_DATA, lastAvailableVideo } from "@/lib/i18n";
 import { isUnlocked } from "@/lib/access";
 import { usePageContent } from "@/hooks/usePageContent";
 import { VideoStage } from "@/components/VideoStage";
+import { DocumentsGallery } from "@/components/DocumentsGallery";
+import { CircularProgressRing } from "@/components/CircularProgressRing";
 import {
   HelpCircle,
   Facebook,
@@ -16,6 +18,7 @@ import {
   Pause,
   FileText,
   ArrowRight,
+  ArrowLeft,
   Check,
 } from "lucide-react";
 
@@ -45,6 +48,7 @@ function VideoPage() {
   const [manuallyPaused, setManuallyPaused] = useState(false);
   const [tapFeedback, setTapFeedback] = useState<"play" | "pause" | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
+  const [showDocs, setShowDocs] = useState(false);
 
   const touchStartX = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -52,12 +56,13 @@ function VideoPage() {
   const touchHandled = useRef(false);
 
   const isFirst = num === 1;
-  const isLast = num === TOTAL_VIDEOS;
+  const isLast = num === lastAvailableVideo;
   const fallback = videoContent[lang][num - 1];
   const title = row?.titles?.[lang]?.trim() || fallback.title;
   const description = row?.descriptions?.[lang]?.trim() || fallback.description;
   const videoUrl = row?.video_url || VIDEO_URLS[num] || null;
   const imageUrl = row?.image_url || null;
+  const overallProgress = ((num - 1) + (progress / 100)) / TOTAL_VIDEOS;
 
   useEffect(() => {
     if (!isUnlocked()) navigate({ to: "/access", replace: true });
@@ -73,6 +78,7 @@ function VideoPage() {
     setPendingNav(null);
     setToast("");
     setVideoEnded(false);
+    setShowDocs(false);
   }, [num]);
 
   const showToastMsg = useCallback((msg: string) => {
@@ -87,10 +93,7 @@ function VideoPage() {
       navigate({ to: "/video/$n", params: { n: String(num - 1) } });
       return;
     }
-    if (isLast) {
-      navigate({ to: "/documents" });
-      return;
-    }
+    if (isLast) return;
     if (progress < 90) {
       showToastMsg(t("questions.blocked"));
       return;
@@ -203,6 +206,15 @@ function VideoPage() {
         ))}
       </div>
 
+      {/* Circular progress ring — overall completion across all videos */}
+      <div className="absolute top-3 right-3 z-45">
+        <CircularProgressRing
+          percent={overallProgress}
+          current={num}
+          total={TOTAL_VIDEOS}
+        />
+      </div>
+
       {/* Questions button (position/animation always LTR geometry) */}
       <div className="absolute top-6 left-4 z-30">
         <button
@@ -236,14 +248,25 @@ function VideoPage() {
         {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </button>
 
-      {/* Social bar above brand + title */}
+      {/* Documents icon — persistent left-side rail (hidden during end-screen to avoid redundancy) */}
+      {!videoEnded && (
+        <button
+          onClick={() => setShowDocs(true)}
+          className="absolute left-4 top-1/2 z-30 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full border border-[rgba(200,169,106,0.4)] bg-black/35 text-[color:var(--gold)] shadow-lg backdrop-blur-md transition hover:bg-black/50 active:scale-90"
+          aria-label={t("docs.title")}
+        >
+          <FileText className="h-5 w-5" />
+        </button>
+      )}
+
+      {/* Social bar above brand + title — always mounted so backdrop-filter stays computed */}
       <div
         className={`absolute left-1/2 z-30 -translate-x-1/2 transition-all duration-500 ${
           isPlaying
-            ? "pointer-events-none invisible translate-y-2 opacity-0"
+            ? "pointer-events-none translate-y-2 opacity-0"
             : "translate-y-0 opacity-100"
         }`}
-        style={{ bottom: "calc(36px + 10rem)" }}
+        style={{ bottom: "calc(36px + 10rem)", willChange: "backdrop-filter, opacity" }}
       >
         <div className="flex items-center gap-3 rounded-full border border-[rgba(200,169,106,0.3)] bg-black/45 px-4 py-2.5 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)]">
           {SOCIALS.map(({ href, Icon, label }) => (
@@ -308,7 +331,7 @@ function VideoPage() {
       {/* End-screen overlay — darker scrim + center action buttons */}
       {videoEnded && (
         <div className="absolute inset-0 z-35 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px]">
-          <div className="flex w-64 flex-col gap-4 animate-slide-up">
+          <div className="flex w-64 flex-col gap-3 animate-slide-up">
             <button
               onClick={() => setShowQuestions(true)}
               className="flex items-center justify-center gap-2.5 rounded-full bg-[color:var(--gold)] py-3 text-sm font-semibold text-[color:var(--bg-raw)] shadow-lg transition active:scale-95"
@@ -317,22 +340,30 @@ function VideoPage() {
               {t("questions.title")}
             </button>
             <button
-              onClick={() => navigate({ to: "/documents" })}
+              onClick={() => setShowDocs(true)}
               className="flex items-center justify-center gap-2.5 rounded-full border border-[rgba(200,169,106,0.4)] bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
             >
               <FileText className="h-4 w-4" />
               {t("docs.title")}
             </button>
-            <button
-              onClick={() => {
-                if (isLast) navigate({ to: "/documents" });
-                else attemptNavigate("next");
-              }}
-              className="flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
-            >
-              {isLast ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-              {isLast ? t("nav.finish") : t("nav.next")}
-            </button>
+            {!isFirst && (
+              <button
+                onClick={() => navigate({ to: "/video/$n", params: { n: String(num - 1) } })}
+                className="flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                {t("nav.prev")}
+              </button>
+            )}
+            {!isLast && (
+              <button
+                onClick={() => attemptNavigate("next")}
+                className="flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
+              >
+                <ArrowRight className="h-4 w-4" />
+                {t("nav.next")}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -347,8 +378,8 @@ function VideoPage() {
             {t("brand.name")}
           </span>
           <span
-            className="inline-flex rounded-2xl border-2 border-[rgba(200,169,106,0.5)] bg-white"
-            style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
+            className="inline-flex rounded-2xl border-2 border-[rgba(200,169,106,0.5)]"
+            style={{ backgroundColor: "#121212", boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
           >
             <img src="/logo.webp" alt="" className="h-14 w-auto" />
           </span>
@@ -499,6 +530,9 @@ function VideoPage() {
           </div>
         </div>
       )}
+
+      {/* Documents gallery modal */}
+      {showDocs && <DocumentsGallery videoNum={num} onClose={() => setShowDocs(false)} />}
     </div>
   );
 }

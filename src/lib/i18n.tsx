@@ -26,6 +26,7 @@ const dicts: Record<Lang, Dict> = {
     "access.locked": "بيئة آمنة — دخول محدود",
     "nav.back": "السابق",
     "nav.next": "التالي",
+    "nav.prev": "الفيديو السابق",
     "nav.finish": "متابعة إلى المستندات",
     "video.progress": "الفيديو {n} من {total}",
     "video.comingSoon": "سيتم إضافة الفيديو قريبًا",
@@ -76,6 +77,7 @@ const dicts: Record<Lang, Dict> = {
     "access.locked": "Secure environment — restricted access",
     "nav.back": "Back",
     "nav.next": "Next",
+    "nav.prev": "Previous Video",
     "nav.finish": "Continue to Documents",
     "video.progress": "Video {n} of {total}",
     "video.comingSoon": "Video will be added soon",
@@ -126,6 +128,7 @@ const dicts: Record<Lang, Dict> = {
     "access.locked": "Beveiligde omgeving — beperkte toegang",
     "nav.back": "Vorige",
     "nav.next": "Volgende",
+    "nav.prev": "Vorige video",
     "nav.finish": "Doorgaan naar documenten",
     "video.progress": "Video {n} van {total}",
     "video.comingSoon": "Video wordt binnenkort toegevoegd",
@@ -251,6 +254,14 @@ export const VIDEO_URLS: Record<number, string | null> = {
   6: null,
   7: null,
 };
+
+// Last video index with a non-null URL — determines end-of-sequence behavior
+export const lastAvailableVideo = Math.max(
+  ...Object.entries(VIDEO_URLS)
+    .filter(([, url]) => url !== null)
+    .map(([key]) => Number(key)),
+  1
+);
 
 export type QAPair = { q: string; a: string };
 export const QUESTIONS_DATA: Record<string, Record<Lang, QAPair[]>> = {
