@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Play } from "lucide-react";
 
@@ -15,7 +15,19 @@ type Props = {
   onTimeUpdate?: (currentTime: number, duration: number) => void;
 };
 
-export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onEnded, onTimeUpdate }: Props) {
+export type VideoStageHandle = {
+  /** Relative seek by delta seconds (clamped to duration). */
+  seek: (delta: number) => void;
+  /** Absolute seek to a timestamp (clamped to duration). */
+  seekTo: (time: number) => void;
+  getCurrentTime: () => number;
+  getDuration: () => number;
+};
+
+export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStage(
+  { videoUrl, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onEnded, onTimeUpdate }: Props,
+  ref,
+) {
   const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -46,6 +58,25 @@ export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, pa
       v.play().catch(() => {});
     }
   }, [paused, videoUrl]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      seek: (delta: number) => {
+        const v = videoRef.current;
+        if (!v || !isFinite(v.duration) || v.duration <= 0) return;
+        v.currentTime = Math.max(0, Math.min(v.currentTime + delta, v.duration));
+      },
+      seekTo: (time: number) => {
+        const v = videoRef.current;
+        if (!v || !isFinite(v.duration) || v.duration <= 0) return;
+        v.currentTime = Math.max(0, Math.min(time, v.duration));
+      },
+      getCurrentTime: () => videoRef.current?.currentTime ?? 0,
+      getDuration: () => videoRef.current?.duration ?? 0,
+    }),
+    [],
+  );
 
   if (videoUrl) {
     return (
@@ -108,4 +139,4 @@ export function VideoStage({ videoUrl, posterUrl, immersive, autoPlay, muted, pa
       </div>
     </div>
   );
-}
+});
