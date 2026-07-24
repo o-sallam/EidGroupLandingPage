@@ -418,16 +418,14 @@ function VideoPage() {
         {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </button>
       )}
-      {/* Left icon rail: social icons + WhatsApp — bottom aligned, animates with controls */}
+      {/* Left icon rail: social icons + WhatsApp — bottom aligned, slides down on play */}
       {!videoEnded && !nextPreview && (
         <div
           className="absolute left-4 z-30 flex flex-col items-center gap-3"
           style={{
-            bottom: isPlaying ? 20 : 72,
-            opacity: isPlaying ? 0 : 1,
-            transform: isPlaying ? "translateY(12px)" : "translateY(0)",
-            pointerEvents: isPlaying ? "none" as const : "auto" as const,
-            transition: "opacity 400ms cubic-bezier(0.22,1,0.36,1), transform 400ms cubic-bezier(0.22,1,0.36,1), bottom 400ms cubic-bezier(0.22,1,0.36,1)",
+            bottom: 72,
+            transform: isPlaying ? "translateY(14px)" : "translateY(0)",
+            transition: "transform 400ms cubic-bezier(0.22,1,0.36,1)",
           }}
         >
           {SOCIALS.map(({ href, Icon, label }) => (
@@ -612,15 +610,14 @@ function VideoPage() {
         </div>
       )}
 
-      {/* Title + logo — bottom anchored, animates with controls */}
+      {/* Title + logo — bottom anchored, slides down on play */}
       {!videoEnded && !nextPreview && (
         <div
           className="absolute left-4 right-4 z-20 rtl:text-right"
           style={{
-            bottom: isPlaying ? 4 : 52,
-            opacity: isPlaying ? 0 : 1,
-            transform: isPlaying ? "translateY(12px)" : "translateY(0)",
-            transition: "opacity 400ms cubic-bezier(0.22,1,0.36,1), transform 400ms cubic-bezier(0.22,1,0.36,1), bottom 400ms cubic-bezier(0.22,1,0.36,1)",
+            bottom: 52,
+            transform: isPlaying ? "translateY(14px)" : "translateY(0)",
+            transition: "transform 400ms cubic-bezier(0.22,1,0.36,1)",
           }}
         >
           <div className="flex flex-col gap-1">
@@ -631,9 +628,6 @@ function VideoPage() {
               {title}
             </h2>
             <div className="flex items-center gap-2.5">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
-                {String(num).padStart(2, "0")}
-              </p>
               <div dir="ltr" className="flex items-center gap-2 pointer-events-none select-none">
                 <span
                   className="text-xs font-semibold tracking-wide text-white/70"
