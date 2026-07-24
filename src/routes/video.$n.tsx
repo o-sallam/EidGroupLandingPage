@@ -33,7 +33,7 @@ const SOCIALS = [
 
 // Double-tap-to-seek increment (seconds). 10s is the conventional step used by
 // YouTube / Instagram Reels double-tap seeking — matches user expectations.
-const SEEK_STEP = 10;
+const SEEK_STEP = 5;
 // Max gap (ms) between two taps to count as a double-tap.
 const DOUBLE_TAP_MS = 300;
 // How long the up-next thumbnail preview counts down before auto-starting.
@@ -49,7 +49,7 @@ function VideoPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(num !== 1);
   const [showQuestions, setShowQuestions] = useState(false);
   const [toast, setToast] = useState("");
   const [modalClosing, setModalClosing] = useState(false);
@@ -62,6 +62,9 @@ function VideoPage() {
   // Target video number for the up-next preview transition (null = inactive).
   const [nextPreview, setNextPreview] = useState<number | null>(null);
   const [previewCount, setPreviewCount] = useState(PREVIEW_SECONDS);
+  // Initial thumbnail preview for the first video (3s delay before playback).
+  const [initialPreview, setInitialPreview] = useState(num === 1);
+  const [initialCount, setInitialCount] = useState(PREVIEW_SECONDS);
 
   const touchStartX = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -82,7 +85,7 @@ function VideoPage() {
   const imageUrl = row?.image_url || null;
   const overallProgress = ((num - 1) + (progress / 100)) / TOTAL_VIDEOS;
   // Surface taps (toggle / seek) are disabled while any overlay is up.
-  const surfaceActive = !showQuestions && !showDocs && !nextPreview && !videoEnded;
+  const surfaceActive = !showQuestions && !showDocs && !nextPreview && !videoEnded && !initialPreview;
 
   useEffect(() => {
     if (!isUnlocked()) navigate({ to: "/access", replace: true });
@@ -97,10 +100,13 @@ function VideoPage() {
     setModalClosing(false);
     setManuallyPaused(false);
     setShowDocs(false);
+    setIsMuted(num !== 1);
     setToast("");
     setVideoEnded(false);
     setNextPreview(null);
     setPreviewCount(PREVIEW_SECONDS);
+    setInitialPreview(num === 1);
+    setInitialCount(PREVIEW_SECONDS);
     setSeekFlash(null);
     if (singleTapTimeoutRef.current) {
       clearTimeout(singleTapTimeoutRef.current);
@@ -213,6 +219,23 @@ function VideoPage() {
     return () => clearInterval(id);
   }, [nextPreview, navigate]);
 
+  // Initial preview countdown — shows the first video's thumbnail for 3s before playback.
+  useEffect(() => {
+    if (!initialPreview) return;
+    let count = PREVIEW_SECONDS;
+    setInitialCount(count);
+    const id = setInterval(() => {
+      count -= 1;
+      if (count <= 0) {
+        clearInterval(id);
+        setInitialPreview(false);
+      } else {
+        setInitialCount(count);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [initialPreview]);
+
   const closeQuestions = useCallback(() => {
     setModalClosing(true);
     setTimeout(() => {
@@ -279,7 +302,7 @@ function VideoPage() {
   );
 
   const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
-  const effectivePaused = manuallyPaused || showQuestions || videoEnded;
+  const effectivePaused = manuallyPaused || showQuestions || videoEnded || initialPreview;
 
   return (
     <div
@@ -396,7 +419,7 @@ function VideoPage() {
       {/* YouTube-style bottom progress bar — interactive scrubber */}
       <div dir="ltr" className="absolute bottom-0 left-0 right-0 z-40" data-no-tap>
         <div
-          className="relative flex items-center"
+          className="relative flex items-center transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             height: 28,
             marginLeft: isPlaying ? 0 : 8,
@@ -414,7 +437,7 @@ function VideoPage() {
             onPointerMove={(e) => {
               if (e.buttons === 1) scrubToClientX(e.clientX);
             }}
-            className="group relative w-full cursor-pointer touch-none"
+            className="group relative w-full cursor-pointer touch-none transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
             style={{
               height: isPlaying ? 2 : 4,
               backgroundColor: "rgba(255,255,255,0.2)",
@@ -520,6 +543,40 @@ function VideoPage() {
         />
       )}
 
+      {/* Initial thumbnail preview for the first video (3s delay before playback). */}
+      {initialPreview && (
+        <div className="absolute inset-0 z-50 overflow-hidden bg-black">
+          <img
+            src={`/thumbnails/${num}.webp`}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80 backdrop-blur-[2px]" />
+          <div className="relative z-10 flex h-full flex-col items-center justify-center gap-5 px-6 text-center animate-preview-in">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)]">
+              {t("video.starting")}
+            </p>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
+              {String(num).padStart(2, "0")} / {TOTAL_VIDEOS}
+            </p>
+            <h2
+              className="max-w-md font-serif text-2xl leading-tight text-white sm:text-3xl"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
+            >
+              {title}
+            </h2>
+            <div className="flex flex-col items-center gap-1">
+              <span key={initialCount} className="animate-count-pop text-6xl font-semibold text-white" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7)" }}>
+                {initialCount}
+              </span>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-white/60">
+                {t("video.starting")}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Title + channel-identity block */}
       <div className="absolute bottom-16 left-4 right-4 z-20 rtl:text-right">
         <div dir="ltr" className="mb-2.5 flex items-start justify-end gap-3 pointer-events-none select-none">
@@ -528,7 +585,20 @@ function VideoPage() {
               className="inline-flex rounded-2xl border-2 border-[rgba(200,169,106,0.5)]"
               style={{ backgroundColor: "#121212", boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
             >
-              <img src="/logo.webp" alt="" className="h-14 w-auto" />
+              <span className="relative" style={{ perspective: 800, lineHeight: 0 }}>
+                <span className="block" style={{ transformStyle: "preserve-3d", animation: "logo-flip 5s ease-in-out infinite" }}>
+                  <img src="/logo.webp" alt="" className="h-14 w-auto" style={{ backfaceVisibility: "hidden", display: "block" }} />
+                  <span
+                    className="absolute inset-0 flex items-center justify-center"
+                    style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                  >
+                    <span className="flex flex-col items-center leading-none">
+                      <span className="font-serif text-xl font-semibold text-[color:var(--gold)]">Eid</span>
+                      <span className="font-serif text-lg font-semibold text-[color:var(--gold)]">Group</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
             </span>
             <span
               className="text-xs font-semibold tracking-wide text-white/90"

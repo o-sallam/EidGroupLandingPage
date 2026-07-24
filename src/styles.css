@@ -259,6 +259,15 @@ html[dir="rtl"] body {
 }
 @utility animate-seek-flash { animation: seek-flash 0.65s ease-out forwards; }
 
+/* ── Logo flip animation ── */
+@keyframes logo-flip {
+  0%, 66% { transform: rotateY(0deg); }
+  72% { transform: rotateY(180deg); }
+  86% { transform: rotateY(180deg); }
+  92% { transform: rotateY(360deg); }
+  100% { transform: rotateY(360deg); }
+}
+
 /* ── Up-next preview fade/scale entrance ── */
 @keyframes preview-in {
   from { opacity: 0; transform: scale(1.04); }
