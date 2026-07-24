@@ -379,23 +379,30 @@ export const QUESTIONS_DATA: Record<string, Record<Lang, QAPair[]>> = {
       { q: "Wanneer begint de marketing?", a: "Het begint vanaf de vroege stadia van het project via het netwerk van vastgoedkantoren, klanten en onze digitale platforms, met als doel de investeringsduur te verkorten." },
     ],
   },
-  // DRAFT — Video 7 content: placeholder awaiting client review/approval before going live
-  // Suggested title: "الضمانات وحماية المستثمر" (Guarantees & Investor Protection)
   "7": {
     ar: [
-      { q: "ما الضمانات المقدمة للمستثمر؟", a: "يتم توثيق الاستثمار بعقد واضح يحدد حصة الشريك في الأرض ونسبة العائد المتفق عليها، مع إتاحة متابعة دورية لمراحل المشروع أولاً بأول." },
-      { q: "ماذا يحدث إذا تأخر البيع عن الفترة المتوقعة؟", a: "تتم مراجعة الخطة بشكل دوري مع المستثمر، مع خيارات واضحة للتعامل مع أي تأخير دون التأثير على أصل حقوقه في المشروع." },
-      { q: "كيف يمكن للمستثمر التأكد من سير العمل؟", a: "من خلال تقارير دورية ومتابعة مباشرة مع فريق عيد جروب، إضافة إلى إمكانية زيارة الأرض أو الاطلاع على مستنداتها عند الحاجة." },
+      { q: "ماذا تحتاجون للبدء؟", a: "نحتاج إلى 10,000 دولار لإطلاق المشروع، وتشمل البحث عن أفضل الفرص العقارية، ودراسة العقارات، وتحليل الأسعار، والتفاوض مع المالكين، ومراجعة الأوراق القانونية، وتقديم الفرصة المناسبة لكم قبل اتخاذ أي قرار بالشراء." },
+      { q: "متى يتم استخدام مبلغ الـ150,000 دولار؟", a: "بعد عرض الفرصة عليكم وموافقتكم عليها، يتم استخدام رأس المال لشراء العقار فقط والانتقال إلى مرحلة التنفيذ." },
+      { q: "كيف تتم إدارة أموال المشروع بعد شراء العقار؟", a: "بعد شراء العقار، يتم تطويره على مراحل، وتُصرف جميع التكاليف من خلال فواتير أسبوعية موثقة مرتبطة بأعمال التنفيذ، مع إرسال صور وفيديوهات وتقارير دورية للمستثمر." },
+      { q: "كيف يتم ضمان سلامة الإجراءات القانونية؟", a: "يتم فحص جميع أوراق العقار من قبل محامٍ مختص، كما يمكن لمحامي المستثمر مراجعة جميع المستندات والعقود قبل إتمام عملية الشراء." },
+      { q: "باسم من تُسجل ملكية العقار؟", a: "تُسجل ملكية العقار باسم الجهة أو الشخص الذي يحدده المستثمر، وفق الاتفاق القانوني بين الطرفين." },
+      { q: "هل أنتم مستعدون لتقديم ضمانات إضافية؟", a: "نعم، نحن منفتحون على مناقشة أي ضمانات قانونية معقولة يطلبها المستثمر أو محاميه، بما يحقق حماية ووضوحًا للطرفين، لأننا نؤمن أن الثقة تُبنى بالشفافية والالتزام." },
     ],
     en: [
-      { q: "What guarantees are provided to the investor?", a: "The investment is documented in a clear contract specifying the partner's share in the land and the agreed return rate, with periodic follow-up on project stages as they happen." },
-      { q: "What happens if the sale is delayed beyond the expected period?", a: "The plan is reviewed periodically with the investor, with clear options to handle any delay without affecting their principal rights in the project." },
-      { q: "How can the investor verify the progress of work?", a: "Through periodic reports and direct follow-up with the Eid Group team, in addition to the possibility of visiting the land or reviewing its documents when needed." },
+      { q: "What do you need to get started?", a: "We need $10,000 to launch the project, which includes searching for the best real estate opportunities, studying properties, analyzing prices, negotiating with owners, reviewing legal documents, and presenting the right opportunity to you before making any purchase decision." },
+      { q: "When is the $150,000 amount used?", a: "After presenting the opportunity to you and obtaining your approval, the capital is used solely to purchase the property and move to the execution phase." },
+      { q: "How is the project's money managed after purchasing the property?", a: "After purchasing the property, it is developed in stages, and all costs are disbursed through weekly documented invoices linked to execution work, with photos, videos, and periodic reports sent to the investor." },
+      { q: "How is the safety of legal procedures ensured?", a: "All property documents are reviewed by a specialized lawyer, and the investor's lawyer can review all documents and contracts before completing the purchase." },
+      { q: "In whose name is the property registered?", a: "The property is registered in the name of the entity or person designated by the investor, according to the legal agreement between the parties." },
+      { q: "Are you willing to provide additional guarantees?", a: "Yes, we are open to discussing any reasonable legal guarantees requested by the investor or their lawyer, to ensure protection and clarity for both parties, because we believe trust is built through transparency and commitment." },
     ],
     nl: [
-      { q: "Welke garanties worden aan de investeerder geboden?", a: "De investering wordt vastgelegd in een duidelijke overeenkomst die het aandeel van de partner in het land en het overeengekomen rendementspercentage specificeert, met periodieke opvolging van de projectfasen." },
-      { q: "Wat gebeurt er als de verkoop langer duurt dan verwacht?", a: "Het plan wordt periodiek met de investeerder herzien, met duidelijke opties om eventuele vertraging aan te pakken zonder hun hoofdsom in het project te beïnvloeden." },
-      { q: "Hoe kan de investeerder de voortgang van het werk verifiëren?", a: "Via periodieke rapporten en directe opvolging met het Eid Group-team, plus de mogelijkheid om het land te bezoeken of documenten in te zien wanneer nodig." },
+      { q: "Wat heeft u nodig om te beginnen?", a: "We hebben $10.000 nodig om het project te starten, inclusief het zoeken naar de beste vastgoedkansen, het bestuderen van panden, het analyseren van prijzen, het onderhandelen met eigenaren, het beoordelen van juridische documenten en het presenteren van de juiste kans voordat u een aankoopbeslissing neemt." },
+      { q: "Wanneer wordt het bedrag van $150.000 gebruikt?", a: "Nadat de kans aan u is gepresenteerd en uw goedkeuring is verkregen, wordt het kapitaal uitsluitend gebruikt om het pand te kopen en over te gaan naar de uitvoeringsfase." },
+      { q: "Hoe wordt het geld van het project beheerd na aankoop van het pand?", a: "Na aankoop van het pand wordt het in fases ontwikkeld en worden alle kosten uitbetaald via wekelijkse gedocumenteerde facturen gekoppeld aan uitvoeringswerkzaamheden, met foto's, video's en periodieke rapporten aan de investeerder." },
+      { q: "Hoe wordt de veiligheid van juridische procedures gewaarborgd?", a: "Alle eigendomsdocumenten worden beoordeeld door een gespecialiseerde advocaat, en de advocaat van de investeerder kan alle documenten en contracten beoordelen voordat de aankoop wordt voltooid." },
+      { q: "Op wiens naam wordt het eigendom geregistreerd?", a: "Het eigendom wordt geregistreerd op naam van de entiteit of persoon die door de investeerder is aangewezen, volgens de juridische overeenkomst tussen de partijen." },
+      { q: "Bent u bereid om aanvullende garanties te bieden?", a: "Ja, we staan open voor het bespreken van redelijke juridische garanties die door de investeerder of hun advocaat worden gevraagd, om bescherming en duidelijkheid voor beide partijen te waarborgen, omdat we geloven dat vertrouwen wordt opgebouwd door transparantie en toewijding." },
     ],
   },
 };
