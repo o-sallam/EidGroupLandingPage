@@ -58,6 +58,7 @@ const dicts: Record<Lang, Dict> = {
     "questions.confirmYes": "نعم",
     "questions.confirmNo": "لا",
     "questions.blocked": "شاهد المزيد من هذا الفيديو للمتابعة",
+    "video.mustWatchFirst": "يجب مشاهدة الفيديوهات السابقة أولاً",
   },
   en: {
     "brand.name": "Eid Group",
@@ -112,6 +113,7 @@ const dicts: Record<Lang, Dict> = {
     "questions.confirmYes": "Yes",
     "questions.confirmNo": "No",
     "questions.blocked": "Watch more of this video to continue",
+    "video.mustWatchFirst": "You must watch the previous videos first",
   },
   nl: {
     "brand.name": "Eid Group",
@@ -166,6 +168,7 @@ const dicts: Record<Lang, Dict> = {
     "questions.confirmYes": "Ja",
     "questions.confirmNo": "Nee",
     "questions.blocked": "Bekijk meer van deze video om door te gaan",
+    "video.mustWatchFirst": "Je moet eerst de vorige video's bekijken",
   },
 };
 
@@ -259,8 +262,8 @@ export const VIDEO_URLS: Record<number, string | null> = {
   2: "https://egroup.runasp.net/videos/v2.mp4",
   3: "https://egroup.runasp.net/videos/v3.mp4",
   4: "https://egroup.runasp.net/videos/v4.mp4",
-  5: null,
-  6: null,
+  5: "https://egroup.runasp.net/videos/v5.mp4",
+  6: "https://egroup.runasp.net/videos/v6.mp4",
   7: null,
 };
 

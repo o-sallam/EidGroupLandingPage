@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Play } from "lucide-react";
 
@@ -103,17 +103,34 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
     );
   }
 
+  const [thumbLoaded, setThumbLoaded] = useState(false);
+  useEffect(() => {
+    if (!posterUrl) { setThumbLoaded(false); return; }
+    let alive = true;
+    setThumbLoaded(false);
+    fetch(posterUrl, { method: "HEAD" })
+      .then((r) => { if (alive) setThumbLoaded(r.ok); })
+      .catch(() => { if (alive) setThumbLoaded(false); });
+    return () => { alive = false; };
+  }, [posterUrl]);
+
   const wrap = immersive
     ? "absolute inset-0 h-full w-full"
     : "relative aspect-[9/16] w-full";
 
+  const DEFAULT_THUMB = "/default-thumbnail.webp";
+  const displayUrl = posterUrl && thumbLoaded ? posterUrl : DEFAULT_THUMB;
+
   return (
     <div className={wrap}>
-      <div
-        className="h-full w-full bg-cover bg-center"
-        style={posterUrl ? { backgroundImage: `url(${posterUrl})` } : undefined}
-      >
-        <div className="relative flex h-full w-full items-center justify-center">
+      <div className="absolute inset-0 h-full w-full overflow-hidden">
+        <img
+          src={displayUrl}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 flex items-center justify-center">
           {!posterUrl && (
             <div
               className="absolute inset-0 opacity-70"
@@ -123,7 +140,6 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
               }}
             />
           )}
-          {posterUrl && <div className="absolute inset-0 bg-black/40" />}
           <div className="relative z-10 flex flex-col items-center gap-4 text-center">
             <div className="grid h-16 w-16 place-items-center rounded-full border border-[rgba(200,169,106,0.5)] bg-[rgba(11,15,20,0.6)] backdrop-blur animate-soft-pulse">
               <Play className="h-6 w-6 text-[color:var(--gold)]" fill="currentColor" />

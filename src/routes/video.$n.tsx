@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, QUESTIONS_DATA, lastAvailableVideo } from "@/lib/i18n";
 import { isUnlocked } from "@/lib/access";
-import { markWatched, isPlayable, WATCH_THRESHOLD } from "@/lib/watchProgress";
+import { markWatched, savePosition, getPosition, isPlayable, WATCH_THRESHOLD } from "@/lib/watchProgress";
 import { usePageContent } from "@/hooks/usePageContent";
 import { VideoStage, type VideoStageHandle } from "@/components/VideoStage";
 import { DocumentsGallery } from "@/components/DocumentsGallery";
@@ -76,6 +76,7 @@ function VideoPage() {
   // Double-tap bookkeeping.
   const lastTapRef = useRef<{ time: number } | null>(null);
   const singleTapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSaveRef = useRef(0);
 
   const isFirst = num === 1;
   const isLast = num === lastAvailableVideo;
@@ -122,8 +123,10 @@ function VideoPage() {
     return () => {
       if (singleTapTimeoutRef.current) clearTimeout(singleTapTimeoutRef.current);
       if (toastTimer.current) clearTimeout(toastTimer.current);
+      const t = stageRef.current?.getCurrentTime();
+      if (t != null) savePosition(num, t);
     };
-  }, []);
+  }, [num]);
 
   const showToastMsg = useCallback((msg: string) => {
     setToast(msg);
@@ -147,6 +150,10 @@ function VideoPage() {
   // tap within DOUBLE_TAP_MS seeks (rewind left / skip right).
   const handleSurfaceTap = useCallback(
     (clientX: number, rect: DOMRect) => {
+      if (isLocked) {
+        showToastMsg(t("video.mustWatchFirst"));
+        return;
+      }
       if (!surfaceActive) return;
       const now = Date.now();
       const relX = clientX - rect.left;
@@ -172,7 +179,7 @@ function VideoPage() {
         togglePlayback();
       }, DOUBLE_TAP_MS);
     },
-    [surfaceActive, doSeek, togglePlayback],
+    [isLocked, surfaceActive, doSeek, togglePlayback, t, showToastMsg],
   );
 
   const isInteractiveTarget = (el: HTMLElement | null) =>
@@ -249,12 +256,20 @@ function VideoPage() {
       setProgress(pct);
       setDuration(dur);
       if (pct >= WATCH_THRESHOLD) markWatched(num);
+      if (Date.now() - lastSaveRef.current > 3000) {
+        savePosition(num, currentTime);
+        lastSaveRef.current = Date.now();
+      }
     }
   };
 
   const handlePlay = () => { setIsPlaying(true); setVideoEnded(false); };
-  const handlePause = () => setIsPlaying(false);
-  const handleEnded = () => { setVideoEnded(true); setManuallyPaused(true); setIsPlaying(false); markWatched(num); };
+  const handlePause = () => {
+    setIsPlaying(false);
+    const t = stageRef.current?.getCurrentTime();
+    if (t != null) savePosition(num, t);
+  };
+  const handleEnded = () => { setVideoEnded(true); setManuallyPaused(true); setIsPlaying(false); markWatched(num); savePosition(num, duration); };
 
   // ── Touch: swipe to navigate, tap to toggle / double-tap to seek ───────────
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -549,6 +564,7 @@ function VideoPage() {
             src={`/thumbnails/${num}.webp`}
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
+            onError={(e) => { if (e.currentTarget.src.indexOf('/default-thumbnail.webp') === -1) e.currentTarget.src = '/default-thumbnail.webp'; }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80 backdrop-blur-[2px]" />
           <div className="relative z-10 flex h-full flex-col items-center justify-center gap-5 px-6 text-center animate-preview-in">
@@ -707,6 +723,7 @@ function UpNextPreview({
         src={`/thumbnails/${target}.webp`}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
+        onError={(e) => { if (e.currentTarget.src.indexOf('/default-thumbnail.webp') === -1) e.currentTarget.src = '/default-thumbnail.webp'; }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80 backdrop-blur-[2px]" />
 
