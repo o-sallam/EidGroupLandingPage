@@ -1,23 +1,22 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, QUESTIONS_DATA, lastAvailableVideo } from "@/lib/i18n";
+import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, lastAvailableVideo } from "@/lib/i18n";
 import { isUnlocked } from "@/lib/access";
 import { markWatched, savePosition, getPosition, isPlayable, WATCH_THRESHOLD } from "@/lib/watchProgress";
 import { usePageContent } from "@/hooks/usePageContent";
 import { VideoStage, type VideoStageHandle } from "@/components/VideoStage";
-import { DocumentsGallery } from "@/components/DocumentsGallery";
-import { CircularProgressRing } from "@/components/CircularProgressRing";
+import { getVideoDocImages } from "@/lib/docImages";
 import {
-  HelpCircle,
   Facebook,
   Instagram,
   Youtube,
   X,
+  ChevronLeft,
+  ChevronRight,
   VolumeX,
   Volume2,
   Play,
   Pause,
-  FileText,
   ArrowRight,
   ArrowLeft,
   Rewind,
@@ -54,13 +53,12 @@ function VideoPage() {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
-  const [showQuestions, setShowQuestions] = useState(false);
   const [toast, setToast] = useState("");
-  const [modalClosing, setModalClosing] = useState(false);
   const [manuallyPaused, setManuallyPaused] = useState(false);
   const [tapFeedback, setTapFeedback] = useState<"play" | "pause" | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
-  const [showDocs, setShowDocs] = useState(false);
+  const [loadedDocs, setLoadedDocs] = useState<string[]>([]);
+  const [docIndex, setDocIndex] = useState<number | null>(null);
   // Brief ripple shown on double-tap-to-seek.
   const [seekFlash, setSeekFlash] = useState<{ side: "left" | "right"; id: number } | null>(null);
   // Target video number for the up-next preview transition (null = inactive).
@@ -80,18 +78,19 @@ function VideoPage() {
   const lastTapRef = useRef<{ time: number } | null>(null);
   const singleTapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSaveRef = useRef(0);
+  const docLoadedRef = useRef(new Set<string>());
 
   const isFirst = num === 1;
   const isLast = num === lastAvailableVideo;
   const isLocked = !isPlayable(num);
   const fallback = videoContent[lang][num - 1];
   const title = row?.titles?.[lang]?.trim() || fallback.title;
-  const description = row?.descriptions?.[lang]?.trim() || fallback.description;
   const videoUrl = row?.video_url || VIDEO_URLS[num] || null;
   const imageUrl = row?.image_url || null;
   const overallProgress = ((num - 1) + (progress / 100)) / TOTAL_VIDEOS;
+  const docCandidates = getVideoDocImages(num);
   // Surface taps (toggle / seek) are disabled while any overlay is up.
-  const surfaceActive = !showQuestions && !showDocs && !nextPreview && !videoEnded && !initialPreview && !isLocked;
+  const surfaceActive = !nextPreview && !videoEnded && !initialPreview && !isLocked;
 
   useEffect(() => {
     if (!isUnlocked()) navigate({ to: "/access", replace: true });
@@ -102,10 +101,7 @@ function VideoPage() {
     setProgress(0);
     setDuration(0);
     setIsPlaying(false);
-    setShowQuestions(false);
-    setModalClosing(false);
     setManuallyPaused(false);
-    setShowDocs(false);
     setIsMuted(num !== 1);
     setToast("");
     setVideoEnded(false);
@@ -114,6 +110,9 @@ function VideoPage() {
     setInitialPreview(num === 1);
     setInitialCount(PREVIEW_SECONDS);
     setSeekFlash(null);
+    setLoadedDocs([]);
+    setDocIndex(null);
+    docLoadedRef.current.clear();
     if (singleTapTimeoutRef.current) {
       clearTimeout(singleTapTimeoutRef.current);
       singleTapTimeoutRef.current = null;
@@ -245,19 +244,6 @@ function VideoPage() {
     return () => clearInterval(id);
   }, [initialPreview]);
 
-  // Auto-show Documents gallery when video ends
-  useEffect(() => {
-    if (videoEnded) setShowDocs(true);
-  }, [videoEnded]);
-
-  const closeQuestions = useCallback(() => {
-    setModalClosing(true);
-    setTimeout(() => {
-      setShowQuestions(false);
-      setModalClosing(false);
-    }, 400);
-  }, []);
-
   const handleTimeUpdate = (currentTime: number, dur: number) => {
     if (dur > 0) {
       const pct = (currentTime / dur) * 100;
@@ -325,8 +311,7 @@ function VideoPage() {
     [duration],
   );
 
-  const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
-  const effectivePaused = manuallyPaused || showQuestions || videoEnded || initialPreview || isLocked;
+  const effectivePaused = manuallyPaused || videoEnded || initialPreview || isLocked;
 
   return (
     <div
@@ -374,45 +359,11 @@ function VideoPage() {
         ))}
       </div>
 
-      {/* Circular progress ring — overall completion across all videos */}
-      <div className="absolute top-6 right-3 z-45">
-        <CircularProgressRing
-          percent={overallProgress}
-          current={num}
-          total={TOTAL_VIDEOS}
-          hidePercent={!videoEnded}
-        />
-      </div>
-
-      {/* Questions button (position/animation always LTR geometry) */}
-      <div className="absolute top-6 left-4 z-30">
-        <button
-          onClick={() => setShowQuestions(true)}
-          className="relative flex items-center"
-          aria-label="Questions"
-        >
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[rgba(200,169,106,0.4)] bg-black/35 text-[color:var(--gold)] backdrop-blur-md">
-            <HelpCircle className="h-5 w-5" />
-          </span>
-          <span
-            className="absolute overflow-hidden whitespace-nowrap left-full ml-2 origin-left"
-            style={{ animation: "emerge-icon-ltr 8s ease-in-out infinite" }}
-          >
-            <span
-              dir="auto"
-              className="rounded-full bg-black/40 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md"
-            >
-              {t("questions.prompt")}
-            </span>
-          </span>
-        </button>
-      </div>
-
-      {/* Mute/unmute — icon only, below questions. Hidden when locked (no video playing). */}
+      {/* Mute/unmute — icon only. Hidden when locked (no video playing). */}
       {!isLocked && (
         <button
         onClick={() => setIsMuted((m) => !m)}
-        className="absolute top-[calc(6px+36px+28px)] left-4 z-30 grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white/70 backdrop-blur-md transition hover:border-white/30"
+        className="absolute top-6 left-4 z-30 grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white/70 backdrop-blur-md transition hover:border-white/30"
         aria-label={isMuted ? "Unmute" : "Mute"}
       >
         {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -523,43 +474,94 @@ function VideoPage() {
         </div>
       )}
 
-      {/* End-screen overlay — darker scrim + center action buttons */}
+      {/* End-screen: documents grid (primary focus) + bottom action bar */}
       {videoEnded && !nextPreview && (
-        <div className="absolute inset-0 z-35 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px]">
-          <div className="flex w-64 flex-col gap-3 animate-slide-up">
-            <button
-              onClick={() => setShowQuestions(true)}
-              className="flex items-center justify-center gap-2.5 rounded-full bg-[color:var(--gold)] py-3 text-sm font-semibold text-[color:var(--bg-raw)] shadow-lg transition active:scale-95"
-            >
-              <HelpCircle className="h-4 w-4" />
-              {t("questions.title")}
-            </button>
-            <button
-              onClick={() => setShowDocs(true)}
-              className="flex items-center justify-center gap-2.5 rounded-full border border-[rgba(200,169,106,0.4)] bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
-            >
-              <FileText className="h-4 w-4" />
-              {t("docs.title")}
-            </button>
-            {!isFirst && (
-              <button
-                onClick={() => navigate({ to: "/video/$n", params: { n: String(num - 1) } })}
-                className="flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                {t("nav.prev")}
-              </button>
-            )}
-            {!isLast && (
-              <button
-                onClick={() => attemptNavigate("next")}
-                className="flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/10 py-3 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95"
-              >
-                <ArrowRight className="h-4 w-4" />
-                {t("nav.next")}
-              </button>
-            )}
+        <div className="absolute inset-0 z-35 flex flex-col bg-black/60 backdrop-blur-[2px]">
+          {/* Hidden doc preloaders */}
+          {docCandidates.map((src) => (
+            <img key={src} src={src} alt="" className="hidden"
+              onLoad={() => {
+                if (!docLoadedRef.current.has(src)) {
+                  docLoadedRef.current.add(src);
+                  setLoadedDocs((prev) => [...prev, src]);
+                }
+              }}
+            />
+          ))}
+
+          <div className="flex flex-col h-full px-4 pb-16 pt-8">
+            {/* Documents grid — centered visual focus */}
+            <div className="flex-1 flex flex-col items-center justify-center min-h-0">
+              <h3 className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)] text-center mb-4">
+                {t("docs.title")}
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-md overflow-y-auto">
+                {loadedDocs.length > 0 ? (
+                  loadedDocs.map((src, i) => (
+                    <button key={src} onClick={() => setDocIndex(i)}
+                      className="aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/30 transition hover:border-[color:var(--gold)] active:scale-95">
+                      <img src={src} alt={`${t("docs.title")} ${i + 1}`} className="h-full w-full object-cover" />
+                    </button>
+                  ))
+                ) : (
+                  <p className="col-span-full text-xs text-white/50 text-center py-8">{t("docs.empty")}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom action bar — compact icon row */}
+            <div className="shrink-0 flex items-center justify-center gap-6 py-4">
+              {!isFirst ? (
+                <button onClick={() => navigate({ to: "/video/$n", params: { n: String(num - 1) } })}
+                  className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30 active:scale-90"
+                  aria-label={t("nav.prev")}>
+                  <ArrowRight className="h-5 w-5" />
+                </button>
+              ) : <div className="h-11 w-11" />}
+
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-xs font-semibold text-white">{Math.round(overallProgress * 100)}%</span>
+                <div className="w-16 h-1 rounded-full bg-white/20 overflow-hidden">
+                  <div className="h-full rounded-full bg-[color:var(--gold)] transition-all duration-300"
+                    style={{ width: `${Math.round(overallProgress * 100)}%` }} />
+                </div>
+              </div>
+
+              {!isLast ? (
+                <button onClick={() => navigate({ to: "/video/$n", params: { n: String(num + 1) } })}
+                  className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30 active:scale-90"
+                  aria-label={t("nav.next")}>
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+              ) : <div className="h-11 w-11" />}
+            </div>
           </div>
+
+          {/* Lightbox — fullscreen doc viewer */}
+          {docIndex !== null && loadedDocs[docIndex] && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85" onClick={() => setDocIndex(null)}>
+              <button onClick={() => setDocIndex(null)}
+                className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 backdrop-blur-md transition hover:text-white">
+                <X className="h-4 w-4" />
+              </button>
+              {loadedDocs.length > 1 && (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); setDocIndex((prev) => (prev! - 1 + loadedDocs.length) % loadedDocs.length); }}
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); setDocIndex((prev) => (prev! + 1) % loadedDocs.length); }}
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </>
+              )}
+              <img src={loadedDocs[docIndex]} alt="" className="max-h-[85vh] max-w-[90vw] rounded-xl object-contain" onClick={(e) => e.stopPropagation()} />
+              <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white/80 backdrop-blur-md">
+                {docIndex + 1} / {loadedDocs.length}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -665,64 +667,6 @@ function VideoPage() {
           </div>
         </div>
       )}
-
-      {/* Questions glassmorphism modal */}
-      {(showQuestions || modalClosing) && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div
-            className={`absolute inset-0 bg-black/60 transition-opacity duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              modalClosing ? "opacity-0" : "opacity-100"
-            }`}
-            onClick={closeQuestions}
-          />
-          <div
-            className={`relative max-h-[70vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl sm:rounded-2xl ${
-              modalClosing
-                ? "translate-y-full opacity-0 transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:translate-y-8"
-                : "animate-slide-up"
-            }`}
-          >
-            <button
-              onClick={closeQuestions}
-              className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 transition hover:text-white"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <h3 className="mb-5 font-serif text-lg text-[color:var(--gold)]">
-              {t("questions.title")}
-            </h3>
-            {questions.length > 0 ? (
-              <div className="space-y-4">
-                {questions.map((qa, i) => (
-                  <div
-                    key={i}
-                    className="rounded-xl border border-[rgba(200,169,106,0.15)] bg-black/20 p-4"
-                  >
-                    <p className="mb-1.5 text-sm font-medium text-[color:var(--gold)]">
-                      {qa.q}
-                    </p>
-                    <p className="text-xs leading-relaxed text-[color:var(--muted-foreground)]">
-                      {qa.a}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-[color:var(--muted-foreground)]">
-                No questions available for this video yet.
-              </p>
-            )}
-            <div className="mt-5 rounded-xl border border-[rgba(200,169,106,0.15)] bg-black/20 p-4">
-              <p className="text-xs leading-relaxed text-[color:var(--muted-foreground)]">
-                {description}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Documents gallery modal */}
-      {showDocs && <DocumentsGallery videoNum={num} onClose={() => setShowDocs(false)} />}
     </div>
   );
 }
