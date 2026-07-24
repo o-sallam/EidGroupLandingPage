@@ -126,22 +126,29 @@ html[dir="rtl"] body {
 
 /* ── Night-sky twinkle for end-screen ── */
 @keyframes twinkle {
-  0%, 100% { opacity: 0.15; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.08; }
+  25% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+  75% { opacity: 0.3; }
 }
-@utility animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
+@utility animate-twinkle { animation: twinkle 2.5s ease-in-out infinite; }
 
 @keyframes twinkle-slow {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.5; }
+  0%, 100% { opacity: 0.05; }
+  25% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+  75% { opacity: 0.15; }
 }
-@utility animate-twinkle-slow { animation: twinkle-slow 5s ease-in-out infinite; }
+@utility animate-twinkle-slow { animation: twinkle-slow 4s ease-in-out infinite; }
 
-@keyframes twinkle-fast {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 0.9; }
+/* ── Star upward drift — very slow, continuous loop ── */
+@keyframes drift-up {
+  0%   { transform: translateY(0); opacity: 0; }
+  5%   { opacity: 0.6; }
+  85%  { opacity: 0.5; }
+  100% { transform: translateY(-110vh); opacity: 0; }
 }
-@utility animate-twinkle-fast { animation: twinkle-fast 2s ease-in-out infinite; }
+@utility animate-drift-up { animation: drift-up 25s linear infinite; }
 
 @keyframes gold-flow {
   0% { background-position: 0% 50%; }

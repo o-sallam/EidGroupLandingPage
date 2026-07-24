@@ -551,20 +551,40 @@ function VideoPage() {
           {/* Night-sky stars */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             {[
-              "left-[10%] top-[8%] w-0.5 h-0.5 animate-twinkle", "left-[23%] top-[15%] w-0.5 h-0.5 animate-twinkle-slow",
-              "left-[35%] top-[5%] w-px h-px animate-twinkle-fast", "left-[48%] top-[20%] w-0.5 h-0.5 animate-twinkle-slow",
-              "left-[60%] top-[10%] w-px h-px animate-twinkle", "left-[75%] top-[3%] w-0.5 h-0.5 animate-twinkle-fast",
-              "left-[88%] top-[18%] w-px h-px animate-twinkle-slow", "left-[5%] top-[30%] w-px h-px animate-twinkle",
-              "left-[18%] top-[42%] w-0.5 h-0.5 animate-twinkle-fast", "left-[30%] top-[55%] w-px h-px animate-twinkle-slow",
-              "left-[45%] top-[35%] w-0.5 h-0.5 animate-twinkle", "left-[55%] top-[50%] w-px h-px animate-twinkle-fast",
-              "left-[70%] top-[40%] w-0.5 h-0.5 animate-twinkle-slow", "left-[82%] top-[60%] w-px h-px animate-twinkle",
-              "left-[92%] top-[48%] w-0.5 h-0.5 animate-twinkle-fast", "left-[8%] top-[65%] w-0.5 h-0.5 animate-twinkle-slow",
-              "left-[22%] top-[78%] w-px h-px animate-twinkle", "left-[38%] top-[70%] w-0.5 h-0.5 animate-twinkle-fast",
-              "left-[50%] top-[85%] w-px h-px animate-twinkle-slow", "left-[65%] top-[75%] w-0.5 h-0.5 animate-twinkle",
-              "left-[80%] top-[82%] w-px h-px animate-twinkle-fast", "left-[15%] top-[90%] w-0.5 h-0.5 animate-twinkle-slow",
-              "left-[42%] top-[95%] w-px h-px animate-twinkle", "left-[72%] top-[92%] w-0.5 h-0.5 animate-twinkle-fast",
+              "left-[10%] w-0.5 h-0.5",
+              "left-[23%] w-0.5 h-0.5",
+              "left-[35%] w-px h-px",
+              "left-[48%] w-0.5 h-0.5",
+              "left-[60%] w-px h-px",
+              "left-[75%] w-0.5 h-0.5",
+              "left-[88%] w-px h-px",
+              "left-[5%] w-px h-px",
+              "left-[18%] w-0.5 h-0.5",
+              "left-[30%] w-px h-px",
+              "left-[45%] w-0.5 h-0.5",
+              "left-[55%] w-px h-px",
+              "left-[70%] w-0.5 h-0.5",
+              "left-[82%] w-px h-px",
+              "left-[92%] w-0.5 h-0.5",
+              "left-[8%] w-0.5 h-0.5",
+              "left-[22%] w-px h-px",
+              "left-[38%] w-0.5 h-0.5",
+              "left-[50%] w-px h-px",
+              "left-[65%] w-0.5 h-0.5",
+              "left-[80%] w-px h-px",
+              "left-[15%] w-0.5 h-0.5",
+              "left-[42%] w-px h-px",
+              "left-[72%] w-0.5 h-0.5",
             ].map((c, i) => (
-              <div key={i} className={`absolute rounded-full bg-white ${c}`} style={{ animationDelay: `${(i * 0.7) % 5}s` }} />
+              <div
+                key={i}
+                className={`absolute rounded-full bg-white ${c}`}
+                style={{
+                  top: `${5 + (i * 4) % 95}%`,
+                  animation: `drift-up ${20 + (i % 5) * 3}s linear infinite, twinkle ${2.5 + (i % 3) * 0.8}s ease-in-out infinite`,
+                  animationDelay: `${i * 1.2}s, ${i * 1.7 + 0.5}s`,
+                }}
+              />
             ))}
           </div>
 
