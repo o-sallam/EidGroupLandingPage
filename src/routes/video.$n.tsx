@@ -102,7 +102,7 @@ function VideoPage() {
     setDuration(0);
     setIsPlaying(false);
     setManuallyPaused(false);
-    setIsMuted(num !== 1);
+    setIsMuted(false);
     setToast("");
     setVideoEnded(false);
     setNextPreview(null);
@@ -342,21 +342,29 @@ function VideoPage() {
 
       {/* Instagram Stories progress bar — overall sequence progress across all videos */}
       <div className="absolute top-2 left-2 right-2 z-40 flex gap-1">
-        {Array.from({ length: TOTAL_VIDEOS }).map((_, i) => (
-          <div key={i} className="h-1 flex-1 overflow-hidden rounded-full bg-white/20">
+        {Array.from({ length: TOTAL_VIDEOS }).map((_, i) => {
+          const isActive = i === num - 1;
+          const fillWidth =
+            i < num - 1
+              ? "100%"
+              : isActive
+                ? `${Math.min(progress, 100)}%`
+                : "0%";
+          return (
             <div
-              className="h-full rounded-full bg-[color:var(--gold)] transition-all duration-300 ease-out"
-              style={{
-                width:
-                  i < num - 1
-                    ? "100%"
-                    : i === num - 1
-                      ? `${Math.min(progress, 100)}%`
-                      : "0%",
-              }}
-            />
-          </div>
-        ))}
+              key={i}
+              className={`h-4 flex-1 overflow-hidden rounded-full bg-white/20 relative ${isActive ? "ring-1 ring-[color:var(--gold)]" : ""}`}
+            >
+              <div
+                className="h-full rounded-full bg-[color:var(--gold)] transition-all duration-300 ease-out"
+                style={{ width: fillWidth }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold text-white leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                {i + 1}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Mute/unmute — icon only. Hidden when locked (no video playing). */}
@@ -661,8 +669,8 @@ function VideoPage() {
 
       {/* Toast */}
       {toast && (
-        <div className="absolute bottom-24 left-1/2 z-50 -translate-x-1/2 animate-fade-up">
-          <div className="animate-shake rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs text-white shadow-2xl backdrop-blur-xl">
+        <div className="absolute bottom-24 left-1/2 z-50 -translate-x-1/2 animate-toast-in" style={{ willChange: "transform" }}>
+          <div className="rounded-full border border-white/25 bg-black/45 px-5 py-3 text-sm font-medium text-white shadow-2xl backdrop-blur-xl">
             {toast}
           </div>
         </div>

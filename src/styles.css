@@ -104,6 +104,13 @@ html[dir="rtl"] body {
 }
 @utility animate-fade-up { animation: fade-up 0.7s ease-out both; }
 
+/* ── Smooth toast entrance (no shake) ── */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@utility animate-toast-in { animation: toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 @keyframes soft-pulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
