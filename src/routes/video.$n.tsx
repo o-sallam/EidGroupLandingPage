@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, QUESTIONS_DATA, lastAvailableVideo } from "@/lib/i18n";
 import { isUnlocked } from "@/lib/access";
+import { markWatched, isPlayable, WATCH_THRESHOLD } from "@/lib/watchProgress";
 import { usePageContent } from "@/hooks/usePageContent";
 import { VideoStage, type VideoStageHandle } from "@/components/VideoStage";
 import { DocumentsGallery } from "@/components/DocumentsGallery";
@@ -78,6 +79,7 @@ function VideoPage() {
 
   const isFirst = num === 1;
   const isLast = num === lastAvailableVideo;
+  const isLocked = !isPlayable(num);
   const fallback = videoContent[lang][num - 1];
   const title = row?.titles?.[lang]?.trim() || fallback.title;
   const description = row?.descriptions?.[lang]?.trim() || fallback.description;
@@ -85,7 +87,7 @@ function VideoPage() {
   const imageUrl = row?.image_url || null;
   const overallProgress = ((num - 1) + (progress / 100)) / TOTAL_VIDEOS;
   // Surface taps (toggle / seek) are disabled while any overlay is up.
-  const surfaceActive = !showQuestions && !showDocs && !nextPreview && !videoEnded && !initialPreview;
+  const surfaceActive = !showQuestions && !showDocs && !nextPreview && !videoEnded && !initialPreview && !isLocked;
 
   useEffect(() => {
     if (!isUnlocked()) navigate({ to: "/access", replace: true });
@@ -190,16 +192,13 @@ function VideoPage() {
         return;
       }
       if (isLast) return;
-      if (progress < 90 && !videoEnded) {
-        showToastMsg(t("questions.blocked"));
-        return;
-      }
-      // End-of-video → show the up-next preview transition before the next clip.
-      // Active mid-video skip (swipe) → navigate directly, no preview/modal.
-      if (videoEnded) startNextPreview();
+      // Free navigation — always allowed, gating is on playback only.
+      // When the video has ended, show the up-next preview before transitioning.
+      // Skip the preview if the next video is locked (will show thumbnail).
+      if (videoEnded && isPlayable(num + 1)) startNextPreview();
       else navigate({ to: "/video/$n", params: { n: String(num + 1) } });
     },
-    [progress, num, isFirst, isLast, videoEnded, navigate, t, showToastMsg, startNextPreview],
+    [num, isFirst, isLast, videoEnded, navigate, startNextPreview],
   );
 
   // Up-next preview countdown — auto-advance to the next video when it hits 0.
@@ -246,14 +245,16 @@ function VideoPage() {
 
   const handleTimeUpdate = (currentTime: number, dur: number) => {
     if (dur > 0) {
-      setProgress((currentTime / dur) * 100);
+      const pct = (currentTime / dur) * 100;
+      setProgress(pct);
       setDuration(dur);
+      if (pct >= WATCH_THRESHOLD) markWatched(num);
     }
   };
 
   const handlePlay = () => { setIsPlaying(true); setVideoEnded(false); };
   const handlePause = () => setIsPlaying(false);
-  const handleEnded = () => { setVideoEnded(true); setManuallyPaused(true); setIsPlaying(false); };
+  const handleEnded = () => { setVideoEnded(true); setManuallyPaused(true); setIsPlaying(false); markWatched(num); };
 
   // ── Touch: swipe to navigate, tap to toggle / double-tap to seek ───────────
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -302,11 +303,12 @@ function VideoPage() {
   );
 
   const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
-  const effectivePaused = manuallyPaused || showQuestions || videoEnded || initialPreview;
+  const effectivePaused = manuallyPaused || showQuestions || videoEnded || initialPreview || isLocked;
 
   return (
     <div
-      className="relative h-[100dvh] overflow-hidden bg-black select-none"
+      key={num}
+      className="relative h-[100dvh] overflow-hidden bg-black select-none animate-page-entrance"
       style={{ touchAction: "manipulation" }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -382,15 +384,16 @@ function VideoPage() {
         </button>
       </div>
 
-      {/* Mute/unmute — icon only, below questions */}
-      <button
+      {/* Mute/unmute — icon only, below questions. Hidden when locked (no video playing). */}
+      {!isLocked && (
+        <button
         onClick={() => setIsMuted((m) => !m)}
         className="absolute top-[calc(6px+36px+28px)] left-4 z-30 grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white/70 backdrop-blur-md transition hover:border-white/30"
         aria-label={isMuted ? "Unmute" : "Mute"}
       >
         {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </button>
-
+      )}
       {/* Left icon rail: social icons + Documents icon (hidden during end-screen / preview). */}
       {!videoEnded && !nextPreview && (
         <div className="absolute left-4 top-1/2 -translate-y-1/2 mt-8 z-30 flex flex-col items-center gap-3">
@@ -415,8 +418,8 @@ function VideoPage() {
           </button>
         </div>
       )}
-
-      {/* YouTube-style bottom progress bar — interactive scrubber */}
+      {!isLocked && (
+      /* YouTube-style bottom progress bar — interactive scrubber */
       <div dir="ltr" className="absolute bottom-0 left-0 right-0 z-40" data-no-tap>
         <div
           className="relative flex items-center transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -464,6 +467,7 @@ function VideoPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Double-tap-to-seek ripple */}
       {seekFlash && (

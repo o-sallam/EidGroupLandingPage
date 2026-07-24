@@ -282,3 +282,22 @@ html[dir="rtl"] body {
     transform: none !important;
   }
 }
+
+/* ── Page entrance for video navigation — used when browsing/switching thumbnails ── */
+@keyframes page-entrance {
+  from { opacity: 0; transform: scale(0.96); }
+  20%  { opacity: 0.5; }
+  to   { opacity: 1; transform: scale(1); }
+}
+@utility animate-page-entrance {
+  animation: page-entrance 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Depth/parallax parallax layering for video page ── */
+@keyframes parallax-bg {
+  from { opacity: 0; transform: scale(1.06); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@utility animate-parallax-bg {
+  animation: parallax-bg 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
