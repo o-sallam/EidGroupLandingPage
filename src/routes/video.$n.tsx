@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, lastAvailableVideo } from "@/lib/i18n";
+import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, lastAvailableVideo, QUESTIONS_DATA } from "@/lib/i18n";
 import { isUnlocked } from "@/lib/access";
 import { markWatched, savePosition, getPosition, isPlayable, WATCH_THRESHOLD } from "@/lib/watchProgress";
 import { usePageContent } from "@/hooks/usePageContent";
@@ -11,8 +11,11 @@ import {
   Instagram,
   Youtube,
   X,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  HelpCircle,
+  FileText,
   VolumeX,
   Volume2,
   Play,
@@ -60,6 +63,7 @@ function VideoPage() {
   const [videoEnded, setVideoEnded] = useState(false);
   const [loadedDocs, setLoadedDocs] = useState<string[]>([]);
   const [docIndex, setDocIndex] = useState<number | null>(null);
+  const [overlay, setOverlay] = useState<"questions" | "docs" | null>(null);
   // Brief ripple shown on double-tap-to-seek.
   const [seekFlash, setSeekFlash] = useState<{ side: "left" | "right"; id: number } | null>(null);
   // Target video number for the up-next preview transition (null = inactive).
@@ -68,7 +72,6 @@ function VideoPage() {
   // Initial thumbnail preview for the first video (3s delay before playback).
   const [initialPreview, setInitialPreview] = useState(num === 1);
   const [initialCount, setInitialCount] = useState(PREVIEW_SECONDS);
-  const [replayCount, setReplayCount] = useState(0);
 
   const touchStartX = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -91,8 +94,9 @@ function VideoPage() {
   const imageUrl = row?.image_url || null;
   const overallProgress = ((num - 1) + (progress / 100)) / TOTAL_VIDEOS;
   const docCandidates = getVideoDocImages(num);
+  const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
   // Surface taps (toggle / seek) are disabled while any overlay is up.
-  const surfaceActive = !nextPreview && !videoEnded && !initialPreview && !isLocked;
+  const surfaceActive = !overlay && !nextPreview && !videoEnded && !initialPreview && !isLocked;
 
   useEffect(() => {
     if (!isUnlocked()) navigate({ to: "/access", replace: true });
@@ -115,6 +119,7 @@ function VideoPage() {
     setLoadedDocs([]);
     setDocIndex(null);
     docLoadedRef.current.clear();
+    setOverlay(null);
     if (singleTapTimeoutRef.current) {
       clearTimeout(singleTapTimeoutRef.current);
       singleTapTimeoutRef.current = null;
@@ -317,7 +322,7 @@ function VideoPage() {
 
   return (
     <div
-      key={`${num}-${replayCount}`}
+      key={num}
       className="relative h-[100dvh] overflow-hidden bg-black select-none animate-page-entrance"
       style={{ touchAction: "manipulation" }}
       onTouchStart={handleTouchStart}
@@ -485,10 +490,10 @@ function VideoPage() {
         </div>
       )}
 
-      {/* End-screen: documents grid (primary focus) + bottom action bar */}
+      {/* End-screen: action buttons + bottom bar */}
       {videoEnded && !nextPreview && (
         <div className="absolute inset-0 z-35 flex flex-col bg-black/60 backdrop-blur-[2px]">
-          {/* Hidden doc preloaders */}
+          {/* Hidden doc preloaders (load in background for when overlay opens) */}
           {docCandidates.map((src) => (
             <img key={src} src={src} alt="" className="hidden"
               onLoad={() => {
@@ -500,24 +505,19 @@ function VideoPage() {
             />
           ))}
 
-          <div className="flex flex-col h-full px-4 pb-16 pt-8">
-            {/* Documents grid — centered visual focus */}
-            <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-              <h3 className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)] text-center mb-4">
+          <div className="flex flex-col h-full px-6 pb-4 pt-12">
+            {/* Two action buttons — centered */}
+            <div className="flex-1 flex flex-col items-center justify-center gap-4">
+              <button onClick={() => setOverlay("questions")}
+                className="flex items-center justify-center gap-3 w-full max-w-xs rounded-full bg-[color:var(--gold)] py-3.5 text-sm font-semibold text-[color:var(--bg-raw)] shadow-lg transition active:scale-95">
+                <HelpCircle className="h-5 w-5" />
+                {t("questions.title")}
+              </button>
+              <button onClick={() => setOverlay("docs")}
+                className="flex items-center justify-center gap-3 w-full max-w-xs rounded-full border border-[rgba(200,169,106,0.4)] bg-white/10 py-3.5 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95">
+                <FileText className="h-5 w-5" />
                 {t("docs.title")}
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-md overflow-y-auto">
-                {loadedDocs.length > 0 ? (
-                  loadedDocs.map((src, i) => (
-                    <button key={src} onClick={() => setDocIndex(i)}
-                      className="aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/30 transition hover:border-[color:var(--gold)] active:scale-95">
-                      <img src={src} alt={`${t("docs.title")} ${i + 1}`} className="h-full w-full object-cover" />
-                    </button>
-                  ))
-                ) : (
-                  <p className="col-span-full text-xs text-white/50 text-center py-8">{t("docs.empty")}</p>
-                )}
-              </div>
+              </button>
             </div>
 
             {/* Bottom action bar — compact icon row */}
@@ -538,7 +538,7 @@ function VideoPage() {
                 </div>
               </div>
 
-              <button onClick={() => setReplayCount((c) => c + 1)}
+              <button onClick={() => { stageRef.current?.seekTo(0); setVideoEnded(false); setManuallyPaused(false); }}
                 className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30 active:scale-90"
                 aria-label="Replay">
                 <RotateCcw className="h-5 w-5" />
@@ -554,7 +554,48 @@ function VideoPage() {
             </div>
           </div>
 
-          {/* Lightbox — fullscreen doc viewer */}
+          {/* Shared swipeable bottom sheet overlay */}
+          {overlay && (
+            <ActionSheet
+              show={overlay !== null}
+              onClose={() => setOverlay(null)}
+              title={overlay === "questions" ? t("questions.title") : t("docs.title")}
+            >
+              {overlay === "questions" ? (
+                <div className="space-y-4">
+                  {questions.length > 0 ? (
+                    questions.map((qa, i) => (
+                      <div key={i} className="rounded-xl border border-[rgba(200,169,106,0.15)] bg-black/20 p-4">
+                        <p className="mb-1.5 text-sm font-medium text-[color:var(--gold)]">{qa.q}</p>
+                        <p className="text-xs leading-relaxed text-[color:var(--muted-foreground)]">{qa.a}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-[color:var(--muted-foreground)] text-center py-8">
+                      No questions available for this video yet.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {loadedDocs.length > 0 ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {loadedDocs.map((src, i) => (
+                        <button key={src} onClick={() => setDocIndex(i)}
+                          className="aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/30 transition hover:border-[color:var(--gold)] active:scale-95">
+                          <img src={src} alt={`${t("docs.title")} ${i + 1}`} className="h-full w-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-[color:var(--muted-foreground)] text-center py-8">{t("docs.empty")}</p>
+                  )}
+                </div>
+              )}
+            </ActionSheet>
+          )}
+
+          {/* Fullscreen doc viewer (lightbox) */}
           {docIndex !== null && loadedDocs[docIndex] && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85" onClick={() => setDocIndex(null)}>
               <button onClick={() => setDocIndex(null)}
@@ -752,6 +793,71 @@ function UpNextPreview({
           <Play className="h-4 w-4" fill="currentColor" />
           {t("video.playNow")}
         </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Swipeable bottom-sheet overlay ─────────────────────────────────────────────
+function ActionSheet({
+  show,
+  onClose,
+  title,
+  children,
+}: {
+  show: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}) {
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const dragY = useRef(0);
+  const [offsetY, setOffsetY] = useState(0);
+  const [closing, setClosing] = useState(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches[0].clientY < 60) return; // only drag from sheet area
+    dragY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const dy = e.touches[0].clientY - dragY.current;
+    if (dy > 0) setOffsetY(dy);
+  };
+
+  const handleTouchEnd = () => {
+    if (offsetY > 120) {
+      setClosing(true);
+      setTimeout(onClose, 250);
+    } else {
+      setOffsetY(0);
+    }
+  };
+
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(onClose, 250);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+      <div className={`absolute inset-0 bg-black/60 transition-opacity duration-[250ms] ${closing ? "opacity-0" : "opacity-100"}`} onClick={handleClose} />
+      <div
+        ref={sheetRef}
+        className={`relative max-h-[70vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl sm:rounded-2xl ${
+          closing ? "translate-y-full opacity-0 transition-all duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:translate-y-8" : "animate-slide-up"
+        }`}
+        style={offsetY > 0 ? { transform: `translateY(${offsetY}px)` } : undefined}
+      >
+        <button onClick={handleClose}
+          className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 transition hover:text-white">
+          <X className="h-4 w-4" />
+        </button>
+        <div className="flex items-center gap-2 mb-5">
+          <div className="mx-auto h-1 w-8 rounded-full bg-white/30 shrink-0" />
+        </div>
+        <h3 className="mb-5 font-serif text-lg text-[color:var(--gold)]">{title}</h3>
+        {children}
       </div>
     </div>
   );
