@@ -6,6 +6,7 @@ import { markWatched, savePosition, getPosition, isPlayable, WATCH_THRESHOLD } f
 import { usePageContent } from "@/hooks/usePageContent";
 import { VideoStage, type VideoStageHandle } from "@/components/VideoStage";
 import { getVideoDocImages } from "@/lib/docImages";
+import { v4ImageUrls, v4VideoUrls } from "@/lib/v4Assets";
 import {
   Facebook,
   Instagram,
@@ -25,12 +26,11 @@ import {
   RotateCcw,
   Rewind,
   FastForward,
-  MessageCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/video/$n")({ component: VideoPage });
 
-const WHATSAPP_NUMBER = "971501234567"; // placeholder — replace with real number
+const WHATSAPP_NUMBER = "31644704354";
 
 const SOCIALS = [
   { href: "https://m.facebook.com/profile.php?id=61560667386827", Icon: Facebook, label: "Facebook" },
@@ -62,7 +62,9 @@ function VideoPage() {
   const [tapFeedback, setTapFeedback] = useState<"play" | "pause" | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
   const [loadedDocs, setLoadedDocs] = useState<string[]>([]);
+  const [videoDocs, setVideoDocs] = useState<string[]>([]);
   const [docIndex, setDocIndex] = useState<number | null>(null);
+  const [videoIndex, setVideoIndex] = useState<number | null>(null);
   const [overlay, setOverlay] = useState<"questions" | "docs" | null>(null);
   // Brief ripple shown on double-tap-to-seek.
   const [seekFlash, setSeekFlash] = useState<{ side: "left" | "right"; id: number } | null>(null);
@@ -72,6 +74,7 @@ function VideoPage() {
   // Initial thumbnail preview for the first video (3s delay before playback).
   const [initialPreview, setInitialPreview] = useState(num === 1);
   const [initialCount, setInitialCount] = useState(PREVIEW_SECONDS);
+  const [showQuestionsHint, setShowQuestionsHint] = useState(false);
 
   const touchStartX = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -79,6 +82,7 @@ function VideoPage() {
   const touchHandled = useRef(false);
   const stageRef = useRef<VideoStageHandle>(null);
   const scrubRef = useRef<HTMLDivElement>(null);
+  const hintRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   // Double-tap bookkeeping.
   const lastTapRef = useRef<{ time: number } | null>(null);
   const singleTapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -93,7 +97,8 @@ function VideoPage() {
   const videoUrl = row?.video_url || VIDEO_URLS[num] || null;
   const imageUrl = row?.image_url || null;
   const overallProgress = ((num - 1) + (progress / 100)) / TOTAL_VIDEOS;
-  const docCandidates = getVideoDocImages(num);
+  const docCandidates = num === 4 ? v4ImageUrls : getVideoDocImages(num);
+  const videoSources = num === 4 ? v4VideoUrls : [];
   const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
   // Surface taps (toggle / seek) are disabled while any overlay is up.
   const surfaceActive = !overlay && !nextPreview && !videoEnded && !initialPreview && !isLocked;
@@ -117,9 +122,12 @@ function VideoPage() {
     setInitialCount(PREVIEW_SECONDS);
     setSeekFlash(null);
     setLoadedDocs([]);
+    setVideoDocs([]);
     setDocIndex(null);
+    setVideoIndex(null);
     docLoadedRef.current.clear();
     setOverlay(null);
+    setShowQuestionsHint(false);
     if (singleTapTimeoutRef.current) {
       clearTimeout(singleTapTimeoutRef.current);
       singleTapTimeoutRef.current = null;
@@ -132,10 +140,14 @@ function VideoPage() {
     return () => {
       if (singleTapTimeoutRef.current) clearTimeout(singleTapTimeoutRef.current);
       if (toastTimer.current) clearTimeout(toastTimer.current);
+      if (hintRef.current) clearTimeout(hintRef.current);
       const t = stageRef.current?.getCurrentTime();
       if (t != null) savePosition(num, t);
     };
   }, [num]);
+
+  // Populate video docs from static asset list for video 4.
+  useEffect(() => { setVideoDocs(videoSources); }, [num]);
 
   const showToastMsg = useCallback((msg: string) => {
     setToast(msg);
@@ -250,6 +262,18 @@ function VideoPage() {
     }, 1000);
     return () => clearInterval(id);
   }, [initialPreview]);
+
+  // Hint cycle: show "Investor Questions" label for 3.5s every 20s.
+  // Resets per video (num dependency). Paused while overlay is open.
+  useEffect(() => {
+    if (overlay) return;
+    const id = setInterval(() => {
+      setShowQuestionsHint(true);
+      clearTimeout(hintRef.current);
+      hintRef.current = setTimeout(() => setShowQuestionsHint(false), 3500);
+    }, 20000);
+    return () => { clearInterval(id); clearTimeout(hintRef.current); };
+  }, [overlay, num]);
 
   const handleTimeUpdate = (currentTime: number, dur: number) => {
     if (dur > 0) {
@@ -385,6 +409,35 @@ function VideoPage() {
         {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </button>
       )}
+      {/* Investor Questions — absolute below mute, slides on play + periodic hint label */}
+      {!videoEnded && !nextPreview && (
+        <div
+          className="absolute left-4 z-30"
+          style={{
+            top: "5.25rem",
+            transform: isPlaying ? "translateY(14px)" : "translateY(0)",
+            transition: "transform 400ms cubic-bezier(0.22,1,0.36,1)",
+          }}
+        >
+          <button
+            onClick={() => setOverlay("questions")}
+            aria-label={t("questions.title")}
+            className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30 active:scale-90"
+          >
+            <HelpCircle className="h-5 w-5" />
+          </button>
+          {showQuestionsHint && (
+            <div
+              className={`absolute top-1/2 -translate-y-1/2 pointer-events-none animate-fade-up ${dir === "rtl" ? "right-full mr-2" : "left-full ml-2"}`}
+            >
+              <div className="whitespace-nowrap rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-[10px] font-medium text-white/90 shadow-lg backdrop-blur-md">
+                {t("questions.title")}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Left icon rail: social icons + WhatsApp — bottom aligned, slides down on play */}
       {!videoEnded && !nextPreview && (
         <div
@@ -414,7 +467,9 @@ function VideoPage() {
             aria-label="WhatsApp"
             className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30"
           >
-            <MessageCircle className="h-5 w-5" />
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
           </a>
         </div>
       )}
@@ -553,73 +608,97 @@ function VideoPage() {
               ) : <div className="h-11 w-11" />}
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Shared swipeable bottom sheet overlay */}
-          {overlay && (
-            <ActionSheet
-              show={overlay !== null}
-              onClose={() => setOverlay(null)}
-              title={overlay === "questions" ? t("questions.title") : t("docs.title")}
-            >
-              {overlay === "questions" ? (
-                <div className="space-y-4">
-                  {questions.length > 0 ? (
-                    questions.map((qa, i) => (
-                      <div key={i} className="rounded-xl border border-[rgba(200,169,106,0.15)] bg-black/20 p-4">
-                        <p className="mb-1.5 text-sm font-medium text-[color:var(--gold)]">{qa.q}</p>
-                        <p className="text-xs leading-relaxed text-[color:var(--muted-foreground)]">{qa.a}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-xs text-[color:var(--muted-foreground)] text-center py-8">
-                      No questions available for this video yet.
-                    </p>
-                  )}
-                </div>
+      {/* Shared swipeable bottom sheet overlay — renders regardless of videoEnded */}
+      {overlay && (
+        <ActionSheet
+          show={overlay !== null}
+          onClose={() => setOverlay(null)}
+          title={overlay === "questions" ? t("questions.title") : t("docs.title")}
+        >
+          {overlay === "questions" ? (
+            <div className="space-y-4">
+              {questions.length > 0 ? (
+                questions.map((qa, i) => (
+                  <div key={i} className="rounded-xl border border-[rgba(200,169,106,0.15)] bg-black/20 p-4">
+                    <p className="mb-1.5 text-sm font-medium text-[color:var(--gold)]">{qa.q}</p>
+                    <p className="text-xs leading-relaxed text-[color:var(--muted-foreground)]">{qa.a}</p>
+                  </div>
+                ))
               ) : (
-                <div>
-                  {loadedDocs.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {loadedDocs.map((src, i) => (
-                        <button key={src} onClick={() => setDocIndex(i)}
-                          className="aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/30 transition hover:border-[color:var(--gold)] active:scale-95">
-                          <img src={src} alt={`${t("docs.title")} ${i + 1}`} className="h-full w-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-[color:var(--muted-foreground)] text-center py-8">{t("docs.empty")}</p>
-                  )}
-                </div>
+                <p className="text-xs text-[color:var(--muted-foreground)] text-center py-8">
+                  No questions available for this video yet.
+                </p>
               )}
-            </ActionSheet>
-          )}
-
-          {/* Fullscreen doc viewer (lightbox) */}
-          {docIndex !== null && loadedDocs[docIndex] && (
-            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85" onClick={() => setDocIndex(null)}>
-              <button onClick={() => setDocIndex(null)}
-                className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 backdrop-blur-md transition hover:text-white">
-                <X className="h-4 w-4" />
-              </button>
-              {loadedDocs.length > 1 && (
+            </div>
+          ) : (
+            <div>
+              {loadedDocs.length > 0 ? (
                 <>
-                  <button onClick={(e) => { e.stopPropagation(); setDocIndex((prev) => (prev! - 1 + loadedDocs.length) % loadedDocs.length); }}
-                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
-                    <ChevronLeft className="h-6 w-6" />
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); setDocIndex((prev) => (prev! + 1) % loadedDocs.length); }}
-                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
-                    <ChevronRight className="h-6 w-6" />
-                  </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                    {loadedDocs.map((src, i) => (
+                      <button key={src} onClick={() => setDocIndex(i)}
+                        className="aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/30 transition hover:border-[color:var(--gold)] active:scale-95">
+                        <img src={src} alt={`${t("docs.title")} ${i + 1}`} className="h-full w-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                  {videoDocs.length > 0 && (
+                    <div className="mt-2 mb-1">
+                      <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[color:var(--gold)]">
+                        {t("video.upNext")}
+                      </h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {videoDocs.map((src, i) => (
+                          <button key={src} onClick={() => setVideoIndex(i)}
+                            className="group aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/50 transition hover:border-[color:var(--gold)] active:scale-95 relative">
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white/90 backdrop-blur-sm transition group-hover:scale-110">
+                                <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
+                              </div>
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                              <span className="text-[10px] text-white/80">{t("video.upNext")}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </>
+              ) : (
+                <p className="text-xs text-[color:var(--muted-foreground)] text-center py-8">{t("docs.empty")}</p>
               )}
-              <img src={loadedDocs[docIndex]} alt="" className="max-h-[85vh] max-w-[90vw] rounded-xl object-contain" onClick={(e) => e.stopPropagation()} />
-              <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white/80 backdrop-blur-md">
-                {docIndex + 1} / {loadedDocs.length}
-              </p>
             </div>
           )}
+        </ActionSheet>
+      )}
+
+      {/* Fullscreen doc viewer (lightbox) */}
+      {docIndex !== null && loadedDocs[docIndex] && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85" onClick={() => setDocIndex(null)}>
+          <button onClick={() => setDocIndex(null)}
+            className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 backdrop-blur-md transition hover:text-white">
+            <X className="h-4 w-4" />
+          </button>
+          {loadedDocs.length > 1 && (
+            <>
+              <button onClick={(e) => { e.stopPropagation(); setDocIndex((prev) => (prev! - 1 + loadedDocs.length) % loadedDocs.length); }}
+                className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button onClick={(e) => { e.stopPropagation(); setDocIndex((prev) => (prev! + 1) % loadedDocs.length); }}
+                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
+                <ChevronRight className="h-6 w-6" />
+              </button>
+            </>
+          )}
+          <img src={loadedDocs[docIndex]} alt="" className="max-h-[85vh] max-w-[90vw] rounded-xl object-contain" onClick={(e) => e.stopPropagation()} />
+          <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white/80 backdrop-blur-md">
+            {docIndex + 1} / {loadedDocs.length}
+          </p>
         </div>
       )}
 
@@ -723,9 +802,42 @@ function VideoPage() {
           <div className="rounded-full border border-white/25 bg-black/45 px-5 py-3 text-sm font-medium text-white shadow-2xl backdrop-blur-xl">
             {toast}
           </div>
+            </div>
+          )}
+
+          {/* Video lightbox */}
+          {videoIndex !== null && videoDocs[videoIndex] && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85" onClick={() => setVideoIndex(null)}>
+              <button onClick={() => setVideoIndex(null)}
+                className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 backdrop-blur-md transition hover:text-white">
+                <X className="h-4 w-4" />
+              </button>
+              {videoDocs.length > 1 && (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); setVideoIndex((prev) => (prev! - 1 + videoDocs.length) % videoDocs.length); }}
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); setVideoIndex((prev) => (prev! + 1) % videoDocs.length); }}
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:bg-white/20">
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </>
+              )}
+              <video
+                src={videoDocs[videoIndex]}
+                className="max-h-[85vh] max-w-[90vw] rounded-xl"
+                controls
+                autoPlay
+                playsInline
+                onClick={(e) => e.stopPropagation()}
+              />
+              <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white/80 backdrop-blur-md">
+                {videoIndex + 1} / {videoDocs.length}
+              </p>
+            </div>
+          )}
         </div>
-      )}
-    </div>
   );
 }
 
@@ -828,7 +940,7 @@ function ActionSheet({
   const handleTouchEnd = () => {
     if (offsetY > 120) {
       setClosing(true);
-      setTimeout(onClose, 250);
+      setTimeout(onClose, 400);
     } else {
       setOffsetY(0);
     }
@@ -836,18 +948,18 @@ function ActionSheet({
 
   const handleClose = () => {
     setClosing(true);
-    setTimeout(onClose, 250);
+    setTimeout(onClose, 400);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-      <div className={`absolute inset-0 bg-black/60 transition-opacity duration-[250ms] ${closing ? "opacity-0" : "opacity-100"}`} onClick={handleClose} />
+      <div className={`absolute inset-0 bg-black/60 transition-opacity duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${closing ? "opacity-0" : "opacity-100"}`} onClick={handleClose} />
       <div
         ref={sheetRef}
         className={`relative max-h-[70vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl sm:rounded-2xl ${
-          closing ? "translate-y-full opacity-0 transition-all duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:translate-y-8" : "animate-slide-up"
+          closing ? "translate-y-full opacity-0 transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:translate-y-8" : "animate-slide-up"
         }`}
-        style={offsetY > 0 ? { transform: `translateY(${offsetY}px)` } : undefined}
+        style={!closing && offsetY > 0 ? { transform: `translateY(${offsetY}px)` } : undefined}
       >
         <button onClick={handleClose}
           className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/60 transition hover:text-white">
