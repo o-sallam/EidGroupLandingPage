@@ -175,7 +175,7 @@ const dicts: Record<Lang, Dict> = {
 // Video-specific content per language
 export const videoContent: Record<Lang, Array<{ title: string; description: string }>> = {
   ar: [
-    { title: "مرحبًا بكم في مجموعة عيد", description: "تعريف بالمجموعة، رسالتها، ورؤيتها الاستثمارية على المدى البعيد." },
+    { title: "من هم عيد جروب؟", description: "تعريف بالمجموعة، رسالتها، ورؤيتها الاستثمارية على المدى البعيد." },
     { title: "لماذا نرى فرصة في سوريا؟", description: "المؤسسون، فريق الإدارة، والإنجازات التي شكّلت المجموعة." },
     { title: "كيف نحدد الفرص الاستثمارية؟", description: "استعراض لأبرز القطاعات التي تعمل فيها المجموعة ومحرّكات النمو." },
     { title: "الخبرة التي ستحوّل الفكرة إلى مشروع ناجح", description: "ملخّص للأداء المالي التاريخي والمؤشرات التشغيلية الأساسية." },
