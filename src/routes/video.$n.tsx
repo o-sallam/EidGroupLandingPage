@@ -22,9 +22,12 @@ import {
   ArrowLeft,
   Rewind,
   FastForward,
+  MessageCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/video/$n")({ component: VideoPage });
+
+const WHATSAPP_NUMBER = "971501234567"; // placeholder — replace with real number
 
 const SOCIALS = [
   { href: "https://m.facebook.com/profile.php?id=61560667386827", Icon: Facebook, label: "Facebook" },
@@ -242,6 +245,11 @@ function VideoPage() {
     return () => clearInterval(id);
   }, [initialPreview]);
 
+  // Auto-show Documents gallery when video ends
+  useEffect(() => {
+    if (videoEnded) setShowDocs(true);
+  }, [videoEnded]);
+
   const closeQuestions = useCallback(() => {
     setModalClosing(true);
     setTimeout(() => {
@@ -372,6 +380,7 @@ function VideoPage() {
           percent={overallProgress}
           current={num}
           total={TOTAL_VIDEOS}
+          hidePercent={!videoEnded}
         />
       </div>
 
@@ -409,9 +418,18 @@ function VideoPage() {
         {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </button>
       )}
-      {/* Left icon rail: social icons + Documents icon (hidden during end-screen / preview). */}
+      {/* Left icon rail: social icons + WhatsApp — bottom aligned, animates with controls */}
       {!videoEnded && !nextPreview && (
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 mt-8 z-30 flex flex-col items-center gap-3">
+        <div
+          className="absolute left-4 z-30 flex flex-col items-center gap-3"
+          style={{
+            bottom: isPlaying ? 20 : 72,
+            opacity: isPlaying ? 0 : 1,
+            transform: isPlaying ? "translateY(12px)" : "translateY(0)",
+            pointerEvents: isPlaying ? "none" as const : "auto" as const,
+            transition: "opacity 400ms cubic-bezier(0.22,1,0.36,1), transform 400ms cubic-bezier(0.22,1,0.36,1), bottom 400ms cubic-bezier(0.22,1,0.36,1)",
+          }}
+        >
           {SOCIALS.map(({ href, Icon, label }) => (
             <a
               key={label}
@@ -424,13 +442,15 @@ function VideoPage() {
               <Icon className="h-5 w-5" />
             </a>
           ))}
-          <button
-            onClick={() => setShowDocs(true)}
+          <a
+            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="WhatsApp"
             className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30"
-            aria-label={t("docs.title")}
           >
-            <FileText className="h-5 w-5" />
-          </button>
+            <MessageCircle className="h-5 w-5" />
+          </a>
         </div>
       )}
       {!isLocked && (
@@ -592,31 +612,43 @@ function VideoPage() {
         </div>
       )}
 
-      {/* Title + channel-identity block */}
-      <div className="absolute bottom-16 left-4 right-4 z-20 rtl:text-right">
-        <div dir="ltr" className="mb-2.5 flex items-start justify-end gap-3 pointer-events-none select-none">
-          <div className="flex flex-col items-center gap-1.5">
-            <span className="inline-flex rounded-2xl" style={{ backgroundColor: "#121212", boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
-              <img src="/logo.webp" alt="" className="h-14 w-auto" style={{ display: "block" }} />
-            </span>
-            <span
-              className="text-xs font-semibold tracking-wide text-white/90"
-              style={{ textShadow: "0 1px 6px rgba(0,0,0,0.7), 0 2px 12px rgba(0,0,0,0.4)" }}
+      {/* Title + logo — bottom anchored, animates with controls */}
+      {!videoEnded && !nextPreview && (
+        <div
+          className="absolute left-4 right-4 z-20 rtl:text-right"
+          style={{
+            bottom: isPlaying ? 4 : 52,
+            opacity: isPlaying ? 0 : 1,
+            transform: isPlaying ? "translateY(12px)" : "translateY(0)",
+            transition: "opacity 400ms cubic-bezier(0.22,1,0.36,1), transform 400ms cubic-bezier(0.22,1,0.36,1), bottom 400ms cubic-bezier(0.22,1,0.36,1)",
+          }}
+        >
+          <div className="flex flex-col gap-1">
+            <h2
+              className="font-serif text-xl leading-tight text-white sm:text-2xl"
+              style={{ textShadow: "0 2px 8px rgba(0,0,0,0.7), 0 4px 20px rgba(0,0,0,0.4)" }}
             >
-              Eid Group
-            </span>
+              {title}
+            </h2>
+            <div className="flex items-center gap-2.5">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
+                {String(num).padStart(2, "0")}
+              </p>
+              <div dir="ltr" className="flex items-center gap-2 pointer-events-none select-none">
+                <span
+                  className="text-xs font-semibold tracking-wide text-white/70"
+                  style={{ textShadow: "0 1px 6px rgba(0,0,0,0.8)" }}
+                >
+                  Eid Group
+                </span>
+                <span className="inline-flex rounded-2xl shrink-0" style={{ backgroundColor: "#121212", boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
+                  <img src="/logo.webp" alt="" className="h-9 w-auto" style={{ display: "block" }} />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-        <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)] drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-          {String(num).padStart(2, "0")} — {t("brand.tag")}
-        </p>
-        <h2
-          className="mt-1 font-serif text-xl leading-tight text-white sm:text-2xl"
-          style={{ textShadow: "0 2px 8px rgba(0,0,0,0.7), 0 4px 20px rgba(0,0,0,0.4)" }}
-        >
-          {title}
-        </h2>
-      </div>
+      )}
 
       {/* Tap feedback overlay */}
       {tapFeedback && (

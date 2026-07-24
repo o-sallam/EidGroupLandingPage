@@ -2,9 +2,10 @@ type Props = {
   percent: number;
   current: number;
   total: number;
+  hidePercent?: boolean;
 };
 
-export function CircularProgressRing({ percent, current, total }: Props) {
+export function CircularProgressRing({ percent, current, total, hidePercent }: Props) {
   const size = 56;
   const stroke = 4;
   const radius = 22;
@@ -45,12 +46,14 @@ export function CircularProgressRing({ percent, current, total }: Props) {
             className="transition-all duration-700 ease-out"
           />
         </svg>
-        <span
-          className="absolute inset-0 flex items-start justify-center text-base font-semibold text-white"
-          style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)", marginTop: 18 }}
-        >
-          {Math.round(percent * 100)}%
-        </span>
+        {!hidePercent && (
+          <span
+            className="absolute inset-0 flex items-start justify-center text-base font-semibold text-white"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)", marginTop: 18 }}
+          >
+            {Math.round(percent * 100)}%
+          </span>
+        )}
       </div>
       <span
         className="font-medium text-white/80"
