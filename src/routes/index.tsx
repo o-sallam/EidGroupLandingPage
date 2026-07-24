@@ -73,11 +73,7 @@ function Landing() {
           {/* Branding text */}
           <div
             className={`flex flex-col items-center gap-1 transition-all duration-500 ease-out ${
-              phase === "welcome"
-                ? "opacity-0"
-                : transition
-                  ? "opacity-60"
-                  : "opacity-100"
+              transition ? "opacity-60" : "opacity-100"
             }`}
           >
             <h1

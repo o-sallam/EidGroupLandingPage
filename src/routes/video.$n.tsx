@@ -49,7 +49,7 @@ function VideoPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isMuted, setIsMuted] = useState(num !== 1);
+  const [isMuted, setIsMuted] = useState(false);
   const [showQuestions, setShowQuestions] = useState(false);
   const [toast, setToast] = useState("");
   const [modalClosing, setModalClosing] = useState(false);
@@ -420,12 +420,7 @@ function VideoPage() {
       <div dir="ltr" className="absolute bottom-0 left-0 right-0 z-40" data-no-tap>
         <div
           className="relative flex items-center transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-          style={{
-            height: 28,
-            marginLeft: isPlaying ? 0 : 8,
-            marginRight: isPlaying ? 0 : 8,
-            marginBottom: isPlaying ? 0 : 4,
-          }}
+          style={{ height: isPlaying ? 0 : 28, paddingLeft: isPlaying ? 0 : 8, paddingRight: isPlaying ? 0 : 8 }}
         >
           <div
             ref={scrubRef}
@@ -439,9 +434,9 @@ function VideoPage() {
             }}
             className="group relative w-full cursor-pointer touch-none transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
             style={{
-              height: isPlaying ? 2 : 4,
+              height: isPlaying ? 4 : 8,
               backgroundColor: "rgba(255,255,255,0.2)",
-              borderRadius: isPlaying ? 0 : 2,
+              borderRadius: isPlaying ? 0 : 3,
             }}
           >
             <div
@@ -449,7 +444,7 @@ function VideoPage() {
               style={{
                 width: `${Math.min(progress, 100)}%`,
                 backgroundColor: "var(--gold)",
-                borderRadius: isPlaying ? 0 : "0 2px 2px 0",
+                borderRadius: isPlaying ? 0 : "0 3px 3px 0",
               }}
             />
             {!isPlaying && (
@@ -592,9 +587,9 @@ function VideoPage() {
                     className="absolute inset-0 flex items-center justify-center"
                     style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                   >
-                    <span className="flex flex-col items-center leading-none">
-                      <span className="font-serif text-xl font-semibold text-[color:var(--gold)]">Eid</span>
-                      <span className="font-serif text-lg font-semibold text-[color:var(--gold)]">Group</span>
+                    <span className="flex flex-col items-center">
+                      <span className="font-['Poppins',sans-serif] text-2xl font-semibold leading-[0.85] text-[color:var(--gold)]" style={{ letterSpacing: "4px", margin: "4px 0 4px 4px" }}>Eid</span>
+                      <span className="font-['Poppins',sans-serif] text-[0.8rem] font-semibold leading-[0.85] text-[color:var(--gold)]">Group</span>
                     </span>
                   </span>
                 </span>
