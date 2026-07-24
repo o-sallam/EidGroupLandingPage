@@ -172,7 +172,7 @@ function VideoPage() {
     >
       <VideoStage
         videoUrl={videoUrl}
-        posterUrl={imageUrl ?? (videoUrl ? "/default-thumbnail.webp" : undefined)}
+        posterUrl={imageUrl ?? `/thumbnails/${num}.webp`}
         immersive
         autoPlay
         muted={isMuted}
