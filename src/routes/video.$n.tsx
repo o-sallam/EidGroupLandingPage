@@ -378,23 +378,23 @@ function VideoPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className="grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30"
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30"
             >
-              <Icon className="h-6 w-6" fill="currentColor" />
+              <Icon className="h-5 w-5" />
             </a>
           ))}
           <button
             onClick={() => setShowDocs(true)}
-            className="grid h-12 w-12 place-items-center rounded-full border border-[rgba(200,169,106,0.4)] bg-black/35 text-[color:var(--gold)] shadow-lg backdrop-blur-md transition hover:bg-black/50 active:scale-90"
+            className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30"
             aria-label={t("docs.title")}
           >
-            <FileText className="h-6 w-6" />
+            <FileText className="h-5 w-5" />
           </button>
         </div>
       )}
 
       {/* YouTube-style bottom progress bar — interactive scrubber */}
-      <div className="absolute bottom-0 left-0 right-0 z-40" data-no-tap>
+      <div dir="ltr" className="absolute bottom-0 left-0 right-0 z-40" data-no-tap>
         <div
           className="relative flex items-center"
           style={{
