@@ -444,7 +444,7 @@ function VideoPage() {
               style={{
                 width: `${Math.min(progress, 100)}%`,
                 backgroundColor: "var(--gold)",
-                borderRadius: isPlaying ? 0 : "0 3px 3px 0",
+                borderRadius: isPlaying ? 0 : 3,
               }}
             />
             {!isPlaying && (
@@ -576,24 +576,8 @@ function VideoPage() {
       <div className="absolute bottom-16 left-4 right-4 z-20 rtl:text-right">
         <div dir="ltr" className="mb-2.5 flex items-start justify-end gap-3 pointer-events-none select-none">
           <div className="flex flex-col items-center gap-1.5">
-            <span
-              className="inline-flex rounded-2xl border-2 border-[rgba(200,169,106,0.5)]"
-              style={{ backgroundColor: "#121212", boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
-            >
-              <span className="relative" style={{ perspective: 800, lineHeight: 0 }}>
-                <span className="block" style={{ transformStyle: "preserve-3d", animation: "logo-flip 5s ease-in-out infinite" }}>
-                  <img src="/logo.webp" alt="" className="h-14 w-auto" style={{ backfaceVisibility: "hidden", display: "block" }} />
-                  <span
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-                  >
-                    <span className="flex flex-col items-center">
-                      <span className="font-['Poppins',sans-serif] text-2xl font-semibold leading-[0.85] text-[color:var(--gold)]" style={{ letterSpacing: "4px", margin: "4px 0 4px 4px" }}>Eid</span>
-                      <span className="font-['Poppins',sans-serif] text-[0.8rem] font-semibold leading-[0.85] text-[color:var(--gold)]">Group</span>
-                    </span>
-                  </span>
-                </span>
-              </span>
+            <span className="inline-flex rounded-2xl" style={{ backgroundColor: "#121212", boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
+              <img src="/logo.webp" alt="" className="h-14 w-auto" style={{ display: "block" }} />
             </span>
             <span
               className="text-xs font-semibold tracking-wide text-white/90"
