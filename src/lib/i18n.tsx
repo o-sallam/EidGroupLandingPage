@@ -264,7 +264,7 @@ export const VIDEO_URLS: Record<number, string | null> = {
   4: "https://egroup.runasp.net/videos/v4.mp4",
   5: "https://egroup.runasp.net/videos/v5.mp4",
   6: "https://egroup.runasp.net/videos/v6.mp4",
-  7: null,
+  7: "https://egroup.runasp.net/videos/v7.mp4",
 };
 
 // Last video index with a non-null URL — determines end-of-sequence behavior
