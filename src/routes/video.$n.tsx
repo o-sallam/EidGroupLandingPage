@@ -19,6 +19,7 @@ import {
   Pause,
   ArrowRight,
   ArrowLeft,
+  RotateCcw,
   Rewind,
   FastForward,
   MessageCircle,
@@ -67,6 +68,7 @@ function VideoPage() {
   // Initial thumbnail preview for the first video (3s delay before playback).
   const [initialPreview, setInitialPreview] = useState(num === 1);
   const [initialCount, setInitialCount] = useState(PREVIEW_SECONDS);
+  const [replayCount, setReplayCount] = useState(0);
 
   const touchStartX = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -315,7 +317,7 @@ function VideoPage() {
 
   return (
     <div
-      key={num}
+      key={`${num}-${replayCount}`}
       className="relative h-[100dvh] overflow-hidden bg-black select-none animate-page-entrance"
       style={{ touchAction: "manipulation" }}
       onTouchStart={handleTouchStart}
@@ -351,18 +353,19 @@ function VideoPage() {
                 ? `${Math.min(progress, 100)}%`
                 : "0%";
           return (
-            <div
+            <button
               key={i}
-              className={`h-4 flex-1 overflow-hidden rounded-full bg-white/20 relative ${isActive ? "ring-1 ring-[color:var(--gold)]" : ""}`}
+              onClick={() => navigate({ to: "/video/$n", params: { n: String(i + 1) } })}
+              className={`h-4 flex-1 overflow-hidden rounded-full bg-white/20 relative cursor-pointer transition active:scale-95 ${isActive ? "ring-1 ring-[color:var(--gold)]" : ""}`}
             >
               <div
-                className="h-full rounded-full bg-[color:var(--gold)] transition-all duration-300 ease-out"
+                className="h-full rounded-full bg-[color:var(--gold)] transition-all duration-300 ease-out pointer-events-none"
                 style={{ width: fillWidth }}
               />
-              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold text-white leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold text-white leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] pointer-events-none">
                 {i + 1}
               </span>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -534,6 +537,12 @@ function VideoPage() {
                     style={{ width: `${Math.round(overallProgress * 100)}%` }} />
                 </div>
               </div>
+
+              <button onClick={() => setReplayCount((c) => c + 1)}
+                className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30 active:scale-90"
+                aria-label="Replay">
+                <RotateCcw className="h-5 w-5" />
+              </button>
 
               {!isLast ? (
                 <button onClick={() => navigate({ to: "/video/$n", params: { n: String(num + 1) } })}

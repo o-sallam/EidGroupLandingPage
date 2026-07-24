@@ -38,7 +38,7 @@ const dicts: Record<Lang, Dict> = {
     "section.docs": "المستندات",
     "section.related": "مقاطع ذات صلة",
     "section.notes": "ملاحظات",
-    "docs.title": "المستندات الرسمية",
+    "docs.title": "الصور والمستندات",
     "docs.subtitle": "الوثائق التنظيمية والمالية للاطلاع.",
     "docs.empty": "سيتم إتاحة المستندات قريبًا.",
     "docs.download": "تنزيل",

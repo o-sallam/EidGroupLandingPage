@@ -67,6 +67,7 @@ function Landing() {
               src="/logo.webp"
               alt="Eid Group"
               className="h-64 w-auto"
+              style={{ marginBottom: -48 }}
             />
           </div>
 
@@ -107,7 +108,7 @@ function Landing() {
               so the branding block sits alone at center during loading ─── */}
         {(transition || phase === "welcome") && (
           <div
-            className={`flex flex-col items-center gap-8 mt-8 ${
+            className={`flex flex-col items-center gap-8 mt-2 ${
               phase === "welcome"
                 ? "animate-fade-up"
                 : "opacity-0 pointer-events-none"
