@@ -548,6 +548,26 @@ function VideoPage() {
       {/* End-screen: action buttons + bottom bar */}
       {videoEnded && !nextPreview && (
         <div className="absolute inset-0 z-35 flex flex-col bg-black/60 backdrop-blur-[2px]">
+          {/* Night-sky stars */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            {[
+              "left-[10%] top-[8%] w-0.5 h-0.5 animate-twinkle", "left-[23%] top-[15%] w-0.5 h-0.5 animate-twinkle-slow",
+              "left-[35%] top-[5%] w-px h-px animate-twinkle-fast", "left-[48%] top-[20%] w-0.5 h-0.5 animate-twinkle-slow",
+              "left-[60%] top-[10%] w-px h-px animate-twinkle", "left-[75%] top-[3%] w-0.5 h-0.5 animate-twinkle-fast",
+              "left-[88%] top-[18%] w-px h-px animate-twinkle-slow", "left-[5%] top-[30%] w-px h-px animate-twinkle",
+              "left-[18%] top-[42%] w-0.5 h-0.5 animate-twinkle-fast", "left-[30%] top-[55%] w-px h-px animate-twinkle-slow",
+              "left-[45%] top-[35%] w-0.5 h-0.5 animate-twinkle", "left-[55%] top-[50%] w-px h-px animate-twinkle-fast",
+              "left-[70%] top-[40%] w-0.5 h-0.5 animate-twinkle-slow", "left-[82%] top-[60%] w-px h-px animate-twinkle",
+              "left-[92%] top-[48%] w-0.5 h-0.5 animate-twinkle-fast", "left-[8%] top-[65%] w-0.5 h-0.5 animate-twinkle-slow",
+              "left-[22%] top-[78%] w-px h-px animate-twinkle", "left-[38%] top-[70%] w-0.5 h-0.5 animate-twinkle-fast",
+              "left-[50%] top-[85%] w-px h-px animate-twinkle-slow", "left-[65%] top-[75%] w-0.5 h-0.5 animate-twinkle",
+              "left-[80%] top-[82%] w-px h-px animate-twinkle-fast", "left-[15%] top-[90%] w-0.5 h-0.5 animate-twinkle-slow",
+              "left-[42%] top-[95%] w-px h-px animate-twinkle", "left-[72%] top-[92%] w-0.5 h-0.5 animate-twinkle-fast",
+            ].map((c, i) => (
+              <div key={i} className={`absolute rounded-full bg-white ${c}`} style={{ animationDelay: `${(i * 0.7) % 5}s` }} />
+            ))}
+          </div>
+
           {/* Hidden doc preloaders (load in background for when overlay opens) */}
           {docCandidates.map((src) => (
             <img key={src} src={src} alt="" className="hidden"
@@ -573,6 +593,44 @@ function VideoPage() {
                 <FileText className="h-5 w-5" />
                 {t("docs.title")}
               </button>
+            </div>
+
+            {/* Social row + animated logo */}
+            <div className="shrink-0 py-3">
+              <div className="flex items-center justify-center gap-6">
+                <div className="relative inline-flex shrink-0">
+                  <div className="gold-glow-frame opacity-70" />
+                  <img
+                    src="/logo.webp"
+                    alt="Eid Group"
+                    className="h-9 w-auto"
+                    style={{ display: "block" }}
+                  />
+                </div>
+                {SOCIALS.map(({ href, Icon, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white/80 backdrop-blur-md transition hover:border-white/30 hover:text-white"
+                  >
+                    <Icon className="h-5 w-5" />
+                  </a>
+                ))}
+                <a
+                  href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white/80 backdrop-blur-md transition hover:border-white/30 hover:text-white"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
 
             {/* Bottom action bar — compact icon row */}

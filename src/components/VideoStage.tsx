@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Play } from "lucide-react";
 
@@ -16,9 +16,7 @@ type Props = {
 };
 
 export type VideoStageHandle = {
-  /** Relative seek by delta seconds (clamped to duration). */
   seek: (delta: number) => void;
-  /** Absolute seek to a timestamp (clamped to duration). */
   seekTo: (time: number) => void;
   getCurrentTime: () => number;
   getDuration: () => number;
@@ -30,6 +28,12 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
 ) {
   const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  const handlePlayClick = useCallback(() => {
+    if (!videoUrl) return;
+    setHasStarted(true);
+  }, [videoUrl]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -41,13 +45,13 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
     return () => {
       v.removeEventListener("timeupdate", handleTime);
     };
-  }, [videoUrl, onTimeUpdate]);
+  }, [videoUrl, onTimeUpdate, hasStarted]);
 
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !videoUrl) return;
     v.muted = muted ?? true;
-  }, [muted, videoUrl]);
+  }, [muted, videoUrl, hasStarted]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -57,7 +61,10 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
     } else if (!v.ended) {
       v.play().catch(() => {});
     }
-  }, [paused, videoUrl]);
+  }, [paused, videoUrl, hasStarted]);
+
+  // Reset hasStarted when videoUrl changes (triggers via key={videoUrl} remount).
+  useEffect(() => { setHasStarted(false); }, [videoUrl]);
 
   useImperativeHandle(
     ref,
@@ -78,6 +85,39 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
     [],
   );
 
+  // ── Play button overlay (pre-play state) ─────────────────────────────────
+  if (videoUrl && !hasStarted) {
+    const wrap = immersive
+      ? "absolute inset-0 h-full w-full"
+      : "relative aspect-[9/16] w-full";
+    const DEFAULT_THUMB = "/default-thumbnail.webp";
+    const displayUrl = posterUrl ?? DEFAULT_THUMB;
+
+    return (
+      <div className={wrap}>
+        <div className="absolute inset-0 h-full w-full overflow-hidden cursor-pointer" onClick={handlePlayClick}>
+          <img
+            src={displayUrl}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center justify-center animate-play-glow">
+                <div className="h-28 w-28 rounded-full border-2 border-[rgba(200,169,106,0.35)]" />
+              </div>
+              <div className="relative z-10 grid h-20 w-20 place-items-center rounded-full border-2 border-[rgba(200,169,106,0.6)] bg-[rgba(11,15,20,0.7)] backdrop-blur transition active:scale-90">
+                <Play className="h-8 w-8 text-[color:var(--gold)]" fill="currentColor" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Video element (hasStarted) ──────────────────────────────────────────
   if (videoUrl) {
     return (
       <video
@@ -103,6 +143,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
     );
   }
 
+  // ── Coming-soon fallback (no videoUrl) ──────────────────────────────────
   const [thumbLoaded, setThumbLoaded] = useState(false);
   useEffect(() => {
     if (!posterUrl) { setThumbLoaded(false); return; }

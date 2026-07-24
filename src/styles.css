@@ -117,6 +117,32 @@ html[dir="rtl"] body {
 }
 @utility animate-soft-pulse { animation: soft-pulse 2.5s ease-in-out infinite; }
 
+/* ── Centered Play button pre-roll glow ── */
+@keyframes play-glow {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 0; }
+}
+@utility animate-play-glow { animation: play-glow 2s ease-in-out infinite; }
+
+/* ── Night-sky twinkle for end-screen ── */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.8; }
+}
+@utility animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
+
+@keyframes twinkle-slow {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.5; }
+}
+@utility animate-twinkle-slow { animation: twinkle-slow 5s ease-in-out infinite; }
+
+@keyframes twinkle-fast {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+@utility animate-twinkle-fast { animation: twinkle-fast 2s ease-in-out infinite; }
+
 @keyframes gold-flow {
   0% { background-position: 0% 50%; }
   100% { background-position: -200% 50%; }
