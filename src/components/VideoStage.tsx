@@ -34,6 +34,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
   // videoUrl prop changes (e.g. async Supabase row resolving) so the <video>
   // is never re-sourced mid-playback. Cleared only when the video identity changes.
   const lockedUrlRef = useRef<string | null>(null);
+  const [thumbLoaded, setThumbLoaded] = useState(false);
 
   const handlePlayClick = useCallback(() => {
     if (!videoUrl) return;
@@ -79,6 +80,16 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
     lockedUrlRef.current = null;
   }, [videoId]);
 
+  useEffect(() => {
+    if (!posterUrl) { setThumbLoaded(false); return; }
+    let alive = true;
+    setThumbLoaded(false);
+    fetch(posterUrl, { method: "HEAD" })
+      .then((r) => { if (alive) setThumbLoaded(r.ok); })
+      .catch(() => { if (alive) setThumbLoaded(false); });
+    return () => { alive = false; };
+  }, [posterUrl]);
+
   useImperativeHandle(
     ref,
     () => ({
@@ -108,7 +119,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
 
     return (
       <div className={wrap}>
-        <div className="absolute inset-0 h-full w-full overflow-hidden cursor-pointer" onClick={handlePlayClick}>
+          <div className="absolute inset-0 h-full w-full overflow-hidden cursor-pointer" onClick={(e) => { e.stopPropagation(); handlePlayClick(); }}>
           <img
             src={displayUrl}
             alt=""
@@ -117,12 +128,10 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
-              <div className="absolute inset-0 flex items-center justify-center animate-play-glow">
-                <div className="h-28 w-28 rounded-full border-2 border-[rgba(200,169,106,0.35)]" />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center animate-play-glow-delayed">
-                <div className="h-28 w-28 rounded-full border-2 border-[rgba(200,169,106,0.35)]" />
-              </div>
+              <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox="0 0 112 112">
+                <circle cx="56" cy="56" r="40" fill="none" stroke="rgba(200,169,106,0.35)" strokeWidth="2" className="origin-center animate-ripple" />
+                <circle cx="56" cy="56" r="40" fill="none" stroke="rgba(200,169,106,0.35)" strokeWidth="2" className="origin-center animate-ripple-delayed" />
+              </svg>
               <div className="relative z-10 grid h-20 w-20 place-items-center rounded-full border-2 border-[rgba(200,169,106,0.6)] bg-[rgba(11,15,20,0.7)] backdrop-blur transition active:scale-90">
                 <Play className="h-8 w-8 text-[color:var(--gold)]" fill="currentColor" />
               </div>
@@ -160,17 +169,6 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
   }
 
   // ── Coming-soon fallback (no videoUrl) ──────────────────────────────────
-  const [thumbLoaded, setThumbLoaded] = useState(false);
-  useEffect(() => {
-    if (!posterUrl) { setThumbLoaded(false); return; }
-    let alive = true;
-    setThumbLoaded(false);
-    fetch(posterUrl, { method: "HEAD" })
-      .then((r) => { if (alive) setThumbLoaded(r.ok); })
-      .catch(() => { if (alive) setThumbLoaded(false); });
-    return () => { alive = false; };
-  }, [posterUrl]);
-
   const wrap = immersive
     ? "absolute inset-0 h-full w-full"
     : "relative aspect-[9/16] w-full";

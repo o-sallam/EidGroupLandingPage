@@ -117,14 +117,23 @@ html[dir="rtl"] body {
 }
 @utility animate-soft-pulse { animation: soft-pulse 2.5s ease-in-out infinite; }
 
-/* ── Centered Play button pre-roll glow ── */
-@keyframes play-glow {
-  0% { transform: scale(0.9); opacity: 0.5; }
-  70% { transform: scale(1.35); opacity: 0; }
-  100% { transform: scale(1.35); opacity: 0; }
+/* ── Centered Play button ripple ── */
+@keyframes ripple {
+  0%   { transform: scale(0.75); opacity: 0.5; }
+  80%  { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
-@utility animate-play-glow { animation: play-glow 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-@utility animate-play-glow-delayed { animation: play-glow 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite; animation-delay: 1.2s; }
+@utility animate-ripple {
+  animation: ripple 3s ease-out infinite;
+  transform-box: fill-box;
+  will-change: transform, opacity;
+}
+@utility animate-ripple-delayed {
+  animation: ripple 3s ease-out infinite;
+  animation-delay: 1.5s;
+  transform-box: fill-box;
+  will-change: transform, opacity;
+}
 
 /* ── Night-sky twinkle for end-screen ── */
 @keyframes twinkle {
