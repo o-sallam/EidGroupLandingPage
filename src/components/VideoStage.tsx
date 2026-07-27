@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 
 type Props = {
   videoUrl?: string | null;
+  videoId?: string | number;
   posterUrl?: string | null;
   immersive?: boolean;
   autoPlay?: boolean;
@@ -23,21 +24,29 @@ export type VideoStageHandle = {
 };
 
 export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStage(
-  { videoUrl, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onEnded, onTimeUpdate }: Props,
+  { videoUrl, videoId, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onEnded, onTimeUpdate }: Props,
   ref,
 ) {
   const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasStarted, setHasStarted] = useState(false);
+  // URL captured at the moment playback starts. Stable across late-arriving
+  // videoUrl prop changes (e.g. async Supabase row resolving) so the <video>
+  // is never re-sourced mid-playback. Cleared only when the video identity changes.
+  const lockedUrlRef = useRef<string | null>(null);
 
   const handlePlayClick = useCallback(() => {
     if (!videoUrl) return;
+    // Capture the URL at the moment playback starts so a late-arriving
+    // videoUrl prop change (e.g. async Supabase row) can't re-source the
+    // <video> mid-playback. See lockedUrlRef + the render branches below.
+    lockedUrlRef.current = videoUrl;
     setHasStarted(true);
   }, [videoUrl]);
 
   useEffect(() => {
     const v = videoRef.current;
-    if (!v || !videoUrl) return;
+    if (!v) return;
     const handleTime = () => {
       if (v.duration && onTimeUpdate) onTimeUpdate(v.currentTime, v.duration);
     };
@@ -45,26 +54,30 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
     return () => {
       v.removeEventListener("timeupdate", handleTime);
     };
-  }, [videoUrl, onTimeUpdate, hasStarted]);
+  }, [videoId, onTimeUpdate, hasStarted]);
 
   useEffect(() => {
     const v = videoRef.current;
-    if (!v || !videoUrl) return;
+    if (!v) return;
     v.muted = muted ?? true;
-  }, [muted, videoUrl, hasStarted]);
+  }, [muted, videoId, hasStarted]);
 
   useEffect(() => {
     const v = videoRef.current;
-    if (!v || !videoUrl) return;
+    if (!v) return;
     if (paused) {
       v.pause();
     } else if (!v.ended) {
       v.play().catch(() => {});
     }
-  }, [paused, videoUrl, hasStarted]);
+  }, [paused, videoId, hasStarted]);
 
-  // Reset hasStarted when videoUrl changes (triggers via key={videoUrl} remount).
-  useEffect(() => { setHasStarted(false); }, [videoUrl]);
+  // Reset hasStarted + clear the locked URL only when the video identity
+  // changes — NOT when the videoUrl prop merely changes value mid-playback.
+  useEffect(() => {
+    setHasStarted(false);
+    lockedUrlRef.current = null;
+  }, [videoId]);
 
   useImperativeHandle(
     ref,
@@ -107,6 +120,9 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
               <div className="absolute inset-0 flex items-center justify-center animate-play-glow">
                 <div className="h-28 w-28 rounded-full border-2 border-[rgba(200,169,106,0.35)]" />
               </div>
+              <div className="absolute inset-0 flex items-center justify-center animate-play-glow-delayed">
+                <div className="h-28 w-28 rounded-full border-2 border-[rgba(200,169,106,0.35)]" />
+              </div>
               <div className="relative z-10 grid h-20 w-20 place-items-center rounded-full border-2 border-[rgba(200,169,106,0.6)] bg-[rgba(11,15,20,0.7)] backdrop-blur transition active:scale-90">
                 <Play className="h-8 w-8 text-[color:var(--gold)]" fill="currentColor" />
               </div>
@@ -118,11 +134,11 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
   }
 
   // ── Video element (hasStarted) ──────────────────────────────────────────
-  if (videoUrl) {
+  if (lockedUrlRef.current) {
     return (
       <video
         ref={videoRef}
-        key={videoUrl}
+        key={lockedUrlRef.current}
         className={
           immersive
             ? "absolute inset-0 h-full w-full object-cover"
@@ -138,7 +154,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
         onPause={onPause}
         onEnded={onEnded}
       >
-        <source src={videoUrl} />
+        <source src={lockedUrlRef.current} />
       </video>
     );
   }

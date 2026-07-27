@@ -119,10 +119,12 @@ html[dir="rtl"] body {
 
 /* ── Centered Play button pre-roll glow ── */
 @keyframes play-glow {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.25); opacity: 0; }
+  0% { transform: scale(0.9); opacity: 0.5; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
 }
-@utility animate-play-glow { animation: play-glow 2s ease-in-out infinite; }
+@utility animate-play-glow { animation: play-glow 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+@utility animate-play-glow-delayed { animation: play-glow 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite; animation-delay: 1.2s; }
 
 /* ── Night-sky twinkle for end-screen ── */
 @keyframes twinkle {
@@ -253,14 +255,6 @@ html[dir="rtl"] body {
   47% { transform: scaleX(0); }
 }
 
-/* ── Countdown number pop ── */
-@keyframes count-pop {
-  from { opacity: 0; transform: scale(0.6); }
-  30%  { opacity: 1; transform: scale(1); }
-  to   { opacity: 0.85; transform: scale(1); }
-}
-@utility animate-count-pop { animation: count-pop 1s ease-out both; }
-
 /* ── Shake for blocked swipe ── */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -307,13 +301,6 @@ html[dir="rtl"] body {
   92% { transform: rotateY(360deg); }
   100% { transform: rotateY(360deg); }
 }
-
-/* ── Up-next preview fade/scale entrance ── */
-@keyframes preview-in {
-  from { opacity: 0; transform: scale(1.04); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@utility animate-preview-in { animation: preview-in 0.5s ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
   [style*="emerge-icon"] {

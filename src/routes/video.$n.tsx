@@ -43,8 +43,6 @@ const SOCIALS = [
 const SEEK_STEP = 5;
 // Max gap (ms) between two taps to count as a double-tap.
 const DOUBLE_TAP_MS = 300;
-// How long the up-next thumbnail preview counts down before auto-starting.
-const PREVIEW_SECONDS = 3;
 
 function VideoPage() {
   const { n } = Route.useParams();
@@ -68,12 +66,6 @@ function VideoPage() {
   const [overlay, setOverlay] = useState<"questions" | "docs" | null>(null);
   // Brief ripple shown on double-tap-to-seek.
   const [seekFlash, setSeekFlash] = useState<{ side: "left" | "right"; id: number } | null>(null);
-  // Target video number for the up-next preview transition (null = inactive).
-  const [nextPreview, setNextPreview] = useState<number | null>(null);
-  const [previewCount, setPreviewCount] = useState(PREVIEW_SECONDS);
-  // Initial thumbnail preview for the first video (3s delay before playback).
-  const [initialPreview, setInitialPreview] = useState(num === 1);
-  const [initialCount, setInitialCount] = useState(PREVIEW_SECONDS);
   const [showQuestionsHint, setShowQuestionsHint] = useState(false);
 
   const touchStartX = useRef(0);
@@ -101,7 +93,7 @@ function VideoPage() {
   const videoSources = num === 4 ? v4VideoUrls : [];
   const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
   // Surface taps (toggle / seek) are disabled while any overlay is up.
-  const surfaceActive = !overlay && !nextPreview && !videoEnded && !initialPreview && !isLocked;
+  const surfaceActive = !overlay && !videoEnded && !isLocked;
 
   useEffect(() => {
     if (!isUnlocked()) navigate({ to: "/access", replace: true });
@@ -116,10 +108,6 @@ function VideoPage() {
     setIsMuted(false);
     setToast("");
     setVideoEnded(false);
-    setNextPreview(null);
-    setPreviewCount(PREVIEW_SECONDS);
-    setInitialPreview(num === 1);
-    setInitialCount(PREVIEW_SECONDS);
     setSeekFlash(null);
     setLoadedDocs([]);
     setVideoDocs([]);
@@ -207,11 +195,6 @@ function VideoPage() {
     !!el?.closest('button, a, [role="button"], [data-no-tap]');
 
   // ── Navigation (swipe + buttons) ──────────────────────────────────────────
-  const startNextPreview = useCallback(() => {
-    if (isLast) return;
-    setNextPreview(num + 1);
-  }, [num, isLast]);
-
   const attemptNavigate = useCallback(
     (direction: "prev" | "next") => {
       if (direction === "prev") {
@@ -221,47 +204,10 @@ function VideoPage() {
       }
       if (isLast) return;
       // Free navigation — always allowed, gating is on playback only.
-      // When the video has ended, show the up-next preview before transitioning.
-      // Skip the preview if the next video is locked (will show thumbnail).
-      if (videoEnded && isPlayable(num + 1)) startNextPreview();
-      else navigate({ to: "/video/$n", params: { n: String(num + 1) } });
+      navigate({ to: "/video/$n", params: { n: String(num + 1) } });
     },
-    [num, isFirst, isLast, videoEnded, navigate, startNextPreview],
+    [num, isFirst, isLast, navigate],
   );
-
-  // Up-next preview countdown — auto-advance to the next video when it hits 0.
-  useEffect(() => {
-    if (nextPreview == null) return;
-    setPreviewCount(PREVIEW_SECONDS);
-    let count = PREVIEW_SECONDS;
-    const id = setInterval(() => {
-      count -= 1;
-      if (count <= 0) {
-        clearInterval(id);
-        navigate({ to: "/video/$n", params: { n: String(nextPreview) } });
-      } else {
-        setPreviewCount(count);
-      }
-    }, 1000);
-    return () => clearInterval(id);
-  }, [nextPreview, navigate]);
-
-  // Initial preview countdown — shows the first video's thumbnail for 3s before playback.
-  useEffect(() => {
-    if (!initialPreview) return;
-    let count = PREVIEW_SECONDS;
-    setInitialCount(count);
-    const id = setInterval(() => {
-      count -= 1;
-      if (count <= 0) {
-        clearInterval(id);
-        setInitialPreview(false);
-      } else {
-        setInitialCount(count);
-      }
-    }, 1000);
-    return () => clearInterval(id);
-  }, [initialPreview]);
 
   // Hint cycle: show "Investor Questions" label for 3.5s every 20s.
   // Resets per video (num dependency). Paused while overlay is open.
@@ -342,7 +288,7 @@ function VideoPage() {
     [duration],
   );
 
-  const effectivePaused = manuallyPaused || videoEnded || initialPreview || isLocked;
+  const effectivePaused = manuallyPaused || videoEnded || isLocked;
 
   return (
     <div
@@ -356,6 +302,7 @@ function VideoPage() {
       <VideoStage
         ref={stageRef}
         videoUrl={videoUrl}
+        videoId={num}
         posterUrl={imageUrl ?? `/thumbnails/${num}.webp`}
         immersive
         autoPlay
@@ -400,7 +347,7 @@ function VideoPage() {
       </div>
 
       {/* Mute/unmute + Investor Questions — grouped in the same area */}
-      {(!isLocked || (!videoEnded && !nextPreview)) && (
+      {(!isLocked || !videoEnded) && (
         <div className="absolute top-9 left-4 z-30 flex flex-col items-center gap-3">
           {!isLocked && (
             <button
@@ -411,7 +358,7 @@ function VideoPage() {
             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
           )}
-          {!videoEnded && !nextPreview && (
+          {!videoEnded && (
             <div>
               <button
                 onClick={() => setOverlay("questions")}
@@ -435,7 +382,7 @@ function VideoPage() {
       )}
 
       {/* Left icon rail: social icons + WhatsApp — bottom aligned, slides down on play */}
-      {!videoEnded && !nextPreview && (
+      {!videoEnded && (
         <div
           className="absolute left-4 z-30 flex flex-col items-center gap-3"
           style={{
@@ -542,7 +489,7 @@ function VideoPage() {
       )}
 
       {/* End-screen: action buttons + bottom bar */}
-      {videoEnded && !nextPreview && (
+      {videoEnded && (
         <div className="absolute inset-0 z-35 flex flex-col bg-black/60 backdrop-blur-[2px]">
           {/* Night-sky stars */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -784,55 +731,8 @@ function VideoPage() {
         </div>
       )}
 
-      {/* Up-next thumbnail preview (transition into the next video) */}
-      {nextPreview != null && (
-        <UpNextPreview
-          target={nextPreview}
-          count={previewCount}
-          title={videoContent[lang][nextPreview - 1]?.title ?? ""}
-          onCancel={() => setNextPreview(null)}
-          onPlayNow={() => navigate({ to: "/video/$n", params: { n: String(nextPreview) } })}
-          t={t}
-        />
-      )}
-
-      {/* Initial thumbnail preview for the first video (3s delay before playback). */}
-      {initialPreview && (
-        <div className="absolute inset-0 z-50 overflow-hidden bg-black">
-          <img
-            src={`/thumbnails/${num}.webp`}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-            onError={(e) => { if (e.currentTarget.src.indexOf('/default-thumbnail.webp') === -1) e.currentTarget.src = '/default-thumbnail.webp'; }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80 backdrop-blur-[2px]" />
-          <div className="relative z-10 flex h-full flex-col items-center justify-center gap-5 px-6 text-center animate-preview-in">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)]">
-              {t("video.starting")}
-            </p>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
-              {String(num).padStart(2, "0")} / {TOTAL_VIDEOS}
-            </p>
-            <h2
-              className="max-w-md font-serif text-2xl leading-tight text-white sm:text-3xl"
-              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
-            >
-              {title}
-            </h2>
-            <div className="flex flex-col items-center gap-1">
-              <span key={initialCount} className="animate-count-pop text-6xl font-semibold text-white" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7)" }}>
-                {initialCount}
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-white/60">
-                {t("video.starting")}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Title + logo — bottom anchored, slides down on play */}
-      {!videoEnded && !nextPreview && (
+      {!videoEnded && (
         <div
           className="absolute left-4 right-4 z-20 rtl:text-right"
           style={{
@@ -920,75 +820,6 @@ function VideoPage() {
             </div>
           )}
         </div>
-  );
-}
-
-// ── Up-next preview overlay ──────────────────────────────────────────────────
-function UpNextPreview({
-  target,
-  count,
-  title,
-  onCancel,
-  onPlayNow,
-  t,
-}: {
-  target: number;
-  count: number;
-  title: string;
-  onCancel: () => void;
-  onPlayNow: () => void;
-  t: (key: string) => string;
-}) {
-  return (
-    <div className="absolute inset-0 z-50 overflow-hidden bg-black">
-      <img
-        src={`/thumbnails/${target}.webp`}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover"
-        onError={(e) => { if (e.currentTarget.src.indexOf('/default-thumbnail.webp') === -1) e.currentTarget.src = '/default-thumbnail.webp'; }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80 backdrop-blur-[2px]" />
-
-      <button
-        onClick={onCancel}
-        className="absolute ltr:right-4 rtl:left-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white/70 backdrop-blur-md transition hover:text-white"
-        aria-label="Cancel"
-      >
-        <X className="h-4 w-4" />
-      </button>
-
-      <div className="relative z-10 flex h-full flex-col items-center justify-center gap-5 px-6 text-center animate-preview-in">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-[color:var(--gold)]">
-          {t("video.upNext")}
-        </p>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-white/60">
-          {String(target).padStart(2, "0")} / {TOTAL_VIDEOS}
-        </p>
-        <h2
-          className="max-w-md font-serif text-2xl leading-tight text-white sm:text-3xl"
-          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
-        >
-          {title}
-        </h2>
-
-        <div className="flex flex-col items-center gap-1">
-          <span key={count} className="animate-count-pop text-6xl font-semibold text-white" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7)" }}>
-            {count}
-          </span>
-          <span className="text-[10px] uppercase tracking-[0.3em] text-white/60">
-            {t("video.starting")}
-          </span>
-        </div>
-
-        <button
-          onClick={onPlayNow}
-          className="mt-2 inline-flex items-center gap-2 rounded-full bg-[color:var(--gold)] px-6 py-2.5 text-sm font-semibold text-[color:var(--bg-raw)] shadow-[0_10px_30px_-10px_rgba(200,169,106,0.6)] transition hover:brightness-110 active:scale-95"
-        >
-          <Play className="h-4 w-4" fill="currentColor" />
-          {t("video.playNow")}
-        </button>
-      </div>
-    </div>
   );
 }
 
