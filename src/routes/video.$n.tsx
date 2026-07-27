@@ -399,40 +399,36 @@ function VideoPage() {
         })}
       </div>
 
-      {/* Mute/unmute — icon only. Hidden when locked (no video playing). */}
-      {!isLocked && (
-        <button
-        onClick={() => setIsMuted((m) => !m)}
-        className="absolute top-9 left-4 z-30 grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white/70 backdrop-blur-md transition hover:border-white/30"
-        aria-label={isMuted ? "Unmute" : "Mute"}
-      >
-        {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-      </button>
-      )}
-      {/* Investor Questions — absolute below mute, slides on play + periodic hint label */}
-      {!videoEnded && !nextPreview && (
-        <div
-          className="absolute left-4 z-30"
-          style={{
-            top: "5.25rem",
-            transform: isPlaying ? "translateY(14px)" : "translateY(0)",
-            transition: "transform 400ms cubic-bezier(0.22,1,0.36,1)",
-          }}
-        >
-          <button
-            onClick={() => setOverlay("questions")}
-            aria-label={t("questions.title")}
-            className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30 active:scale-90"
+      {/* Mute/unmute + Investor Questions — grouped in the same area */}
+      {(!isLocked || (!videoEnded && !nextPreview)) && (
+        <div className="absolute top-9 left-4 z-30 flex flex-col items-center gap-3">
+          {!isLocked && (
+            <button
+            onClick={() => setIsMuted((m) => !m)}
+            className="grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white/70 backdrop-blur-md transition hover:border-white/30"
+            aria-label={isMuted ? "Unmute" : "Mute"}
           >
-            <HelpCircle className="h-5 w-5" />
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
-          {showQuestionsHint && (
-            <div
-              className={`absolute top-1/2 -translate-y-1/2 pointer-events-none animate-fade-up ${dir === "rtl" ? "right-full mr-2" : "left-full ml-2"}`}
-            >
-              <div className="whitespace-nowrap rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-[10px] font-medium text-white/90 shadow-lg backdrop-blur-md">
-                {t("questions.title")}
-              </div>
+          )}
+          {!videoEnded && !nextPreview && (
+            <div>
+              <button
+                onClick={() => setOverlay("questions")}
+                aria-label={t("questions.title")}
+                className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md transition hover:border-white/30 active:scale-90"
+              >
+                <HelpCircle className="h-5 w-5" />
+              </button>
+              {showQuestionsHint && (
+                <div
+                  className={`absolute top-1/2 -translate-y-1/2 pointer-events-none animate-fade-up ${dir === "rtl" ? "right-full mr-2" : "left-full ml-2"}`}
+                >
+                  <div className="whitespace-nowrap rounded-full border border-white/15 bg-black/45 px-3 py-1.5 text-[10px] font-medium text-white/90 shadow-lg backdrop-blur-md">
+                    {t("questions.title")}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -601,32 +597,38 @@ function VideoPage() {
           ))}
 
           <div className="flex flex-col h-full px-6 pb-4 pt-12">
-            {/* Two action buttons — centered */}
-            <div className="flex-1 flex flex-col items-center justify-center gap-4">
+            {/* Logo — moved to the top of the end-screen and enlarged; reuses
+                the gold-glow-frame animation from the splash/lock screen. */}
+            <div className="flex shrink-0 justify-center">
+              <div className="relative inline-flex">
+                <div className="gold-glow-frame" />
+                <img
+                  src="/logo.webp"
+                  alt="Eid Group"
+                  className="h-64 w-auto"
+                  style={{ marginBottom: -48 }}
+                />
+              </div>
+            </div>
+
+            {/* Two action buttons — match width with social row below */}
+            <div className="mx-auto flex w-[75%] max-w-[240px] flex-1 flex-col items-center justify-center gap-4">
               <button onClick={() => setOverlay("questions")}
-                className="flex items-center justify-center gap-3 w-full max-w-xs rounded-full bg-[color:var(--gold)] py-3.5 text-sm font-semibold text-[color:var(--bg-raw)] shadow-lg transition active:scale-95">
+                className="flex w-full items-center justify-center gap-3 rounded-full bg-[color:var(--gold)] py-3.5 text-sm font-semibold text-[color:var(--bg-raw)] shadow-lg transition active:scale-95">
                 <HelpCircle className="h-5 w-5" />
                 {t("questions.title")}
               </button>
               <button onClick={() => setOverlay("docs")}
-                className="flex items-center justify-center gap-3 w-full max-w-xs rounded-full border border-[rgba(200,169,106,0.4)] bg-white/10 py-3.5 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95">
+                className="flex w-full items-center justify-center gap-3 rounded-full border border-[rgba(200,169,106,0.4)] bg-white/10 py-3.5 text-sm font-medium text-white shadow-lg backdrop-blur-md transition hover:bg-white/20 active:scale-95">
                 <FileText className="h-5 w-5" />
                 {t("docs.title")}
               </button>
             </div>
 
-            {/* Social row + animated logo */}
-            <div className="shrink-0 py-3">
-              <div className="flex items-center justify-center gap-6">
-                <div className="relative inline-flex shrink-0">
-                  <div className="gold-glow-frame opacity-70" />
-                  <img
-                    src="/logo.webp"
-                    alt="Eid Group"
-                    className="h-9 w-auto"
-                    style={{ display: "block" }}
-                  />
-                </div>
+            {/* Social row — constrained to the same width as the buttons above,
+                with even spacing via justify-between. */}
+            <div className="mx-auto w-[75%] max-w-[240px] shrink-0 py-3">
+              <div className="flex items-center justify-between">
                 {SOCIALS.map(({ href, Icon, label }) => (
                   <a
                     key={label}
