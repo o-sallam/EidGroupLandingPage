@@ -284,6 +284,10 @@ function VideoPage() {
       const frac = Math.max(0, Math.min((clientX - rect.left) / rect.width, 1));
       setProgress(frac * 100);
       stageRef.current?.seekTo(frac * dur);
+      // Mirrors the Replay button: dismiss the completion overlay and resume
+      // playback from the scrubbed position.
+      setVideoEnded(false);
+      setManuallyPaused(false);
     },
     [duration],
   );
