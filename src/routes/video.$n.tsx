@@ -605,14 +605,14 @@ function VideoPage() {
                 <img
                   src="/logo.webp"
                   alt="Eid Group"
-                  className="h-64 w-auto"
-                  style={{ marginBottom: -48 }}
+                  className="h-52 w-auto"
+                  style={{ marginBottom: -36 }}
                 />
               </div>
             </div>
 
             {/* Two action buttons — match width with social row below */}
-            <div className="mx-auto flex w-[75%] max-w-[240px] flex-1 flex-col items-center justify-center gap-4">
+            <div className="mx-auto mt-2 flex w-[75%] max-w-[240px] flex-col items-center gap-3">
               <button onClick={() => setOverlay("questions")}
                 className="flex w-full items-center justify-center gap-3 rounded-full bg-[color:var(--gold)] py-3.5 text-sm font-semibold text-[color:var(--bg-raw)] shadow-lg transition active:scale-95">
                 <HelpCircle className="h-5 w-5" />
@@ -627,7 +627,7 @@ function VideoPage() {
 
             {/* Social row — constrained to the same width as the buttons above,
                 with even spacing via justify-between. */}
-            <div className="mx-auto w-[75%] max-w-[240px] shrink-0 py-3">
+            <div className="mx-auto mt-3 w-[75%] max-w-[240px] shrink-0">
               <div className="flex items-center justify-between">
                 {SOCIALS.map(({ href, Icon, label }) => (
                   <a
@@ -654,6 +654,8 @@ function VideoPage() {
                 </a>
               </div>
             </div>
+
+            <div className="flex-1" />
 
             {/* Bottom action bar — compact icon row */}
             <div className="shrink-0 flex items-center justify-center gap-6 py-4">
