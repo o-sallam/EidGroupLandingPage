@@ -119,7 +119,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
 
     return (
       <div className={wrap}>
-          <div className="absolute inset-0 h-full w-full overflow-hidden cursor-pointer" onClick={(e) => { e.stopPropagation(); handlePlayClick(); }}>
+          <div data-no-tap className="absolute inset-0 h-full w-full overflow-hidden cursor-pointer" onClick={(e) => { e.stopPropagation(); handlePlayClick(); }}>
           <img
             src={displayUrl}
             alt=""
