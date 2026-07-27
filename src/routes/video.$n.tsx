@@ -544,9 +544,13 @@ function VideoPage() {
           ))}
 
           <div className="flex flex-col h-full px-6 pb-4 pt-12">
+            {/* Top flex spacer — centers the logo + action group vertically
+                (paired with the matching spacer above the bottom action bar). */}
+            <div className="flex-1" />
+
             {/* Logo — moved to the top of the end-screen and enlarged; reuses
                 the gold-glow-frame animation from the splash/lock screen. */}
-            <div className="flex shrink-0 justify-center animate-fade-slide-up">
+            <div className="flex shrink-0 justify-center animate-fade-slide-up mt-4">
               <div className="relative inline-flex">
                 <div className="gold-glow-frame" />
                 <img
