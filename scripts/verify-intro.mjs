@@ -101,14 +101,14 @@ try {
     crossorigin: v.hasAttribute("crossorigin"),
   }));
   assert(attrs.autoplay === true, "autoplay set");
-  assert(attrs.muted === true, "muted set");
+  console.log(`  ℹ muted=${attrs.muted} (true = waiting for gesture, false = sound auto-ran)`);
   assert(attrs.playsInline === true, "playsInline set");
-  assert(attrs.loop === true, "loop set");
+  assert(attrs.loop === false, "no loop (auto-advances on ended)");
   assert(attrs.controls === false, "no native controls");
   assert(attrs.disablePiP === true, "disablePictureInPicture set");
   assert(
     attrs.controlsList === "nodownload noplaybackrate nofullscreen",
-    "controlsList restricts download/rate/fullscreen"
+    "controlsList restricts download/rate/fullscreen",
   );
   assert(attrs.crossorigin === false, "no crossorigin attr (CORS-free playback)");
 
@@ -133,21 +133,23 @@ try {
 
   // Playback state (video is large; wait for first frame or readyState>=2)
   const ready = await video.evaluate(
-    (v) => new Promise((resolve) => {
-      if (v.readyState >= 2) return resolve(v.readyState);
-      v.addEventListener("loadeddata", () => resolve(v.readyState), { once: true });
-      setTimeout(() => resolve(v.readyState), 15000);
-    })
+    (v) =>
+      new Promise((resolve) => {
+        if (v.readyState >= 2) return resolve(v.readyState);
+        v.addEventListener("loadeddata", () => resolve(v.readyState), { once: true });
+        setTimeout(() => resolve(v.readyState), 15000);
+      }),
   );
   console.log(`  ℹ readyState=${ready} (2=current data, 3=future data, 4=enough)`);
   assert(ready >= 2, "video buffered to at least current-frame (preload working)");
 
   const playing = await video.evaluate(
-    (v) => new Promise((resolve) => {
-      if (!v.paused) return resolve(true);
-      v.addEventListener("playing", () => resolve(true), { once: true });
-      setTimeout(() => resolve(!v.paused), 10000);
-    })
+    (v) =>
+      new Promise((resolve) => {
+        if (!v.paused) return resolve(true);
+        v.addEventListener("playing", () => resolve(true), { once: true });
+        setTimeout(() => resolve(!v.paused), 10000);
+      }),
   );
   assert(playing, "video is playing (muted autoplay)");
 
@@ -166,7 +168,9 @@ try {
   // re-mutes / re-unmutes.
   console.log("\n[6b] Sound auto-run behavior");
   const arrival = await video.evaluate((v) => ({ muted: v.muted, paused: v.paused }));
-  console.log(`  ℹ arrival: muted=${arrival.muted} paused=${arrival.paused} (${arrival.muted ? "muted until gesture" : "sound auto-ran"})`);
+  console.log(
+    `  ℹ arrival: muted=${arrival.muted} paused=${arrival.paused} (${arrival.muted ? "muted until gesture" : "sound auto-ran"})`,
+  );
   if (arrival.muted) {
     // …first user gesture lifts muting (autoplay policy allows
     // play-with-sound inside a trusted gesture)…
@@ -187,8 +191,31 @@ try {
   const reUnmuted = await video.evaluate((v) => v.muted);
   assert(reUnmuted === false, "mute toggle unmutes again");
 
-  // Arabic check — fresh context with the lang flag preset (provider defaults
-  // to "ar"), verify the preloader + hero both pick intro-ar.mp4.
+  // Auto-advance: when the video ends it should fade to black, then land on
+  // /video/1 with a light delay. First wait for the whole file to buffer
+  // (preload only guarantees fast start, not the tail bytes), then seek just
+  // before the end to trigger ended quickly.
+  console.log("\n[6c] Auto-advance on video end");
+  await page.waitForFunction(
+    () => {
+      const v = document.querySelector(".video-hero video");
+      return v && v.buffered.length > 0 && v.buffered.end(v.buffered.length - 1) >= v.duration - 0.05;
+    },
+    undefined,
+    { timeout: 180000, polling: 1000 }
+  );
+  console.log("  ℹ video fully buffered — seeking to the end");
+  await video.evaluate((v) => {
+    v.currentTime = Math.max(0, v.duration - 0.6);
+    v.play().catch(() => {});
+  });
+  await page.waitForSelector(".video-hero-leaving", { timeout: 10000 });
+  console.log("  ✓ fade-to-black started when video ended");
+  await page.waitForURL("**/video/1", { timeout: 10000, waitUntil: "commit" });
+  console.log("  ✓ auto-advanced to /video/1 after the fade delay");
+
+  // 7. Arabic — fresh context with the lang flag preset (provider defaults to
+  // "ar"), verify the preloader + hero both pick intro-ar.mp4.
   console.log("\n[7] Arabic → intro-ar.mp4");
   const arCtx = await browser.newContext({
     viewport: { width: 390, height: 844 },
@@ -199,7 +226,10 @@ try {
   await arPage.waitForSelector(".video-hero video", { timeout: 15000 });
   const arHeroSrc = await arPage.locator(".video-hero video").getAttribute("src");
   assert(arHeroSrc?.includes("intro-ar.mp4"), `hero uses ar video (src=${arHeroSrc})`);
-  const arPreSrc = await arPage.locator(".video-preloader").getAttribute("src").catch(() => null);
+  const arPreSrc = await arPage
+    .locator(".video-preloader")
+    .getAttribute("src")
+    .catch(() => null);
   assert(arPreSrc?.includes("intro-ar.mp4"), `preloader warms ar video (src=${arPreSrc})`);
   await arCtx.close();
 

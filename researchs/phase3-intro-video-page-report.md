@@ -94,9 +94,9 @@ All 24 assertions passed:
 
 ## 5. Open Questions (need product decision)
 
-1. **Loop vs handoff**: implemented as **loop** (spec default) + the delayed
-   Continue pill. If product wants auto-advance to `/video/1` when the video
-   ends instead, remove `loop` and add an `onEnded` → navigate handler.
+1. **Loop vs handoff**: **resolved** — the video now auto-advances to `/video/1`
+   when it ends, after a light 600ms fade-to-black (the Continue pill lets users
+   skip ahead earlier; Back fades the same way). No looping.
 2. **Audio**: both tracks carry narration (AAC). **Sound now auto-runs** where
    the browser allows it (Chrome — the user already interacted with the domain
    on /lang + /access); Safari/Firefox keep it muted until the first tap
@@ -104,8 +104,8 @@ All 24 assertions passed:
    /video pages.
 3. **Continue/back affordances**: the three pills (back, mute, continue) are
    the only UI. Product can delete them (buttons in `VideoHeroPage`) for a
-   100% chrome-free looping page — but then the only way forward is browser
-   back / direct URL.
+   100% chrome-free page — but then the only way forward is browser back /
+   direct URL.
 4. **"nl" (Dutch)**: the app supports Dutch; no Dutch video exists, so it falls
    back to the English track. Confirm that's acceptable.
 5. **Language persistence**: hard reload resets `lang` to `ar` (pre-existing).
@@ -123,6 +123,20 @@ All 24 assertions passed:
 - [x] Right-click context menu suppressed
 - [x] No layout shift (fixed full-viewport, dark background, fade-in)
 - [x] Audio auto-runs where the browser permits; otherwise unlocks on first tap
+- [x] Auto-advances to /video/1 when the video ends (600ms fade-to-black first)
+
+## 8. Follow-up Fix (2026-08-12) — Auto-advance on video end
+
+Per product request, the intro no longer loops: when the video finishes it
+**auto-advances to /video/1** with a light animation delay. Implementation:
+- Removed the `loop` attribute; wired `onEnded` → fade-to-black overlay
+  (`.video-hero-fade`, 600ms) → `navigate("/video/1")`.
+- The Continue pill and Back button use the same fade-out for a consistent
+  page-transition feel; a `navigatingRef` guard prevents double navigation
+  (ended + tap racing); pending timers are cleared on unmount.
+- Hero video now also sets `preload="auto"`.
+- Verified: seek-to-end triggers `.video-hero-leaving` then lands on
+  `/video/1`; full suite is now 33 assertions, all passing.
 
 ## 7. Follow-up Fixes (2026-08-12)
 

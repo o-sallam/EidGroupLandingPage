@@ -4,14 +4,19 @@ import { useI18n, getIntroVideoUrl } from "@/lib/i18n";
 import { ArrowLeft, ArrowRight, Volume2, VolumeX } from "lucide-react";
 
 // Delay before the (non-native) page-navigation affordances fade in, so the
-// opening view is pure, uncluttered full-screen video. Product can remove the
-// <button>s below entirely — the video then loops with no UI at all.
+// opening view is pure, uncluttered full-screen video.
 const UI_REVEAL_MS = 6000;
+// Light fade-to-black before auto-advancing to /video/1 once the video ends
+// (or when the user taps Continue / Back).
+const EXIT_FADE_MS = 600;
 
 /**
  * Full-viewport motion-graphics video page (replaces the old "7 videos" intro
  * card). Plays the language-appropriate track edge-to-edge with no native
  * player chrome: no controls, no scrubber, no PiP, no context menu.
+ *
+ * When the video finishes it auto-advances to /video/1 after a brief
+ * fade-to-black (the Continue pill lets the user skip ahead earlier).
  *
  * Audio: both tracks carry narration (AAC). Autoplay must start muted in every
  * browser, so we begin muted and immediately try to lift muting once frames
@@ -30,9 +35,13 @@ export function VideoHeroPage() {
   const [uiVisible, setUiVisible] = useState(false);
   const [failed, setFailed] = useState(false);
   const [muted, setMuted] = useState(true);
+  const [leaving, setLeaving] = useState(false);
   // True once the user explicitly muted via the toggle — the auto-unmute
   // gesture handler must then stay quiet until they unmute themselves.
   const userMutedRef = useRef(false);
+  // Guards against double navigation (ended + Continue tap racing).
+  const navigatingRef = useRef(false);
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const src = getIntroVideoUrl(lang);
 
   // Playback + progressive unmute. Muted autoplay is permitted in every modern
@@ -97,8 +106,24 @@ export function VideoHeroPage() {
     return () => clearTimeout(id);
   }, []);
 
-  const goNext = () => navigate({ to: "/video/$n", params: { n: "1" } });
-  const goBack = () => navigate({ to: "/" });
+  // Clear any pending exit-fade timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    };
+  }, []);
+
+  // Fade to black, then navigate — used when the video ends and by the
+  // Continue / Back buttons, so leaving feels like a page transition.
+  const leaveWithFade = (go: () => void) => {
+    if (navigatingRef.current) return;
+    navigatingRef.current = true;
+    setLeaving(true);
+    fadeTimerRef.current = setTimeout(go, EXIT_FADE_MS);
+  };
+
+  const goNext = () => leaveWithFade(() => navigate({ to: "/video/$n", params: { n: "1" } }));
+  const goBack = () => leaveWithFade(() => navigate({ to: "/" }));
 
   const toggleMute = () => {
     const v = videoRef.current;
@@ -115,7 +140,10 @@ export function VideoHeroPage() {
   const Prev = dir === "rtl" ? ArrowRight : ArrowLeft;
 
   return (
-    <div className="video-hero animate-page-entrance" dir={dir}>
+    <div
+      className={`video-hero animate-page-entrance ${leaving ? "video-hero-leaving" : ""}`}
+      dir={dir}
+    >
       <video
         key={src}
         ref={videoRef}
@@ -123,12 +151,13 @@ export function VideoHeroPage() {
         autoPlay
         muted={muted}
         playsInline
-        loop
+        preload="auto"
         disablePictureInPicture
         controlsList="nodownload noplaybackrate nofullscreen"
         onContextMenu={(e) => e.preventDefault()}
         onDragStart={(e) => e.preventDefault()}
         onError={() => setFailed(true)}
+        onEnded={goNext}
       />
 
       {/* Graceful fallback if the (large) video fails to load — keeps the page
@@ -160,6 +189,9 @@ export function VideoHeroPage() {
           <Next className="h-4 w-4" />
         </button>
       </div>
+
+      {/* Fade-to-black exit overlay — covers the video + UI on the way out */}
+      <div className="video-hero-fade" aria-hidden="true" />
     </div>
   );
 }
