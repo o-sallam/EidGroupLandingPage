@@ -12,4 +12,12 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    define: {
+      // Unique per deployment so clients wipe localStorage on every push.
+      __APP_VERSION__: JSON.stringify(
+        process.env.VERCEL_GIT_COMMIT_SHA ?? new Date().toISOString(),
+      ),
+    },
+  },
 });

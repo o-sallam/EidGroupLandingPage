@@ -392,7 +392,7 @@ html[dir="rtl"] body {
     pointer-events: none;
   }
   .video-hero::before {
-    inset-inline-start: 0;
+    left: 0;
     background: linear-gradient(
       90deg,
       rgba(200, 169, 106, 0.9) 0%,
@@ -402,7 +402,7 @@ html[dir="rtl"] body {
     );
   }
   .video-hero::after {
-    inset-inline-end: 0;
+    right: 0;
     background: linear-gradient(
       270deg,
       rgba(200, 169, 106, 0.9) 0%,
@@ -515,8 +515,8 @@ html[dir="rtl"] body {
     bottom: 0;
     height: 100%;
     width: auto !important;
-    inset-inline-start: 50%;
-    inset-inline-end: auto;
+    left: 50%;
+    right: auto;
     transform: translateX(-50%);
     object-fit: contain;
   }
