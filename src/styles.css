@@ -345,3 +345,111 @@ html[dir="rtl"] body {
 @utility animate-parallax-bg {
   animation: parallax-bg 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* ── Full-screen intro motion-graphics video (replaces the "7 videos" text) ──
+   Edge-to-edge, no letterboxing, no player frame. 100dvh keeps it flush with
+   the visible viewport under mobile browser chrome; 100vh is the fallback. */
+.video-hero {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #000;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.video-hero video {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Page-level navigation (not player chrome) — fades in after a delay */
+.video-hero-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.video-hero-ui-visible { opacity: 1; }
+
+.video-hero-back {
+  position: absolute;
+  top: max(env(safe-area-inset-top), 16px);
+  inset-inline-start: 16px;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.video-hero-back:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.video-hero-continue {
+  position: absolute;
+  bottom: max(env(safe-area-inset-bottom), 28px);
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  border: 1px solid rgba(200, 169, 106, 0.45);
+  background: rgba(11, 15, 20, 0.55);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px -10px rgba(0, 0, 0, 0.7);
+  transition: background 200ms ease, border-color 200ms ease;
+}
+.video-hero-continue:hover {
+  border-color: var(--gold);
+  background: rgba(200, 169, 106, 0.18);
+}
+
+/* Fallback shown only if the video errors out */
+.video-hero-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: radial-gradient(60% 40% at 50% 0%, rgba(200, 169, 106, 0.14), transparent 70%);
+}
+
+/* ── Off-screen full-video preloader (starts during the first-page splash) ──
+   Not display:none — that makes some engines skip loading entirely. */
+.video-preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0.01;
+  pointer-events: none;
+  z-index: -1;
+}

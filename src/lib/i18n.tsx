@@ -275,6 +275,19 @@ export const lastAvailableVideo = Math.max(
   1
 );
 
+// Full-screen intro motion-graphics video, one track per language.
+// Only ar/en have dedicated tracks — "nl" (Dutch) falls back to English.
+// RunASP origin sends no CORS headers, so these are consumed via <video>
+// elements (media elements are CORS-exempt), never via fetch().
+export const INTRO_VIDEO_URLS: Record<"ar" | "en", string> = {
+  ar: "https://egroup.runasp.net/videos/intro-ar.mp4",
+  en: "https://egroup.runasp.net/videos/intro-en.mp4",
+};
+
+export function getIntroVideoUrl(lang: Lang): string {
+  return INTRO_VIDEO_URLS[lang === "ar" ? "ar" : "en"];
+}
+
 export type QAPair = { q: string; a: string };
 export const QUESTIONS_DATA: Record<string, Record<Lang, QAPair[]>> = {
   "1": {

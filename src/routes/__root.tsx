@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "../lib/i18n";
+import { VideoPreloader } from "../components/VideoPreloader";
 
 function NotFoundComponent() {
   return (
@@ -46,7 +47,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <h1 className="font-serif text-xl text-[color:var(--foreground)]">Something went wrong</h1>
         <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">Please try again.</p>
         <button
-          onClick={() => { router.invalidate(); reset(); }}
+          onClick={() => {
+            router.invalidate();
+            reset();
+          }}
           className="mt-6 rounded-full bg-[color:var(--gold)] px-6 py-2 text-sm font-medium text-[color:var(--bg-raw)]"
         >
           Retry
@@ -63,7 +67,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#0B0F14" },
       { title: "Eid Group — Investment Data Room" },
-      { name: "description", content: "Confidential investment presentation prepared for banks, investment firms and private investors." },
+      {
+        name: "description",
+        content:
+          "Confidential investment presentation prepared for banks, investment firms and private investors.",
+      },
       { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "Eid Group — Investment Data Room" },
       { property: "og:description", content: "Confidential investment presentation." },
@@ -106,6 +114,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        {/* Starts buffering the intro video during the first page's splash and
+            keeps it warm across route changes until /intro is reached. */}
+        <VideoPreloader />
         <Outlet />
       </I18nProvider>
     </QueryClientProvider>
