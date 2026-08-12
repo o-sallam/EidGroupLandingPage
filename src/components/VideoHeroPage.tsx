@@ -34,6 +34,7 @@ export function VideoHeroPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [uiVisible, setUiVisible] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [buffering, setBuffering] = useState(false);
   const [muted, setMuted] = useState(true);
   const [leaving, setLeaving] = useState(false);
   // True once the user explicitly muted via the toggle — the auto-unmute
@@ -42,7 +43,22 @@ export function VideoHeroPage() {
   // Guards against double navigation (ended + Continue tap racing).
   const navigatingRef = useRef(false);
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Streaming recovery bookkeeping: reload the source (max RECOVERY_ATTEMPTS)
+  // when the stream stalls with no data progress for RECOVERY_MS.
+  const RECOVERY_MS = 4500;
+  const RECOVERY_ATTEMPTS = 2;
+  const stallRef = useRef<{ lastProgress: number; stalledSince: number; attempts: number }>({
+    lastProgress: 0,
+    stalledSince: 0,
+    attempts: 0,
+  });
   const src = getIntroVideoUrl(lang);
+  // WebM (AV1) is the small, primary stream; the MP4 (H.264) twin is listed
+  // second as a codec fallback for devices that can't decode AV1 (Safari etc.).
+  const streamSources = [
+    { src, type: "video/webm" },
+    { src: src.replace(/\.webm$/, ".mp4"), type: "video/mp4" },
+  ];
 
   // Playback + progressive unmute. Muted autoplay is permitted in every modern
   // browser; the explicit play() calls (plus canplay/loadeddata hooks) cover
@@ -79,6 +95,36 @@ export function VideoHeroPage() {
       v.removeEventListener("canplay", tryPlay);
       v.removeEventListener("loadeddata", onLoaded);
     };
+  }, [src]);
+
+  // Stream watchdog — recovers a stream that has gone silent. The origin
+  // (RunASP) rejects HTTP range requests, so some engines stream the whole
+  // file with a plain 200; if the connection stalls with no data progress,
+  // reload the source and resume instead of freezing on a "cut" frame.
+  useEffect(() => {
+    stallRef.current = { lastProgress: 0, stalledSince: 0, attempts: 0 };
+    const id = window.setInterval(() => {
+      const v = videoRef.current;
+      if (!v || v.ended || v.paused || v.error || v.readyState < 2) return;
+      const now = Date.now();
+      const t = v.currentTime;
+      const progressed = t > stallRef.current.lastProgress;
+      if (progressed) {
+        stallRef.current.lastProgress = t;
+        stallRef.current.stalledSince = 0;
+        return;
+      }
+      if (!stallRef.current.stalledSince) stallRef.current.stalledSince = now;
+      if (now - stallRef.current.stalledSince > RECOVERY_MS) {
+        if (stallRef.current.attempts >= RECOVERY_ATTEMPTS) return;
+        stallRef.current.attempts += 1;
+        stallRef.current.stalledSince = 0;
+        setBuffering(true);
+        v.load();
+        v.play().catch(() => {});
+      }
+    }, 1500);
+    return () => window.clearInterval(id);
   }, [src]);
 
   // First user gesture anywhere on the page lifts muting (all browsers allow
@@ -147,7 +193,6 @@ export function VideoHeroPage() {
       <video
         key={src}
         ref={videoRef}
-        src={src}
         autoPlay
         muted={muted}
         playsInline
@@ -156,9 +201,29 @@ export function VideoHeroPage() {
         controlsList="nodownload noplaybackrate nofullscreen"
         onContextMenu={(e) => e.preventDefault()}
         onDragStart={(e) => e.preventDefault()}
+        onWaiting={() => setBuffering(true)}
+        onStalled={() => setBuffering(true)}
+        onPlaying={() => setBuffering(false)}
+        onCanPlay={() => setBuffering(false)}
+        onCanPlayThrough={() => setBuffering(false)}
         onError={() => setFailed(true)}
         onEnded={goNext}
-      />
+      >
+        {/* Primary stream is the small WebM (AV1); MP4 (H.264) twin acts as a
+            codec fallback for engines that can't decode AV1. */}
+        {streamSources.map((s) => (
+          <source key={s.src} src={s.src} type={s.type} />
+        ))}
+      </video>
+
+      {/* Buffering indicator — shown while the stream is fetching, so a slow
+          network never looks like a frozen/cut video. */}
+      {buffering && !failed && (
+        <div className="video-hero-buffering" aria-hidden="true">
+          <span className="video-hero-buffering-spinner" />
+          <span className="video-hero-buffering-text">Loading…</span>
+        </div>
+      )}
 
       {/* Graceful fallback if the (large) video fails to load — keeps the page
           navigable instead of showing a dead black screen. */}
