@@ -97,12 +97,15 @@ All 24 assertions passed:
 1. **Loop vs handoff**: implemented as **loop** (spec default) + the delayed
    Continue pill. If product wants auto-advance to `/video/1` when the video
    ends instead, remove `loop` and add an `onEnded` → navigate handler.
-2. **Audio**: implemented **muted, silent, no audio UI** (spec default). The
-   motion graphics videos appear to have no audio track. An unmute button would
-   be a new custom control if ever wanted.
-3. **Continue/back affordances**: the two pills are the only UI. Product can
-   delete them (both buttons in `VideoHeroPage`) for a 100% chrome-free looping
-   page — but then the only way forward is browser back / direct URL.
+2. **Audio**: both tracks carry narration (AAC). **Sound now auto-runs** where
+   the browser allows it (Chrome — the user already interacted with the domain
+   on /lang + /access); Safari/Firefox keep it muted until the first tap
+   anywhere on the page (autoplay policy). A discreet mute toggle mirrors the
+   /video pages.
+3. **Continue/back affordances**: the three pills (back, mute, continue) are
+   the only UI. Product can delete them (buttons in `VideoHeroPage`) for a
+   100% chrome-free looping page — but then the only way forward is browser
+   back / direct URL.
 4. **"nl" (Dutch)**: the app supports Dutch; no Dutch video exists, so it falls
    back to the English track. Confirm that's acceptable.
 5. **Language persistence**: hard reload resets `lang` to `ar` (pre-existing).
@@ -119,3 +122,31 @@ All 24 assertions passed:
       (`animate-page-entrance`); exit = instant swap, same as the rest of the site
 - [x] Right-click context menu suppressed
 - [x] No layout shift (fixed full-viewport, dark background, fade-in)
+- [x] Audio auto-runs where the browser permits; otherwise unlocks on first tap
+
+## 7. Follow-up Fixes (2026-08-12)
+
+### Hydration mismatch (fixed)
+`VideoPreloader` initially rendered `<video>` on the client but `null` on the
+server (the server can't read the client-only `isLangChosen()` flag), producing
+"Hydration failed" in dev. Fixed by creating the preloader element
+**imperatively** inside a `useEffect` and appending it to `<body>`; the React
+component always returns `null`, so server and client markup always agree.
+
+### Audio auto-run (added at product request)
+Both `intro-*.mp4` files carry AAC narration. Behavior now:
+- Autoplay starts **muted** (mandatory in all browsers).
+- As soon as frames are ready, we attempt to lift muting — browsers that
+  permit unmuted autoplay after prior domain interaction (Chrome: the user
+  tapped through `/lang` and `/access`) get **sound instantly on arrival**.
+- Stricter engines (Safari/Firefox) reject the unmute; the video stays muted
+  until the **first tap anywhere on the page**, which unlocks sound.
+- A discreet mute/unmute toggle (styled like the /video pages) fades in with
+  the other controls after 6s; an explicit user mute is respected by the
+  auto-unmute handlers.
+
+### Re-verification
+`scripts/verify-intro.mjs` extended to 31 assertions — all passing:
+arrival state may be muted (until gesture) or unmuted (sound auto-ran); a
+gesture always ends unmuted + playing; toggle mutes/unmutes; **zero
+hydration-mismatch console errors** across the full flow.

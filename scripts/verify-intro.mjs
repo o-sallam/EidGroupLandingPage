@@ -28,11 +28,21 @@ function assert(cond, msg) {
   console.log(`  ✓ ${msg}`);
 }
 
+function captureConsoleErrors(page) {
+  const errors = [];
+  page.on("console", (msg) => {
+    if (msg.type() === "error") errors.push(msg.text());
+  });
+  page.on("pageerror", (err) => errors.push(String(err)));
+  return errors;
+}
+
 let browser;
 try {
   await waitForServer();
   browser = await chromium.launch({ channel: "chrome", headless: true });
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } }); // iPhone-ish
+  const consoleErrors = captureConsoleErrors(page);
 
   // 1. First visit → /lang
   console.log("\n[1] Language selection page");
@@ -149,6 +159,34 @@ try {
   await sleep(300);
   assert(menuOpened === false, "right-click context menu suppressed");
 
+  // Sound: either browsers let sound auto-run on arrival (Chrome — the user
+  // already interacted with the domain on /lang + /access) or they keep it
+  // muted until the first gesture (Safari/Firefox). Both are legal; the
+  // invariants are: a gesture always ends unmuted+playing, and the toggle
+  // re-mutes / re-unmutes.
+  console.log("\n[6b] Sound auto-run behavior");
+  const arrival = await video.evaluate((v) => ({ muted: v.muted, paused: v.paused }));
+  console.log(`  ℹ arrival: muted=${arrival.muted} paused=${arrival.paused} (${arrival.muted ? "muted until gesture" : "sound auto-ran"})`);
+  if (arrival.muted) {
+    // …first user gesture lifts muting (autoplay policy allows
+    // play-with-sound inside a trusted gesture)…
+    await page.mouse.click(195, 200);
+    await sleep(400);
+  }
+  const afterGesture = await video.evaluate((v) => ({ muted: v.muted, paused: v.paused }));
+  assert(afterGesture.muted === false, "sound is on after first interaction");
+  assert(afterGesture.paused === false, "still playing with sound on");
+
+  // …and the toggle re-mutes, then re-unmutes.
+  await page.locator(".video-hero-mute").click();
+  await sleep(200);
+  const remuted = await video.evaluate((v) => v.muted);
+  assert(remuted === true, "mute toggle mutes again");
+  await page.locator(".video-hero-mute").click();
+  await sleep(200);
+  const reUnmuted = await video.evaluate((v) => v.muted);
+  assert(reUnmuted === false, "mute toggle unmutes again");
+
   // Arabic check — fresh context with the lang flag preset (provider defaults
   // to "ar"), verify the preloader + hero both pick intro-ar.mp4.
   console.log("\n[7] Arabic → intro-ar.mp4");
@@ -164,6 +202,14 @@ try {
   const arPreSrc = await arPage.locator(".video-preloader").getAttribute("src").catch(() => null);
   assert(arPreSrc?.includes("intro-ar.mp4"), `preloader warms ar video (src=${arPreSrc})`);
   await arCtx.close();
+
+  // 8. No hydration mismatch anywhere in the flow
+  console.log("\n[8] Hydration integrity");
+  await page.goto(BASE + "/intro", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".video-hero video", { timeout: 15000 });
+  await sleep(800);
+  const hydErrors = consoleErrors.filter((e) => /hydrat/i.test(e));
+  assert(hydErrors.length === 0, "no hydration mismatch errors");
 
   console.log("\nALL CHECKS PASSED ✅");
 } catch (err) {

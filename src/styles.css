@@ -381,10 +381,10 @@ html[dir="rtl"] body {
 }
 .video-hero-ui-visible { opacity: 1; }
 
-.video-hero-back {
+.video-hero-back,
+.video-hero-mute {
   position: absolute;
   top: max(env(safe-area-inset-top), 16px);
-  inset-inline-start: 16px;
   pointer-events: auto;
   display: grid;
   place-items: center;
@@ -397,7 +397,10 @@ html[dir="rtl"] body {
   backdrop-filter: blur(12px);
   transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
 }
-.video-hero-back:hover {
+.video-hero-back { inset-inline-start: 16px; }
+.video-hero-mute { inset-inline-end: 16px; }
+.video-hero-back:hover,
+.video-hero-mute:hover {
   border-color: rgba(255, 255, 255, 0.35);
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
