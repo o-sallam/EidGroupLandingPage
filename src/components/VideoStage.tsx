@@ -123,7 +123,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
           <img
             src={displayUrl}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            className="video-stage-immersive absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -150,7 +150,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
         key={lockedUrlRef.current}
         className={
           immersive
-            ? "absolute inset-0 h-full w-full object-cover"
+            ? "video-stage-immersive absolute inset-0 h-full w-full object-cover"
             : "aspect-[9/16] w-full object-cover"
         }
         controls={false}
@@ -182,7 +182,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
         <img
           src={displayUrl}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          className="video-stage-immersive absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex items-center justify-center">

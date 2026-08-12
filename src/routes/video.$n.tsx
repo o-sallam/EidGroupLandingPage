@@ -322,6 +322,22 @@ function VideoPage() {
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-black/55 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-56 bg-gradient-to-t from-black/75 to-transparent" />
 
+      {/* PC-only smooth gold edge gradients (mirrors the /intro hero) */}
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-[32vw] max-w-[420px] lg:block"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(200,169,106,0.9) 0%, rgba(200,169,106,0.45) 32%, rgba(200,169,106,0.14) 62%, transparent 100%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[32vw] max-w-[420px] lg:block"
+        style={{
+          background:
+            "linear-gradient(270deg, rgba(200,169,106,0.9) 0%, rgba(200,169,106,0.45) 32%, rgba(200,169,106,0.14) 62%, transparent 100%)",
+        }}
+      />
+
       {/* Instagram Stories progress bar — overall sequence progress across all videos */}
       <div className="absolute top-2 left-2 right-2 z-40 flex gap-1">
         {Array.from({ length: TOTAL_VIDEOS }).map((_, i) => {

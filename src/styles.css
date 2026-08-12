@@ -366,9 +366,55 @@ html[dir="rtl"] body {
   display: block;
   position: absolute;
   inset: 0;
+  margin: auto;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* On wide (desktop) screens: fill the full height with the video centered
+   (no edge-to-edge stretch), and paint smooth, gradually-fading gold "color
+   edges" down the left and right — the brand color melts gently into the
+   video instead of a hard cutoff. Mobile keeps the full-bleed cover. */
+@media (min-width: 1024px) {
+  .video-hero video {
+    width: auto;
+    height: 100%;
+  }
+
+  .video-hero::before,
+  .video-hero::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: min(32vw, 420px);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .video-hero::before {
+    inset-inline-start: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(200, 169, 106, 0.9) 0%,
+      rgba(200, 169, 106, 0.45) 32%,
+      rgba(200, 169, 106, 0.14) 62%,
+      transparent 100%
+    );
+  }
+  .video-hero::after {
+    inset-inline-end: 0;
+    background: linear-gradient(
+      270deg,
+      rgba(200, 169, 106, 0.9) 0%,
+      rgba(200, 169, 106, 0.45) 32%,
+      rgba(200, 169, 106, 0.14) 62%,
+      transparent 100%
+    );
+  }
+  .video-hero-ui,
+  .video-hero-fallback {
+    z-index: 2;
+  }
 }
 
 /* Page-level navigation (not player chrome) — fades in after a delay */
@@ -457,6 +503,23 @@ html[dir="rtl"] body {
 .video-hero-leaving .video-hero-fade {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* ── /video/* story player on PC ──
+   Don't stretch the story clip to fill the whole wide screen — keep it
+   full-height and centered (portrait clips show in full), while the gold edge
+   gradients added in the route smoothly fill the leftover left/right space. */
+@media (min-width: 1024px) {
+  .video-stage-immersive {
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: auto !important;
+    inset-inline-start: 50%;
+    inset-inline-end: auto;
+    transform: translateX(-50%);
+    object-fit: contain;
+  }
 }
 
 /* ── Off-screen full-video preloader (starts during the first-page splash) ──

@@ -280,8 +280,8 @@ export const lastAvailableVideo = Math.max(
 // RunASP origin sends no CORS headers, so these are consumed via <video>
 // elements (media elements are CORS-exempt), never via fetch().
 export const INTRO_VIDEO_URLS: Record<"ar" | "en", string> = {
-  ar: "https://egroup.runasp.net/videos/intro-ar.mp4",
-  en: "https://egroup.runasp.net/videos/intro-en.mp4",
+  ar: "https://egroup.runasp.net/videos/intro-ar.webm",
+  en: "https://egroup.runasp.net/videos/intro-en.webm",
 };
 
 export function getIntroVideoUrl(lang: Lang): string {
