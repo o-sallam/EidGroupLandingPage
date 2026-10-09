@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { PortalShell } from "@/components/PortalShell";
 import { usePageContent } from "@/hooks/usePageContent";
@@ -6,7 +6,6 @@ import { FileText, ArrowRight, ArrowLeft, Mail, FileDown } from "lucide-react";
 
 export function DocumentsPage() {
   const { t, dir } = useI18n();
-  const navigate = useNavigate();
   const Arrow = dir === "rtl" ? ArrowLeft : ArrowRight;
   const Prev = dir === "rtl" ? ArrowRight : ArrowLeft;
   const { row } = usePageContent("documents");
@@ -20,9 +19,7 @@ export function DocumentsPage() {
             {t("brand.tag")}
           </p>
           <h1 className="font-serif text-3xl text-[color:var(--foreground)]">{t("docs.title")}</h1>
-          <p className="max-w-xl text-sm text-[color:var(--muted-foreground)]">
-            {t("docs.subtitle")}
-          </p>
+          <p className="max-w-xl text-sm text-[color:var(--muted-foreground)]">{t("docs.subtitle")}</p>
         </div>
 
         {pdfs.length > 0 ? (
@@ -37,9 +34,7 @@ export function DocumentsPage() {
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <FileText className="h-5 w-5 shrink-0 text-[color:var(--gold)]" />
-                  <span className="truncate text-sm text-[color:var(--foreground)]">
-                    {p.name || "PDF"}
-                  </span>
+                  <span className="truncate text-sm text-[color:var(--foreground)]">{p.name || "PDF"}</span>
                 </div>
                 <FileDown className="h-4 w-4 text-[color:var(--muted-foreground)]" />
               </a>

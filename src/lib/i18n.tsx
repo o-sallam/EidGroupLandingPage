@@ -14,9 +14,8 @@ const dicts: Record<Lang, Dict> = {
     "welcome.cta": "ابدأ العرض",
     "welcome.confidential": "سرّي — للاطلاع فقط",
     "introPage.title": "مرحبًا بكم",
-    "introPage.line1": "أمامكم 5 فيديوهات قصيرة توضح مشروعنا الاستثماري من البداية حتى النهاية.",
-    "introPage.line2":
-      "ولأن بعض التفاصيل يصعب شرحها داخل الفيديو، أضفنا في كل صفحة وثائق وصورًا وإجابات عن أبرز الأسئلة المتوقعة.",
+    "introPage.line1": "أمامكم 7 فيديوهات قصيرة توضح مشروعنا الاستثماري من البداية حتى النهاية.",
+    "introPage.line2": "ولأن بعض التفاصيل يصعب شرحها داخل الفيديو، أضفنا في كل صفحة وثائق وصورًا وإجابات عن أبرز الأسئلة المتوقعة.",
     "introPage.line3": "نتمنى أن يمنحكم هذا العرض صورة واضحة وشاملة عن المشروع.",
     "introPage.continue": "متابعة",
     "access.title": "رمز الدخول",
@@ -66,17 +65,13 @@ const dicts: Record<Lang, Dict> = {
     "brand.tag": "Investment Data Room",
     "splash.loading": "Preparing your session…",
     "welcome.title": "Private Investment Presentation",
-    "welcome.subtitle":
-      "A confidential dossier prepared exclusively for banks, investment firms and private investors.",
+    "welcome.subtitle": "A confidential dossier prepared exclusively for banks, investment firms and private investors.",
     "welcome.cta": "Enter Presentation",
     "welcome.confidential": "Confidential — Authorized Access Only",
     "introPage.title": "Welcome",
-    "introPage.line1":
-      "Ahead of you are 5 short videos that walk you through our investment project from start to finish.",
-    "introPage.line2":
-      "Since some details are difficult to explain within the videos alone, we've included documents, images, and answers to the most anticipated questions on every page.",
-    "introPage.line3":
-      "We hope this presentation gives you a clear and comprehensive picture of the project.",
+    "introPage.line1": "Ahead of you are 7 short videos that walk you through our investment project from start to finish.",
+    "introPage.line2": "Since some details are difficult to explain within the videos alone, we've included documents, images, and answers to the most anticipated questions on every page.",
+    "introPage.line3": "We hope this presentation gives you a clear and comprehensive picture of the project.",
     "introPage.continue": "Continue",
     "access.title": "Access Code",
     "access.subtitle": "Enter the access code provided to you to continue.",
@@ -125,17 +120,13 @@ const dicts: Record<Lang, Dict> = {
     "brand.tag": "Investerings-datakamer",
     "splash.loading": "Sessie voorbereiden…",
     "welcome.title": "Vertrouwelijke investeringspresentatie",
-    "welcome.subtitle":
-      "Een vertrouwelijk dossier, exclusief samengesteld voor banken, investeringsmaatschappijen en particuliere investeerders.",
+    "welcome.subtitle": "Een vertrouwelijk dossier, exclusief samengesteld voor banken, investeringsmaatschappijen en particuliere investeerders.",
     "welcome.cta": "Presentatie openen",
     "welcome.confidential": "Vertrouwelijk — Alleen toegestane toegang",
     "introPage.title": "Welkom",
-    "introPage.line1":
-      "Voor u liggen 5 korte video's die ons investeringsproject van begin tot eind toelichten.",
-    "introPage.line2":
-      "Omdat sommige details moeilijk uit te leggen zijn in de video's alleen, hebben we op elke pagina documenten, afbeeldingen en antwoorden op de meest verwachte vragen toegevoegd.",
-    "introPage.line3":
-      "We hopen dat deze presentatie u een duidelijk en volledig beeld van het project geeft.",
+    "introPage.line1": "Voor u liggen 7 korte video's die ons investeringsproject van begin tot eind toelichten.",
+    "introPage.line2": "Omdat sommige details moeilijk uit te leggen zijn in de video's alleen, hebben we op elke pagina documenten, afbeeldingen en antwoorden op de meest verwachte vragen toegevoegd.",
+    "introPage.line3": "We hopen dat deze presentatie u een duidelijk en volledig beeld van het project geeft.",
     "introPage.continue": "Doorgaan",
     "access.title": "Toegangscode",
     "access.subtitle": "Voer de aan u verstrekte toegangscode in om verder te gaan.",
@@ -184,67 +175,25 @@ const dicts: Record<Lang, Dict> = {
 // Video-specific content per language
 export const videoContent: Record<Lang, Array<{ title: string; description: string }>> = {
   ar: [
-    {
-      title: "من هم عيد جروب؟",
-      description: "تعريف بالمجموعة، رسالتها، ورؤيتها الاستثمارية على المدى البعيد.",
-    },
-    {
-      title: "لماذا نرى فرصة في سوريا؟",
-      description: "المؤسسون، فريق الإدارة، والإنجازات التي شكّلت المجموعة.",
-    },
-    {
-      title: "كيف نحدد الفرص الاستثمارية؟",
-      description: "استعراض لأبرز القطاعات التي تعمل فيها المجموعة ومحرّكات النمو.",
-    },
-    {
-      title: "الخبرة التي ستحوّل الفكرة إلى مشروع ناجح",
-      description: "ملخّص للأداء المالي التاريخي والمؤشرات التشغيلية الأساسية.",
-    },
-    { title: "المشاريع الحالية", description: "مراجعة للمشاريع النشطة الحالية ومراحل تنفيذها." },
+    { title: "من هم عيد جروب؟", description: "تعريف بالمجموعة، رسالتها، ورؤيتها الاستثمارية على المدى البعيد." },
+    { title: "لماذا نرى فرصة في سوريا؟", description: "المؤسسون، فريق الإدارة، والإنجازات التي شكّلت المجموعة." },
+    { title: "كيف نحدد الفرص الاستثمارية؟", description: "استعراض لأبرز القطاعات التي تعمل فيها المجموعة ومحرّكات النمو." },
+    { title: "الخبرة التي ستحوّل الفكرة إلى مشروع ناجح", description: "ملخّص للأداء المالي التاريخي والمؤشرات التشغيلية الأساسية." },
+    { title: "فرصة الاستثمار", description: "هيكل الفرصة، الشروط الأولية، والعائد المتوقّع للمستثمرين." },
   ],
   en: [
-    {
-      title: "Welcome to Eid Group",
-      description: "Introduction to the group, its mission, and long-term investment vision.",
-    },
-    {
-      title: "Why Do We See an Opportunity in Syria?",
-      description: "Founders, executive team, and the milestones that shaped the group.",
-    },
-    {
-      title: "How Do We Identify Investment Opportunities?",
-      description: "An overview of the key sectors the group operates in and its growth drivers.",
-    },
-    {
-      title: "The Expertise That Will Turn an Idea Into a Successful Venture",
-      description: "Summary of historical financial performance and core operating metrics.",
-    },
-    {
-      title: "Current Projects",
-      description: "Review of active projects and their stages of execution.",
-    },
+    { title: "Welcome to Eid Group", description: "Introduction to the group, its mission, and long-term investment vision." },
+    { title: "Why Do We See an Opportunity in Syria?", description: "Founders, executive team, and the milestones that shaped the group." },
+    { title: "How Do We Identify Investment Opportunities?", description: "An overview of the key sectors the group operates in and its growth drivers." },
+    { title: "The Expertise That Will Turn an Idea Into a Successful Venture", description: "Summary of historical financial performance and core operating metrics." },
+    { title: "The Investment Opportunity", description: "Deal structure, indicative terms, and expected returns for investors." },
   ],
   nl: [
-    {
-      title: "Welkom bij Eid Group",
-      description: "Introductie van de groep, haar missie en investeringsvisie op lange termijn.",
-    },
-    {
-      title: "Waarom zien wij een kans in Syrië?",
-      description: "Oprichters, directie en de mijlpalen die de groep hebben gevormd.",
-    },
-    {
-      title: "Hoe bepalen wij investeringskansen?",
-      description: "Overzicht van de belangrijkste sectoren en groeidrijvers van de groep.",
-    },
-    {
-      title: "De expertise die een idee verandert in een succesvol bedrijf",
-      description: "Samenvatting van historische prestaties en kern-KPI's.",
-    },
-    {
-      title: "Huidige projecten",
-      description: "Overzicht van lopende projecten en hun uitvoeringsfase.",
-    },
+    { title: "Welkom bij Eid Group", description: "Introductie van de groep, haar missie en investeringsvisie op lange termijn." },
+    { title: "Waarom zien wij een kans in Syrië?", description: "Oprichters, directie en de mijlpalen die de groep hebben gevormd." },
+    { title: "Hoe bepalen wij investeringskansen?", description: "Overzicht van de belangrijkste sectoren en groeidrijvers van de groep." },
+    { title: "De expertise die een idee verandert in een succesvol bedrijf", description: "Samenvatting van historische prestaties en kern-KPI's." },
+    { title: "De investeringskans", description: "Dealstructuur, indicatieve voorwaarden en verwacht rendement." },
   ],
 };
 
@@ -295,16 +244,10 @@ export const TOTAL_VIDEOS = 5;
 const LANG_CHOSEN_KEY = "eid_lang_chosen";
 export function isLangChosen(): boolean {
   if (typeof window === "undefined") return false;
-  try {
-    return localStorage.getItem(LANG_CHOSEN_KEY) === "1";
-  } catch {
-    return false;
-  }
+  try { return localStorage.getItem(LANG_CHOSEN_KEY) === "1"; } catch { return false; }
 }
 export function markLangChosen() {
-  try {
-    localStorage.setItem(LANG_CHOSEN_KEY, "1");
-  } catch {}
+  try { localStorage.setItem(LANG_CHOSEN_KEY, "1"); } catch {}
 }
 
 // Hardcoded fallback video URLs (RunASP-hosted)
@@ -321,7 +264,7 @@ export const lastAvailableVideo = Math.max(
   ...Object.entries(VIDEO_URLS)
     .filter(([, url]) => url !== null)
     .map(([key]) => Number(key)),
-  1,
+  1
 );
 
 // Full-screen intro motion-graphics video, one track per language.
@@ -341,222 +284,87 @@ export type QAPair = { q: string; a: string };
 export const QUESTIONS_DATA: Record<string, Record<Lang, QAPair[]>> = {
   "1": {
     ar: [
-      {
-        q: "ما هو رأس المال المطلوب؟",
-        a: "نبحث عن شريك يساهم برأس مال قدره 150,000 دولار للمشروع، بالإضافة إلى 10,000 دولار لتأسيس وإدارة مرحلة إطلاق المشروع.",
-      },
-      {
-        q: "لماذا أستثمر مع عيد جروب؟",
-        a: "لأننا نجمع بين الخبرة في التسويق العقاري، وشبكة العلاقات، والشركاء التنفيذيين، مع خطة واضحة لإدارة المشروع.",
-      },
-      {
-        q: "ماذا سأتعرف عليه في الفيديوهات القادمة؟",
-        a: "ستتعرف على السوق، والفريق، وخطة الاستثمار، وآلية العمل، والضمانات، وكيفية تحقيق العائد المتوقع.",
-      },
+      { q: "ما هو رأس المال المطلوب؟", a: "نبحث عن شريك يساهم برأس مال قدره 150,000 دولار للمشروع، بالإضافة إلى 10,000 دولار لتأسيس وإدارة مرحلة إطلاق المشروع." },
+      { q: "لماذا أستثمر مع عيد جروب؟", a: "لأننا نجمع بين الخبرة في التسويق العقاري، وشبكة العلاقات، والشركاء التنفيذيين، مع خطة واضحة لإدارة المشروع." },
+      { q: "ماذا سأتعرف عليه في الفيديوهات القادمة؟", a: "ستتعرف على السوق، والفريق، وخطة الاستثمار، وآلية العمل، والضمانات، وكيفية تحقيق العائد المتوقع." },
     ],
     en: [
-      {
-        q: "What is the required capital?",
-        a: "We are looking for a partner to contribute $150,000 in capital for the project, plus $10,000 for establishing and managing the project launch phase.",
-      },
-      {
-        q: "Why invest with Eid Group?",
-        a: "Because we combine expertise in real estate marketing, a network of relationships, and execution partners, with a clear project management plan.",
-      },
-      {
-        q: "What will I learn in the upcoming videos?",
-        a: "You will learn about the market, the team, the investment plan, the working mechanism, the guarantees, and how to achieve the expected return.",
-      },
+      { q: "What is the required capital?", a: "We are looking for a partner to contribute $150,000 in capital for the project, plus $10,000 for establishing and managing the project launch phase." },
+      { q: "Why invest with Eid Group?", a: "Because we combine expertise in real estate marketing, a network of relationships, and execution partners, with a clear project management plan." },
+      { q: "What will I learn in the upcoming videos?", a: "You will learn about the market, the team, the investment plan, the working mechanism, the guarantees, and how to achieve the expected return." },
     ],
     nl: [
-      {
-        q: "Wat is het benodigde kapitaal?",
-        a: "We zoeken een partner die $150.000 aan kapitaal bijdraagt voor het project, plus $10.000 voor de oprichting en het beheer van de startfase van het project.",
-      },
-      {
-        q: "Waarom investeren in Eid Group?",
-        a: "Omdat we expertise in vastgoedmarketing, een netwerk van relaties en uitvoeringspartners combineren met een duidelijk projectmanagementplan.",
-      },
-      {
-        q: "Wat zal ik leren in de komende video's?",
-        a: "U leert over de markt, het team, het investeringsplan, de werkwijze, de garanties en hoe u het verwachte rendement kunt behalen.",
-      },
+      { q: "Wat is het benodigde kapitaal?", a: "We zoeken een partner die $150.000 aan kapitaal bijdraagt voor het project, plus $10.000 voor de oprichting en het beheer van de startfase van het project." },
+      { q: "Waarom investeren in Eid Group?", a: "Omdat we expertise in vastgoedmarketing, een netwerk van relaties en uitvoeringspartners combineren met een duidelijk projectmanagementplan." },
+      { q: "Wat zal ik leren in de komende video's?", a: "U leert over de markt, het team, het investeringsplan, de werkwijze, de garanties en hoe u het verwachte rendement kunt behalen." },
     ],
   },
   "2": {
     ar: [
-      {
-        q: "لماذا تعتبرون أن الوقت الحالي مناسب للاستثمار؟",
-        a: "لأن السوق يشهد تغيرات وفرصًا جديدة، مع زيادة اهتمام المستثمرين والسوريين المقيمين في الخارج.",
-      },
-      {
-        q: "لماذا اخترتم القطاع العقاري؟",
-        a: "لأنه من أكثر القطاعات التي يمكن فيها إضافة قيمة حقيقية للعقار وتحقيق عائد من خلال التطوير وليس فقط انتظار ارتفاع الأسعار.",
-      },
-      {
-        q: "هل تعتمد الخطة على توقعات فقط؟",
-        a: "لا، بل على متابعة يومية للسوق، وتحليل الفرص، وشبكة علاقات ميدانية.",
-      },
+      { q: "لماذا تعتبرون أن الوقت الحالي مناسب للاستثمار؟", a: "لأن السوق يشهد تغيرات وفرصًا جديدة، مع زيادة اهتمام المستثمرين والسوريين المقيمين في الخارج." },
+      { q: "لماذا اخترتم القطاع العقاري؟", a: "لأنه من أكثر القطاعات التي يمكن فيها إضافة قيمة حقيقية للعقار وتحقيق عائد من خلال التطوير وليس فقط انتظار ارتفاع الأسعار." },
+      { q: "هل تعتمد الخطة على توقعات فقط؟", a: "لا، بل على متابعة يومية للسوق، وتحليل الفرص، وشبكة علاقات ميدانية." },
     ],
     en: [
-      {
-        q: "Why do you believe now is the right time to invest?",
-        a: "Because the market is experiencing changes and new opportunities, with increasing interest from investors and Syrians residing abroad.",
-      },
-      {
-        q: "Why did you choose the real estate sector?",
-        a: "Because it is one of the sectors where real value can be added to a property and returns achieved through development, not just waiting for price increases.",
-      },
-      {
-        q: "Does the plan rely solely on predictions?",
-        a: "No, it is based on daily market monitoring, opportunity analysis, and a field relationship network.",
-      },
+      { q: "Why do you believe now is the right time to invest?", a: "Because the market is experiencing changes and new opportunities, with increasing interest from investors and Syrians residing abroad." },
+      { q: "Why did you choose the real estate sector?", a: "Because it is one of the sectors where real value can be added to a property and returns achieved through development, not just waiting for price increases." },
+      { q: "Does the plan rely solely on predictions?", a: "No, it is based on daily market monitoring, opportunity analysis, and a field relationship network." },
     ],
     nl: [
-      {
-        q: "Waarom denkt u dat dit het juiste moment is om te investeren?",
-        a: "Omdat de markt veranderingen en nieuwe kansen doormaakt, met toenemende interesse van investeerders en Syriërs in het buitenland.",
-      },
-      {
-        q: "Waarom heeft u voor de vastgoedsector gekozen?",
-        a: "Omdat het een van de sectoren is waar echte waarde aan een pand kan worden toegevoegd en rendement kan worden behaald via ontwikkeling, niet alleen door te wachten op prijsstijgingen.",
-      },
-      {
-        q: "Is het plan alleen gebaseerd op voorspellingen?",
-        a: "Nee, het is gebaseerd op dagelijkse marktmonitoring, kansanalyse en een netwerk van veldrelaties.",
-      },
+      { q: "Waarom denkt u dat dit het juiste moment is om te investeren?", a: "Omdat de markt veranderingen en nieuwe kansen doormaakt, met toenemende interesse van investeerders en Syriërs in het buitenland." },
+      { q: "Waarom heeft u voor de vastgoedsector gekozen?", a: "Omdat het een van de sectoren is waar echte waarde aan een pand kan worden toegevoegd en rendement kan worden behaald via ontwikkeling, niet alleen door te wachten op prijsstijgingen." },
+      { q: "Is het plan alleen gebaseerd op voorspellingen?", a: "Nee, het is gebaseerd op dagelijkse marktmonitoring, kansanalyse en een netwerk van veldrelaties." },
     ],
   },
   "3": {
     ar: [
-      {
-        q: "من أين تحصلون على الفرص العقارية؟",
-        a: "من خلال شبكة المكاتب العقارية، وعلاقاتنا المباشرة، والعملاء، والعقارات التي لا تُعرض في السوق بشكل علني.",
-      },
-      {
-        q: "لماذا تعتقدون أنكم تصلون إلى فرص أفضل؟",
-        a: "لأننا موجودون في السوق بشكل يومي، ولدينا شبكة واسعة من العلاقات والخبرة في تقييم الفرص.",
-      },
-      {
-        q: "هل ستختارون أي أرض؟",
-        a: "لا، نختار فقط الفرص التي تحقق معاييرنا من حيث السعر، والموقع، وإمكانية التطوير وسهولة إعادة البيع.",
-      },
+      { q: "من أين تحصلون على الفرص العقارية؟", a: "من خلال شبكة المكاتب العقارية، وعلاقاتنا المباشرة، والعملاء، والعقارات التي لا تُعرض في السوق بشكل علني." },
+      { q: "لماذا تعتقدون أنكم تصلون إلى فرص أفضل؟", a: "لأننا موجودون في السوق بشكل يومي، ولدينا شبكة واسعة من العلاقات والخبرة في تقييم الفرص." },
+      { q: "هل ستختارون أي أرض؟", a: "لا، نختار فقط الفرص التي تحقق معاييرنا من حيث السعر، والموقع، وإمكانية التطوير وسهولة إعادة البيع." },
     ],
     en: [
-      {
-        q: "Where do you source real estate opportunities?",
-        a: "Through our network of real estate offices, direct relationships, clients, and properties not publicly listed on the market.",
-      },
-      {
-        q: "Why do you believe you have access to better opportunities?",
-        a: "Because we are active in the market daily, with a broad network of relationships and experience in evaluating opportunities.",
-      },
-      {
-        q: "Will you choose any piece of land?",
-        a: "No, we select only opportunities that meet our criteria in terms of price, location, development potential, and ease of resale.",
-      },
+      { q: "Where do you source real estate opportunities?", a: "Through our network of real estate offices, direct relationships, clients, and properties not publicly listed on the market." },
+      { q: "Why do you believe you have access to better opportunities?", a: "Because we are active in the market daily, with a broad network of relationships and experience in evaluating opportunities." },
+      { q: "Will you choose any piece of land?", a: "No, we select only opportunities that meet our criteria in terms of price, location, development potential, and ease of resale." },
     ],
     nl: [
-      {
-        q: "Waar haalt u de vastgoedkansen vandaan?",
-        a: "Via ons netwerk van vastgoedkantoren, directe relaties, klanten en panden die niet openlijk op de markt worden aangeboden.",
-      },
-      {
-        q: "Waarom denkt u dat u toegang heeft tot betere kansen?",
-        a: "Omdat we dagelijks actief zijn op de markt, met een breed netwerk van relaties en ervaring in het beoordelen van kansen.",
-      },
-      {
-        q: "Kiest u elk willekeurig stuk grond?",
-        a: "Nee, we selecteren alleen kansen die voldoen aan onze criteria op het gebied van prijs, locatie, ontwikkelingspotentieel en gemak van doorverkoop.",
-      },
+      { q: "Waar haalt u de vastgoedkansen vandaan?", a: "Via ons netwerk van vastgoedkantoren, directe relaties, klanten en panden die niet openlijk op de markt worden aangeboden." },
+      { q: "Waarom denkt u dat u toegang heeft tot betere kansen?", a: "Omdat we dagelijks actief zijn op de markt, met een breed netwerk van relaties en ervaring in het beoordelen van kansen." },
+      { q: "Kiest u elk willekeurig stuk grond?", a: "Nee, we selecteren alleen kansen die voldoen aan onze criteria op het gebied van prijs, locatie, ontwikkelingspotentieel en gemak van doorverkoop." },
     ],
   },
   "4": {
     ar: [
-      {
-        q: "من سيشرف على تنفيذ المشروع؟",
-        a: "سيتم التنفيذ بالتعاون بين عيد جروب، وعبد المجيد عيد، والمهندس حسان تكريتي، وشركة إعماركم.",
-      },
-      {
-        q: "ما دور شركة إعماركم؟",
-        a: "تنفيذ أعمال التطوير الميدانية، والاستفادة من خبرتها ووجودها في المنطقة المستهدفة.",
-      },
-      {
-        q: "هل لدى الفريق خبرة سابقة؟",
-        a: "نعم، توجد مشاريع منفذة سابقًا يمكن الاطلاع على صورها وأعمالها ضمن التطبيق.",
-      },
+      { q: "من سيشرف على تنفيذ المشروع؟", a: "سيتم التنفيذ بالتعاون بين عيد جروب، وعبد المجيد عيد، والمهندس حسان تكريتي، وشركة إعماركم." },
+      { q: "ما دور شركة إعماركم؟", a: "تنفيذ أعمال التطوير الميدانية، والاستفادة من خبرتها ووجودها في المنطقة المستهدفة." },
+      { q: "هل لدى الفريق خبرة سابقة؟", a: "نعم، توجد مشاريع منفذة سابقًا يمكن الاطلاع على صورها وأعمالها ضمن التطبيق." },
     ],
     en: [
-      {
-        q: "Who will oversee the project execution?",
-        a: "Execution will be carried out in collaboration between Eid Group, Abdul Majeed Eid, Engineer Hassan Tekereti, and Emaarkom Company.",
-      },
-      {
-        q: "What is Emaarkom's role?",
-        a: "Executing field development work, leveraging their expertise and presence in the target area.",
-      },
-      {
-        q: "Does the team have prior experience?",
-        a: "Yes, there are previously executed projects whose photos and work can be viewed within the application.",
-      },
+      { q: "Who will oversee the project execution?", a: "Execution will be carried out in collaboration between Eid Group, Abdul Majeed Eid, Engineer Hassan Tekereti, and Emaarkom Company." },
+      { q: "What is Emaarkom's role?", a: "Executing field development work, leveraging their expertise and presence in the target area." },
+      { q: "Does the team have prior experience?", a: "Yes, there are previously executed projects whose photos and work can be viewed within the application." },
     ],
     nl: [
-      {
-        q: "Wie houdt toezicht op de uitvoering van het project?",
-        a: "De uitvoering gebeurt in samenwerking tussen Eid Group, Abdul Majeed Eid, ingenieur Hassan Tekereti en Emaarkom Company.",
-      },
-      {
-        q: "Wat is de rol van Emaarkom?",
-        a: "Het uitvoeren van veldontwikkelingswerkzaamheden, gebruikmakend van hun expertise en aanwezigheid in het doelgebied.",
-      },
-      {
-        q: "Heeft het team eerdere ervaring?",
-        a: "Ja, er zijn eerder uitgevoerde projecten waarvan foto's en werk binnen de applicatie kunnen worden bekeken.",
-      },
+      { q: "Wie houdt toezicht op de uitvoering van het project?", a: "De uitvoering gebeurt in samenwerking tussen Eid Group, Abdul Majeed Eid, ingenieur Hassan Tekereti en Emaarkom Company." },
+      { q: "Wat is de rol van Emaarkom?", a: "Het uitvoeren van veldontwikkelingswerkzaamheden, gebruikmakend van hun expertise en aanwezigheid in het doelgebied." },
+      { q: "Heeft het team eerdere ervaring?", a: "Ja, er zijn eerder uitgevoerde projecten waarvan foto's en werk binnen de applicatie kunnen worden bekeken." },
     ],
   },
   "5": {
     ar: [
-      {
-        q: "لماذا اخترتم تطوير الأراضي بدل بناء فيلا؟",
-        a: "لأنه يمنح مرونة أكبر، وسرعة في إعادة البيع، ويقلل من المخاطر مقارنة بالبناء الكامل.",
-      },
-      {
-        q: "ما هو المشروع المستهدف؟",
-        a: "شراء أرض بمساحة تقارب ثلاثة دونمات، ثم فرزها إلى ثلاث قطع مستقلة وتطويرها لتصبح جاهزة للبيع أو للبناء.",
-      },
-      {
-        q: "هل يمكن تغيير الخطة؟",
-        a: "نعم، ولكن فقط إذا ظهرت فرصة أفضل، وبعد عرضها على المستثمر والحصول على موافقته.",
-      },
+      { q: "لماذا اخترتم تطوير الأراضي بدل بناء فيلا؟", a: "لأنه يمنح مرونة أكبر، وسرعة في إعادة البيع، ويقلل من المخاطر مقارنة بالبناء الكامل." },
+      { q: "ما هو المشروع المستهدف؟", a: "شراء أرض بمساحة تقارب ثلاثة دونمات، ثم فرزها إلى ثلاث قطع مستقلة وتطويرها لتصبح جاهزة للبيع أو للبناء." },
+      { q: "هل يمكن تغيير الخطة؟", a: "نعم، ولكن فقط إذا ظهرت فرصة أفضل، وبعد عرضها على المستثمر والحصول على موافقته." },
     ],
     en: [
-      {
-        q: "Why did you choose land development instead of building a villa?",
-        a: "Because it offers greater flexibility, faster resale, and reduces risks compared to full construction.",
-      },
-      {
-        q: "What is the target project?",
-        a: "Purchasing a plot of approximately three donums, then dividing it into three independent plots and developing them to be ready for sale or construction.",
-      },
-      {
-        q: "Can the plan be changed?",
-        a: "Yes, but only if a better opportunity arises, and after presenting it to the investor and obtaining their approval.",
-      },
+      { q: "Why did you choose land development instead of building a villa?", a: "Because it offers greater flexibility, faster resale, and reduces risks compared to full construction." },
+      { q: "What is the target project?", a: "Purchasing a plot of approximately three donums, then dividing it into three independent plots and developing them to be ready for sale or construction." },
+      { q: "Can the plan be changed?", a: "Yes, but only if a better opportunity arises, and after presenting it to the investor and obtaining their approval." },
     ],
     nl: [
-      {
-        q: "Waarom heeft u gekozen voor landontwikkeling in plaats van het bouwen van een villa?",
-        a: "Omdat het meer flexibiliteit, snellere doorverkoop en minder risico's biedt in vergelijking met volledige bouw.",
-      },
-      {
-        q: "Wat is het doelproject?",
-        a: "Het kopen van een stuk grond van ongeveer drie dönüm, het splitsen in drie onafhankelijke percelen en het ontwikkelen ervan zodat ze klaar zijn voor verkoop of bouw.",
-      },
-      {
-        q: "Kan het plan worden gewijzigd?",
-        a: "Ja, maar alleen als zich een betere kans voordoet en nadat deze aan de investeerder is voorgelegd en diens goedkeuring is verkregen.",
-      },
+      { q: "Waarom heeft u gekozen voor landontwikkeling in plaats van het bouwen van een villa?", a: "Omdat het meer flexibiliteit, snellere doorverkoop en minder risico's biedt in vergelijking met volledige bouw." },
+      { q: "Wat is het doelproject?", a: "Het kopen van een stuk grond van ongeveer drie dönüm, het splitsen in drie onafhankelijke percelen en het ontwikkelen ervan zodat ze klaar zijn voor verkoop of bouw." },
+      { q: "Kan het plan worden gewijzigd?", a: "Ja, maar alleen als zich een betere kans voordoet en nadat deze aan de investeerder is voorgelegd en diens goedkeuring is verkregen." },
     ],
   },
 };
