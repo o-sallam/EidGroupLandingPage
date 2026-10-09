@@ -6,8 +6,8 @@ import { useI18n, isLangChosen, getIntroVideoUrl } from "@/lib/i18n";
  *
  * Mounted at the app root (inside I18nProvider) so it survives route changes:
  * the download begins while the first page's splash/loader is showing and keeps
- * buffering through the welcome screen and /access, so by the time the user
- * reaches /intro the video starts instantly from the HTTP cache — no spinner.
+ * buffering through /lang and /, so by the time the user reaches /intro the
+ * video starts instantly from the HTTP cache — no spinner.
  *
  * Implementation notes:
  * - The <video> element is created imperatively inside an effect and appended

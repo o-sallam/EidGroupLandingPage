@@ -21,9 +21,9 @@ const EXIT_FADE_MS = 600;
  * Audio: both tracks carry narration (AAC). Autoplay must start muted in every
  * browser, so we begin muted and immediately try to lift muting once frames
  * are ready — browsers that permit unmuted autoplay after a prior domain
- * interaction (e.g. Chrome: the user tapped through /lang and /access) get
- * sound instantly; stricter engines stay muted until the first tap anywhere
- * on the page. A discreet mute toggle mirrors the /video pages.
+ * interaction (e.g. Chrome: the user tapped through /lang) get sound instantly;
+ * stricter engines stay muted until the first tap anywhere on the page. A
+ * discreet mute toggle mirrors the /video pages.
  *
  * The video is pre-warmed during the first page's splash via VideoPreloader,
  * so the entrance fade reveals an already-buffered, already-playing video.

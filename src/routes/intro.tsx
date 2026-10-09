@@ -6,7 +6,7 @@ export const Route = createFileRoute("/intro")({ component: IntroPage });
 /**
  * Full-screen bilingual motion-graphics intro video (replaces the old
  * "7 videos" text card). Route path is preserved so existing navigation
- * (/access → /intro → /video/1) keeps working unchanged.
+ * (/lang → / → /intro → /video/1) keeps working unchanged.
  */
 function IntroPage() {
   return <VideoHeroPage />;
