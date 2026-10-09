@@ -1,7 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
-import { isUnlocked } from "@/lib/access";
 import { PortalShell } from "@/components/PortalShell";
 import { usePageContent } from "@/hooks/usePageContent";
 import { FileText, ArrowRight, ArrowLeft, Mail, FileDown } from "lucide-react";
@@ -14,10 +12,6 @@ export function DocumentsPage() {
   const { row } = usePageContent("documents");
   const pdfs = row?.pdfs ?? [];
 
-  useEffect(() => {
-    if (!isUnlocked()) navigate({ to: "/access", replace: true });
-  }, [navigate]);
-
   return (
     <PortalShell>
       <div className="animate-fade-up space-y-8">
@@ -26,7 +20,9 @@ export function DocumentsPage() {
             {t("brand.tag")}
           </p>
           <h1 className="font-serif text-3xl text-[color:var(--foreground)]">{t("docs.title")}</h1>
-          <p className="max-w-xl text-sm text-[color:var(--muted-foreground)]">{t("docs.subtitle")}</p>
+          <p className="max-w-xl text-sm text-[color:var(--muted-foreground)]">
+            {t("docs.subtitle")}
+          </p>
         </div>
 
         {pdfs.length > 0 ? (
@@ -41,7 +37,9 @@ export function DocumentsPage() {
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <FileText className="h-5 w-5 shrink-0 text-[color:var(--gold)]" />
-                  <span className="truncate text-sm text-[color:var(--foreground)]">{p.name || "PDF"}</span>
+                  <span className="truncate text-sm text-[color:var(--foreground)]">
+                    {p.name || "PDF"}
+                  </span>
                 </div>
                 <FileDown className="h-4 w-4 text-[color:var(--muted-foreground)]" />
               </a>
@@ -59,7 +57,7 @@ export function DocumentsPage() {
         <div className="flex items-center justify-between gap-3">
           <Link
             to="/video/$n"
-            params={{ n: "7" }}
+            params={{ n: "5" }}
             className="inline-flex items-center gap-2 rounded-full border border-[rgba(200,169,106,0.3)] bg-[rgba(23,28,34,0.6)] px-5 py-2.5 text-sm text-[color:var(--foreground)] transition hover:bg-[color:var(--gold-soft)]"
           >
             <Prev className="h-4 w-4" />

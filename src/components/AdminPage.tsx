@@ -16,7 +16,7 @@ const LANGS = ["ar", "en", "nl"] as const;
 type Lang = (typeof LANGS)[number];
 
 const PAGES: { key: string; label: string }[] = [
-  ...Array.from({ length: 7 }, (_, i) => ({ key: `video-${i + 1}`, label: `Video ${i + 1}` })),
+  ...Array.from({ length: 5 }, (_, i) => ({ key: `video-${i + 1}`, label: `Video ${i + 1}` })),
   { key: "documents", label: "Documents" },
 ];
 
@@ -134,11 +134,16 @@ function PageEditor({ pageKey, label }: { pageKey: string; label: string }) {
   useEffect(() => {
     if (!open) return;
     setLoading(true);
-    (supabase.from("page_content" as never) as never as {
-      select: (s: string) => {
-        eq: (c: string, v: string) => { maybeSingle: () => Promise<{ data: PageContentInput | null }> };
-      };
-    })
+    (
+      supabase.from("page_content" as never) as never as {
+        select: (s: string) => {
+          eq: (
+            c: string,
+            v: string,
+          ) => { maybeSingle: () => Promise<{ data: PageContentInput | null }> };
+        };
+      }
+    )
       .select("*")
       .eq("page_key", pageKey)
       .maybeSingle()
@@ -160,10 +165,15 @@ function PageEditor({ pageKey, label }: { pageKey: string; label: string }) {
     if (!res.ok) throw new Error("Upload failed");
     if (kind === "image") setData((d) => ({ ...d, image_url: publicUrl }));
     else if (kind === "video") setData((d) => ({ ...d, video_url: publicUrl }));
-    else if (kind === "gallery") setData((d) => ({ ...d, gallery: [...d.gallery, { url: publicUrl }] }));
-    else if (kind === "pdf") setData((d) => ({ ...d, pdfs: [...d.pdfs, { url: publicUrl, name: file.name }] }));
+    else if (kind === "gallery")
+      setData((d) => ({ ...d, gallery: [...d.gallery, { url: publicUrl }] }));
+    else if (kind === "pdf")
+      setData((d) => ({ ...d, pdfs: [...d.pdfs, { url: publicUrl, name: file.name }] }));
     else if (kind === "related")
-      setData((d) => ({ ...d, related_videos: [...d.related_videos, { url: publicUrl, title: file.name }] }));
+      setData((d) => ({
+        ...d,
+        related_videos: [...d.related_videos, { url: publicUrl, title: file.name }],
+      }));
   }
 
   async function doSave() {
@@ -186,7 +196,9 @@ function PageEditor({ pageKey, label }: { pageKey: string; label: string }) {
         className="flex w-full items-center justify-between px-5 py-4 text-start"
       >
         <span className="font-serif text-lg text-[color:var(--foreground)]">{label}</span>
-        <span className="text-xs text-[color:var(--muted-foreground)]">{open ? "Close" : "Edit"}</span>
+        <span className="text-xs text-[color:var(--muted-foreground)]">
+          {open ? "Close" : "Edit"}
+        </span>
       </button>
       {open && (
         <div className="space-y-6 border-t border-[rgba(200,169,106,0.15)] px-5 py-6">
@@ -317,10 +329,16 @@ function MediaSlot({
   const [busy, setBusy] = useState(false);
   return (
     <div className="space-y-2">
-      <label className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--gold)]">{label}</label>
+      <label className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--gold)]">
+        {label}
+      </label>
       <div className="flex items-center gap-2">
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[rgba(200,169,106,0.3)] bg-[rgba(23,28,34,0.6)] px-3 py-2 text-xs text-[color:var(--foreground)] hover:bg-[color:var(--gold-soft)]">
-          {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+          {busy ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Upload className="h-3.5 w-3.5" />
+          )}
           {currentUrl ? "Replace" : "Upload"}
           <input
             type="file"
@@ -379,9 +397,15 @@ function ListSection({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--gold)]">{title}</label>
+        <label className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--gold)]">
+          {title}
+        </label>
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[rgba(200,169,106,0.3)] bg-[rgba(23,28,34,0.6)] px-3 py-1.5 text-xs text-[color:var(--foreground)] hover:bg-[color:var(--gold-soft)]">
-          {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+          {busy ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Plus className="h-3.5 w-3.5" />
+          )}
           Add
           <input
             type="file"

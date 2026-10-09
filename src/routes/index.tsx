@@ -19,7 +19,10 @@ function Landing() {
     setPhase("loading");
     const t1 = setTimeout(() => setTransition(true), 2200);
     const t2 = setTimeout(() => setPhase("welcome"), 2900);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [navigate]);
 
   if (phase === "redirect") return null;
@@ -47,9 +50,7 @@ function Landing() {
         {/* ─── Shared branding block (never unmounts) ─── */}
         <div
           className={`flex flex-col items-center gap-4 transition-all duration-700 ease-out ${
-            transition
-              ? "scale-[0.45] -translate-y-6"
-              : "scale-100 translate-y-0"
+            transition ? "scale-[0.45] -translate-y-6" : "scale-100 translate-y-0"
           }`}
         >
           {/* Logo + gold glow frame */}
@@ -57,9 +58,7 @@ function Landing() {
             {phase !== "welcome" && (
               <div
                 className={`gold-glow-frame transition-all duration-500 ease-out ${
-                  transition
-                    ? "opacity-0 scale-90 blur-sm"
-                    : "opacity-100 scale-100 blur-0"
+                  transition ? "opacity-0 scale-90 blur-sm" : "opacity-100 scale-100 blur-0"
                 }`}
               />
             )}
@@ -109,9 +108,7 @@ function Landing() {
         {(transition || phase === "welcome") && (
           <div
             className={`flex flex-col items-center gap-8 mt-2 ${
-              phase === "welcome"
-                ? "animate-fade-up"
-                : "opacity-0 pointer-events-none"
+              phase === "welcome" ? "animate-fade-up" : "opacity-0 pointer-events-none"
             }`}
           >
             <div className="space-y-4">
@@ -127,7 +124,7 @@ function Landing() {
             </div>
 
             <button
-              onClick={() => navigate({ to: "/access" })}
+              onClick={() => navigate({ to: "/intro" })}
               className="group inline-flex items-center gap-3 rounded-full bg-[color:var(--gold)] px-8 py-3.5 text-sm font-semibold tracking-wide text-[color:var(--bg-raw)] shadow-[0_10px_40px_-10px_rgba(200,169,106,0.6)] transition hover:brightness-110"
             >
               <Arrow className="h-4 w-4 transition-all duration-700 rtl:cta-arrow-anim-rtl ltr:cta-arrow-anim" />
