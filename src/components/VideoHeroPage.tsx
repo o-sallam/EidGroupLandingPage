@@ -3,9 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useI18n, getIntroVideoUrl } from "@/lib/i18n";
 import { ArrowLeft, ArrowRight, Volume2, VolumeX } from "lucide-react";
 
-// Delay before the (non-native) page-navigation affordances fade in, so the
-// opening view is pure, uncluttered full-screen video.
-const UI_REVEAL_MS = 6000;
+// Countdown starts at 30 and counts down to 1 based on video playback time.
+const INTRO_COUNTDOWN_START = 30;
 // Light fade-to-black before auto-advancing to /video/1 once the video ends
 // (or when the user taps Continue / Back).
 const EXIT_FADE_MS = 600;
@@ -32,7 +31,7 @@ export function VideoHeroPage() {
   const { lang, dir, t } = useI18n();
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [uiVisible, setUiVisible] = useState(false);
+  
   const [failed, setFailed] = useState(false);
   const [buffering, setBuffering] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -43,6 +42,10 @@ export function VideoHeroPage() {
   // Guards against double navigation (ended + Continue tap racing).
   const navigatingRef = useRef(false);
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True when the intro video has ended (Continue button should appear).
+  const [videoEnded, setVideoEnded] = useState(false);
+  // Countdown number (30 → 1) synced with video playback.
+  const [countdown, setCountdown] = useState(INTRO_COUNTDOWN_START);
   // Streaming recovery bookkeeping: reload the source (max RECOVERY_ATTEMPTS)
   // when the stream stalls with no data progress for RECOVERY_MS.
   const RECOVERY_MS = 4500;
@@ -146,11 +149,22 @@ export function VideoHeroPage() {
     };
   }, []);
 
-  // Fade the page-level navigation in late; leave the initial view clean.
-  useEffect(() => {
-    const id = setTimeout(() => setUiVisible(true), UI_REVEAL_MS);
-    return () => clearTimeout(id);
-  }, []);
+  // Handle video time updates to sync the countdown display.
+  // The countdown pauses when the video pauses and stays in sync.
+  const handleTimeUpdate = () => {
+    const v = videoRef.current;
+    if (!v || v.ended) return;
+    const currentTime = v.currentTime;
+    // Formula: displayed = clamp(30 - Math.floor(currentTime), 1, 30)
+    const value = Math.max(1, Math.min(INTRO_COUNTDOWN_START, INTRO_COUNTDOWN_START - Math.floor(currentTime)));
+    setCountdown(value);
+  };
+
+  // Handle video end — show Continue button and clear countdown.
+  const handleVideoEnded = () => {
+    setVideoEnded(true);
+    setCountdown(1); // Ensure it's at minimum when video ends
+  };
 
   // Clear any pending exit-fade timer on unmount.
   useEffect(() => {
@@ -207,7 +221,8 @@ export function VideoHeroPage() {
         onCanPlay={() => setBuffering(false)}
         onCanPlayThrough={() => setBuffering(false)}
         onError={() => setFailed(true)}
-        onEnded={goNext}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleVideoEnded}
       >
         {/* Primary stream is the small WebM (AV1); MP4 (H.264) twin acts as a
             codec fallback for engines that can't decode AV1. */}
@@ -234,10 +249,9 @@ export function VideoHeroPage() {
         </div>
       )}
 
-      {/* Page-level navigation — NOT player chrome. Deliberately minimal and
-          brand-styled; fades in after the video has been on screen a while.
-          Delete these buttons if product wants a pure looping backdrop. */}
-      <div className={`video-hero-ui ${uiVisible ? "video-hero-ui-visible" : ""}`}>
+      {/* Page-level navigation — Back and Mute buttons. Continue button appears
+          only when the video has ended. */}
+      <div className={`video-hero-ui ${videoEnded ? "video-hero-ui-visible" : ""}`}>
         <button type="button" onClick={goBack} aria-label="Back" className="video-hero-back">
           <Prev className="h-4 w-4" />
         </button>
@@ -254,6 +268,18 @@ export function VideoHeroPage() {
           <Next className="h-4 w-4" />
         </button>
       </div>
+
+      {/* Countdown display: shows 30→1 while video plays, hides when video ends. */}
+      {!videoEnded && (
+        <div
+          className="video-hero-countdown"
+          aria-hidden="true"
+        >
+          <span key={countdown} className="video-hero-countdown-number">
+            {countdown}
+          </span>
+        </div>
+      )}
 
       {/* Fade-to-black exit overlay — covers the video + UI on the way out */}
       <div className="video-hero-fade" aria-hidden="true" />
