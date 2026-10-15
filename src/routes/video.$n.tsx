@@ -555,6 +555,9 @@ function VideoPage() {
                   setLoadedDocs((prev) => [...prev, src]);
                 }
               }}
+              onError={() => {
+                console.warn(`Failed to load doc: ${src}`);
+              }}
             />
           ))}
 
