@@ -1,24 +1,21 @@
-// Dynamic asset discovery for video 4 using Vite's import.meta.glob
-// Files live in public/videosdocs/v4docs/ — adding/removing files there and
-// rebuilding automatically updates the gallery without code changes.
+// Static asset manifest for video 4, loaded from remote server.
+// Uses src/lib/mediaManifest.ts for the file list and mediaUrl.ts for URL building.
 
-// We match from project root (/public/...) since that's where files are.
-// Vite processes these as asset imports and returns the public URL.
-const imageModules = import.meta.glob('/public/videosdocs/v4docs/*.{webp,jpg,png,jpeg,gif,svg}', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-}) as Record<string, string>;
+import { getDocImageUrls, getDocVideoUrls, MEDIA_MANIFEST } from "./mediaManifest";
 
-const videoModules = import.meta.glob('/public/videosdocs/v4docs/*.{mp4,webm,ogg,mov}', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-}) as Record<string, string>;
+const VIDEO_4_NUMBER = 4;
 
-export const v4ImageUrls: string[] = Object.values(imageModules).sort();
-export const v4VideoUrls: string[] = Object.values(videoModules).sort();
+// Build URLs from manifest - always returns arrays (never null/undefined)
+export const v4ImageUrls: string[] = getDocImageUrls(VIDEO_4_NUMBER);
+export const v4VideoUrls: string[] = getDocVideoUrls(VIDEO_4_NUMBER);
 
+/**
+ * Check if video 4 has any doc assets available.
+ * Useful for conditionally rendering the docs gallery section.
+ */
 export function isVideo4AssetsAvailable(): boolean {
-  return v4ImageUrls.length > 0 || v4VideoUrls.length > 0;
+  const manifest = MEDIA_MANIFEST[VIDEO_4_NUMBER];
+  const hasImages = manifest && manifest.images && manifest.images.length > 0;
+  const hasVideos = manifest && manifest.videos && manifest.videos.length > 0;
+  return hasImages || hasVideos;
 }

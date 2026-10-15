@@ -81,9 +81,9 @@ const CONTENT: Record<string, Partial<PageContentRow>> = {
     },
     image_url: "/thumbnails/4.webp",
     video_url: VIDEO_URLS[4],
-    // Gallery from public/videosdocs/v4docs/
+    // Gallery from remote server (v4docs/images/)
     gallery: v4ImageUrls.map((url) => ({ url })),
-    // Related videos from public/videosdocs/v4docs/
+    // Related videos from remote server (v4docs/videos/)
     related_videos: v4VideoUrls.map((url, i) => ({
       url,
       title: `Document ${i + 1}`,
