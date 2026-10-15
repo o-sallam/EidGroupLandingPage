@@ -20,7 +20,7 @@ export interface VideoDocManifest {
 /**
  * Static manifest keyed by video number.
  * - v1docs: has images 1-5.webp
- * - v2docs: no docs yet (empty)
+ * - v2docs: videos doc-v1.mp4
  * - v3docs: no docs yet (empty)
  * - v4docs: has images 1-4.webp, videos doc-v1.mp4, doc-v2.mp4, doc-v3.mp4
  * - v5docs: no docs yet (empty)
@@ -32,7 +32,7 @@ export const MEDIA_MANIFEST: Record<number, VideoDocManifest> = {
   },
   2: {
     images: [],
-    videos: [],
+    videos: ["doc-v1.mp4"],
   },
   3: {
     images: [],

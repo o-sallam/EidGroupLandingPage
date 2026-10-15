@@ -1,7 +1,6 @@
 import { videoContent } from "../i18n/videoContent";
 import { VIDEO_URLS } from "../i18n/config";
-import { v4ImageUrls, v4VideoUrls } from "../v4Assets";
-import { getVideoDocImages } from "../docImages";
+import { getVideoDocImages, getVideoDocVideos } from "../docImages";
 
 export type PageContentRow = {
   page_key: string;
@@ -82,9 +81,9 @@ const CONTENT: Record<string, Partial<PageContentRow>> = {
     image_url: "/thumbnails/4.webp",
     video_url: VIDEO_URLS[4],
     // Gallery from remote server (v4docs/images/)
-    gallery: v4ImageUrls.map((url) => ({ url })),
+    gallery: getVideoDocImages(4).map((url) => ({ url })),
     // Related videos from remote server (v4docs/videos/)
-    related_videos: v4VideoUrls.map((url, i) => ({
+    related_videos: getVideoDocVideos(4).map((url, i) => ({
       url,
       title: `Document ${i + 1}`,
     })),

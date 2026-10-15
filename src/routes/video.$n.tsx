@@ -4,8 +4,7 @@ import { useI18n, videoContent, TOTAL_VIDEOS, VIDEO_URLS, lastAvailableVideo, QU
 import { markWatched, savePosition, getPosition, isPlayable, WATCH_THRESHOLD } from "@/lib/watchProgress";
 import { usePageContent } from "@/hooks/usePageContent";
 import { VideoStage, type VideoStageHandle } from "@/components/VideoStage";
-import { getVideoDocImages } from "@/lib/docImages";
-import { v4ImageUrls, v4VideoUrls } from "@/lib/v4Assets";
+import { getVideoDocImages, getVideoDocVideos } from "@/lib/docImages";
 import {
   Facebook,
   Instagram,
@@ -88,8 +87,8 @@ function VideoPage() {
   const videoUrl = row?.video_url || VIDEO_URLS[num] || null;
   const imageUrl = row?.image_url || null;
   const overallProgress = ((num - 1) + (progress / 100)) / TOTAL_VIDEOS;
-  const docCandidates = num === 4 ? v4ImageUrls : getVideoDocImages(num);
-  const videoSources = num === 4 ? v4VideoUrls : [];
+  const docCandidates = getVideoDocImages(num);
+  const videoSources = getVideoDocVideos(num);
   const questions = QUESTIONS_DATA[num]?.[lang] ?? [];
   // Surface taps (toggle / seek) are disabled while any overlay is up.
   const surfaceActive = !overlay && !videoEnded && !isLocked;
