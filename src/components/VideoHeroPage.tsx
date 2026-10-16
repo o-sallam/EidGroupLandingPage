@@ -3,8 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useI18n, getIntroVideoUrl } from "@/lib/i18n";
 import { ArrowLeft, ArrowRight, Volume2, VolumeX } from "lucide-react";
 
-// Countdown starts at 30 and counts down to 1 based on video playback time.
-const INTRO_COUNTDOWN_START = 30;
+// Countdown starts at 20 and counts down to 1 based on video playback time.
+const INTRO_COUNTDOWN_START = 20;
 // Light fade-to-black before auto-advancing to /video/1 once the video ends
 // (or when the user taps Continue / Back).
 const EXIT_FADE_MS = 600;
@@ -44,7 +44,7 @@ export function VideoHeroPage() {
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // True when the intro video has ended (Continue button should appear).
   const [videoEnded, setVideoEnded] = useState(false);
-  // Countdown number (30 → 1) synced with video playback.
+  // Countdown number (20 → 1) synced with video playback.
   const [countdown, setCountdown] = useState(INTRO_COUNTDOWN_START);
   // Streaming recovery bookkeeping: reload the source (max RECOVERY_ATTEMPTS)
   // when the stream stalls with no data progress for RECOVERY_MS.
@@ -155,7 +155,7 @@ export function VideoHeroPage() {
     const v = videoRef.current;
     if (!v || v.ended) return;
     const currentTime = v.currentTime;
-    // Formula: displayed = clamp(30 - Math.floor(currentTime), 1, 30)
+    // Formula: displayed = clamp(20 - Math.floor(currentTime), 1, 20)
     const value = Math.max(
       1,
       Math.min(INTRO_COUNTDOWN_START, INTRO_COUNTDOWN_START - Math.floor(currentTime)),
@@ -272,7 +272,7 @@ export function VideoHeroPage() {
         </button>
       </div>
 
-      {/* Countdown display: shows 30→1 while video plays, hides when video ends. */}
+      {/* Countdown display: shows 20→1 while video plays, hides when video ends. */}
       {!videoEnded && (
         <div className="video-hero-countdown" aria-hidden="true">
           <span key={countdown} className="video-hero-countdown-number">
