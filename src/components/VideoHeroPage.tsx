@@ -31,7 +31,7 @@ export function VideoHeroPage() {
   const { lang, dir, t } = useI18n();
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   const [failed, setFailed] = useState(false);
   const [buffering, setBuffering] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -156,7 +156,10 @@ export function VideoHeroPage() {
     if (!v || v.ended) return;
     const currentTime = v.currentTime;
     // Formula: displayed = clamp(30 - Math.floor(currentTime), 1, 30)
-    const value = Math.max(1, Math.min(INTRO_COUNTDOWN_START, INTRO_COUNTDOWN_START - Math.floor(currentTime)));
+    const value = Math.max(
+      1,
+      Math.min(INTRO_COUNTDOWN_START, INTRO_COUNTDOWN_START - Math.floor(currentTime)),
+    );
     setCountdown(value);
   };
 
@@ -271,10 +274,7 @@ export function VideoHeroPage() {
 
       {/* Countdown display: shows 30→1 while video plays, hides when video ends. */}
       {!videoEnded && (
-        <div
-          className="video-hero-countdown"
-          aria-hidden="true"
-        >
+        <div className="video-hero-countdown" aria-hidden="true">
           <span key={countdown} className="video-hero-countdown-number">
             {countdown}
           </span>

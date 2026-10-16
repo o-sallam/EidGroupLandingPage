@@ -12,7 +12,9 @@ function readAll(): Record<number, { w: number; p: number }> {
 }
 
 function writeAll(data: Record<number, { w: number; p: number }>) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {}
 }
 
 export function markWatched(num: number): void {

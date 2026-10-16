@@ -38,9 +38,7 @@ export function DocumentsGallery({ videoNum, onClose }: Props) {
           >
             <X className="h-4 w-4" />
           </button>
-          <h3 className="mb-2 font-serif text-lg text-[color:var(--gold)]">
-            {t("docs.title")}
-          </h3>
+          <h3 className="mb-2 font-serif text-lg text-[color:var(--gold)]">{t("docs.title")}</h3>
           {candidates.map((src) => (
             <img
               key={src}
@@ -48,12 +46,12 @@ export function DocumentsGallery({ videoNum, onClose }: Props) {
               alt=""
               className="hidden"
               onLoad={() => handleLoad(src)}
-              onError={() => console.warn(`[DocumentsGallery] Failed to load: ${src} for video ${videoNum}`)}
+              onError={() =>
+                console.warn(`[DocumentsGallery] Failed to load: ${src} for video ${videoNum}`)
+              }
             />
           ))}
-          <p className="text-xs text-[color:var(--muted-foreground)]">
-            {t("docs.empty")}
-          </p>
+          <p className="text-xs text-[color:var(--muted-foreground)]">{t("docs.empty")}</p>
         </div>
       </div>
     );
@@ -70,12 +68,8 @@ export function DocumentsGallery({ videoNum, onClose }: Props) {
           >
             <X className="h-4 w-4" />
           </button>
-          <h3 className="mb-2 font-serif text-lg text-[color:var(--gold)]">
-            {t("docs.title")}
-          </h3>
-          <p className="text-xs text-[color:var(--muted-foreground)]">
-            {t("docs.empty")}
-          </p>
+          <h3 className="mb-2 font-serif text-lg text-[color:var(--gold)]">{t("docs.title")}</h3>
+          <p className="text-xs text-[color:var(--muted-foreground)]">{t("docs.empty")}</p>
         </div>
       </div>
     );
@@ -92,9 +86,7 @@ export function DocumentsGallery({ videoNum, onClose }: Props) {
           >
             <X className="h-4 w-4" />
           </button>
-          <h3 className="mb-4 font-serif text-lg text-[color:var(--gold)]">
-            {t("docs.title")}
-          </h3>
+          <h3 className="mb-4 font-serif text-lg text-[color:var(--gold)]">{t("docs.title")}</h3>
           <div
             className="flex gap-3 overflow-x-auto pb-2"
             style={{ scrollSnapType: "x mandatory" }}

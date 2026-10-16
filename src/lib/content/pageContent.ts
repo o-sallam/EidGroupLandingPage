@@ -104,7 +104,7 @@ const CONTENT: Record<string, Partial<PageContentRow>> = {
   },
   // Documents page - currently no static PDFs
   // If PDFs need to be added, place them in public/docs/ and update this
-  "documents": {
+  documents: {
     titles: {
       ar: "الصور والمستندات",
       en: "Official Documents",

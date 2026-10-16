@@ -13,10 +13,7 @@ export function CircularProgressRing({ percent, current, total, hidePercent }: P
   const offset = circumference * (1 - Math.min(percent, 1));
 
   return (
-    <div
-      className="flex items-center gap-2"
-      style={{ direction: "ltr" }}
-    >
+    <div className="flex items-center gap-2" style={{ direction: "ltr" }}>
       <div className="relative" style={{ width: size, height: size }}>
         <svg
           width={size}

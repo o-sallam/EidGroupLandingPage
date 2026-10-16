@@ -6,10 +6,16 @@ export const TOTAL_VIDEOS = 5;
 const LANG_CHOSEN_KEY = "eid_lang_chosen";
 export const isLangChosen = (): boolean => {
   if (typeof window === "undefined") return false;
-  try { return localStorage.getItem(LANG_CHOSEN_KEY) === "1"; } catch { return false; }
+  try {
+    return localStorage.getItem(LANG_CHOSEN_KEY) === "1";
+  } catch {
+    return false;
+  }
 };
 export const markLangChosen = (): void => {
-  try { localStorage.setItem(LANG_CHOSEN_KEY, "1"); } catch {}
+  try {
+    localStorage.setItem(LANG_CHOSEN_KEY, "1");
+  } catch {}
 };
 
 // Hardcoded fallback video URLs (RunASP-hosted)
@@ -26,7 +32,7 @@ export const lastAvailableVideo = Math.max(
   ...Object.entries(VIDEO_URLS)
     .filter(([, url]) => url !== null)
     .map(([key]) => Number(key)),
-  1
+  1,
 );
 
 // Full-screen intro motion-graphics video, one track per language.

@@ -24,7 +24,19 @@ export type VideoStageHandle = {
 };
 
 export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStage(
-  { videoUrl, videoId, posterUrl, immersive, autoPlay, muted, paused, onPlay, onPause, onEnded, onTimeUpdate }: Props,
+  {
+    videoUrl,
+    videoId,
+    posterUrl,
+    immersive,
+    autoPlay,
+    muted,
+    paused,
+    onPlay,
+    onPause,
+    onEnded,
+    onTimeUpdate,
+  }: Props,
   ref,
 ) {
   const { t } = useI18n();
@@ -81,13 +93,22 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
   }, [videoId]);
 
   useEffect(() => {
-    if (!posterUrl) { setThumbLoaded(false); return; }
+    if (!posterUrl) {
+      setThumbLoaded(false);
+      return;
+    }
     let alive = true;
     setThumbLoaded(false);
     fetch(posterUrl, { method: "HEAD" })
-      .then((r) => { if (alive) setThumbLoaded(r.ok); })
-      .catch(() => { if (alive) setThumbLoaded(false); });
-    return () => { alive = false; };
+      .then((r) => {
+        if (alive) setThumbLoaded(r.ok);
+      })
+      .catch(() => {
+        if (alive) setThumbLoaded(false);
+      });
+    return () => {
+      alive = false;
+    };
   }, [posterUrl]);
 
   useImperativeHandle(
@@ -111,15 +132,20 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
 
   // ── Play button overlay (pre-play state) ─────────────────────────────────
   if (videoUrl && !hasStarted) {
-    const wrap = immersive
-      ? "absolute inset-0 h-full w-full"
-      : "relative aspect-[9/16] w-full";
+    const wrap = immersive ? "absolute inset-0 h-full w-full" : "relative aspect-[9/16] w-full";
     const DEFAULT_THUMB = "/default-thumbnail.webp";
     const displayUrl = posterUrl ?? DEFAULT_THUMB;
 
     return (
       <div className={wrap}>
-          <div data-no-tap className="absolute inset-0 h-full w-full overflow-hidden cursor-pointer" onClick={(e) => { e.stopPropagation(); handlePlayClick(); }}>
+        <div
+          data-no-tap
+          className="absolute inset-0 h-full w-full overflow-hidden cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePlayClick();
+          }}
+        >
           <img
             src={displayUrl}
             alt=""
@@ -128,9 +154,28 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
-              <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox="0 0 112 112">
-                <circle cx="56" cy="56" r="40" fill="none" stroke="rgba(200,169,106,0.35)" strokeWidth="2" className="origin-center animate-ripple" />
-                <circle cx="56" cy="56" r="40" fill="none" stroke="rgba(200,169,106,0.35)" strokeWidth="2" className="origin-center animate-ripple-delayed" />
+              <svg
+                className="absolute inset-0 h-full w-full overflow-visible"
+                viewBox="0 0 112 112"
+              >
+                <circle
+                  cx="56"
+                  cy="56"
+                  r="40"
+                  fill="none"
+                  stroke="rgba(200,169,106,0.35)"
+                  strokeWidth="2"
+                  className="origin-center animate-ripple"
+                />
+                <circle
+                  cx="56"
+                  cy="56"
+                  r="40"
+                  fill="none"
+                  stroke="rgba(200,169,106,0.35)"
+                  strokeWidth="2"
+                  className="origin-center animate-ripple-delayed"
+                />
               </svg>
               <div className="relative z-10 grid h-20 w-20 place-items-center rounded-full border-2 border-[rgba(200,169,106,0.6)] bg-[rgba(11,15,20,0.7)] backdrop-blur transition active:scale-90">
                 <Play className="h-8 w-8 text-[color:var(--gold)]" fill="currentColor" />
@@ -169,9 +214,7 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
   }
 
   // ── Coming-soon fallback (no videoUrl) ──────────────────────────────────
-  const wrap = immersive
-    ? "absolute inset-0 h-full w-full"
-    : "relative aspect-[9/16] w-full";
+  const wrap = immersive ? "absolute inset-0 h-full w-full" : "relative aspect-[9/16] w-full";
 
   const DEFAULT_THUMB = "/default-thumbnail.webp";
   const displayUrl = posterUrl && thumbLoaded ? posterUrl : DEFAULT_THUMB;
@@ -200,7 +243,9 @@ export const VideoStage = forwardRef<VideoStageHandle, Props>(function VideoStag
               <Play className="h-6 w-6 text-[color:var(--gold)]" fill="currentColor" />
             </div>
             <div className="space-y-1 px-6">
-              <p className="font-serif text-lg text-[color:var(--foreground)]">{t("video.comingSoon")}</p>
+              <p className="font-serif text-lg text-[color:var(--foreground)]">
+                {t("video.comingSoon")}
+              </p>
               <p className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--muted-foreground)]">
                 {t("video.arabicNote")}
               </p>

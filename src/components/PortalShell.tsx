@@ -4,7 +4,11 @@ import { ShieldCheck, Facebook, Instagram, Youtube } from "lucide-react";
 import type { ReactNode } from "react";
 
 const SOCIALS = [
-  { href: "https://m.facebook.com/profile.php?id=61560667386827", Icon: Facebook, label: "Facebook" },
+  {
+    href: "https://m.facebook.com/profile.php?id=61560667386827",
+    Icon: Facebook,
+    label: "Facebook",
+  },
   { href: "https://www.instagram.com/eid_group1/", Icon: Instagram, label: "Instagram" },
   { href: "https://www.youtube.com/@Eidgroup.1", Icon: Youtube, label: "YouTube" },
 ];

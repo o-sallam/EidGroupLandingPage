@@ -11,7 +11,8 @@ const dicts: Record<Lang, Dict> = {
     "welcome.confidential": "سرّي — للاطلاع فقط",
     "introPage.title": "مرحبًا بكم",
     "introPage.line1": "أمامكم 7 فيديوهات قصيرة توضح مشروعنا الاستثماري من البداية حتى النهاية.",
-    "introPage.line2": "ولأن بعض التفاصيل يصعب شرحها داخل الفيديو، أضفنا في كل صفحة وثائق وصورًا وإجابات عن أبرز الأسئلة المتوقعة.",
+    "introPage.line2":
+      "ولأن بعض التفاصيل يصعب شرحها داخل الفيديو، أضفنا في كل صفحة وثائق وصورًا وإجابات عن أبرز الأسئلة المتوقعة.",
     "introPage.line3": "نتمنى أن يمنحكم هذا العرض صورة واضحة وشاملة عن المشروع.",
     "introPage.continue": "متابعة",
     "access.title": "رمز الدخول",
@@ -61,13 +62,17 @@ const dicts: Record<Lang, Dict> = {
     "brand.tag": "Investment Data Room",
     "splash.loading": "Preparing your session…",
     "welcome.title": "Private Investment Presentation",
-    "welcome.subtitle": "A confidential dossier prepared exclusively for banks, investment firms and private investors.",
+    "welcome.subtitle":
+      "A confidential dossier prepared exclusively for banks, investment firms and private investors.",
     "welcome.cta": "Enter Presentation",
     "welcome.confidential": "Confidential — Authorized Access Only",
     "introPage.title": "Welcome",
-    "introPage.line1": "Ahead of you are 7 short videos that walk you through our investment project from start to finish.",
-    "introPage.line2": "Since some details are difficult to explain within the videos alone, we've included documents, images, and answers to the most anticipated questions on every page.",
-    "introPage.line3": "We hope this presentation gives you a clear and comprehensive picture of the project.",
+    "introPage.line1":
+      "Ahead of you are 7 short videos that walk you through our investment project from start to finish.",
+    "introPage.line2":
+      "Since some details are difficult to explain within the videos alone, we've included documents, images, and answers to the most anticipated questions on every page.",
+    "introPage.line3":
+      "We hope this presentation gives you a clear and comprehensive picture of the project.",
     "introPage.continue": "Continue",
     "nav.back": "Back",
     "nav.next": "Next",
@@ -110,13 +115,17 @@ const dicts: Record<Lang, Dict> = {
     "brand.tag": "Investerings-datakamer",
     "splash.loading": "Sessie voorbereiden…",
     "welcome.title": "Vertrouwelijke investeringspresentatie",
-    "welcome.subtitle": "Een vertrouwelijk dossier, exclusief samengesteld voor banken, investeringsmaatschappijen en particuliere investeerders.",
+    "welcome.subtitle":
+      "Een vertrouwelijk dossier, exclusief samengesteld voor banken, investeringsmaatschappijen en particuliere investeerders.",
     "welcome.cta": "Presentatie openen",
     "welcome.confidential": "Vertrouwelijk — Alleen toegestane toegang",
     "introPage.title": "Welkom",
-    "introPage.line1": "Voor u liggen 7 korte video's die ons investeringsproject van begin tot eind toelichten.",
-    "introPage.line2": "Omdat sommige details moeilijk uit te leggen zijn in de video's alleen, hebben we op elke pagina documenten, afbeeldingen en antwoorden op de meest verwachte vragen toegevoegd.",
-    "introPage.line3": "We hopen dat deze presentatie u een duidelijk en volledig beeld van het project geeft.",
+    "introPage.line1":
+      "Voor u liggen 7 korte video's die ons investeringsproject van begin tot eind toelichten.",
+    "introPage.line2":
+      "Omdat sommige details moeilijk uit te leggen zijn in de video's alleen, hebben we op elke pagina documenten, afbeeldingen en antwoorden op de meest verwachte vragen toegevoegd.",
+    "introPage.line3":
+      "We hopen dat deze presentatie u een duidelijk en volledig beeld van het project geeft.",
     "introPage.continue": "Doorgaan",
     "access.title": "Toegangscode",
     "access.subtitle": "Voer de aan u verstrekte toegangscode in om verder te gaan.",

@@ -3,7 +3,9 @@ import { lazy, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { PortalShell } from "@/components/PortalShell";
 
-const DocumentsPageLazy = lazy(() => import("@/components/DocumentsPage").then(m => ({ default: m.DocumentsPage })));
+const DocumentsPageLazy = lazy(() =>
+  import("@/components/DocumentsPage").then((m) => ({ default: m.DocumentsPage })),
+);
 
 export const Route = createFileRoute("/documents")({
   component: () => (

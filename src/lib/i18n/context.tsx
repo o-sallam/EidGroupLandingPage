@@ -28,7 +28,7 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </I18nContext.Provider>
   );
-}
+};
 
 export const useI18n = (): I18nContextValue => {
   const ctx = useContext(I18nContext);

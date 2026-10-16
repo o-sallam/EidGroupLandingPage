@@ -1,11 +1,11 @@
 /**
  * Static manifest of document files available on the remote server.
- * 
- * To add a file: upload it to the server folder (e.g., v2docs/images/), 
+ *
+ * To add a file: upload it to the server folder (e.g., v2docs/images/),
  * then add its file name to the appropriate array below.
- * 
+ *
  * Server layout: {baseUrl}/v{N}docs/images/<file> and v{N}docs/videos/<file>
- * 
+ *
  * IMPORTANT: Never return null/undefined. All arrays must be empty arrays []
  * for video numbers that don't have files yet. Consumers expect arrays.
  */
@@ -13,8 +13,8 @@
 import { getDocImageUrl, getDocVideoUrl } from "./mediaUrl";
 
 export interface VideoDocManifest {
-  images: string[];    // File names only (e.g., ["1.webp", "2.webp"])
-  videos: string[];    // File names only (e.g., ["doc-v1.mp4"])
+  images: string[]; // File names only (e.g., ["1.webp", "2.webp"])
+  videos: string[]; // File names only (e.g., ["doc-v1.mp4"])
 }
 
 /**

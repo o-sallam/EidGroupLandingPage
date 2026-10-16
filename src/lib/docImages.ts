@@ -9,7 +9,7 @@ import { getDocImageUrls, getDocVideoUrls } from "./mediaManifest";
  * Always returns an array (never null/undefined), even for unknown video numbers.
  * Sorts numerically by extracting the number from filenames.
  *
- * 
+ *
  * @param videoNum - The video number (1, 2, 3, etc.)
  * @returns Array of full URLs to doc images
  */

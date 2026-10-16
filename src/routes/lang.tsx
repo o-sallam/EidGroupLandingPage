@@ -58,11 +58,7 @@ function LangSelect() {
 
       <div className="relative z-10 w-full max-w-sm">
         <div className="mb-10 flex flex-col items-center gap-5 text-center animate-fade-up">
-          <img
-            src="/logo.webp"
-            alt="Eid Group"
-            className="h-24 w-auto"
-          />
+          <img src="/logo.webp" alt="Eid Group" className="h-24 w-auto" />
 
           <div
             className="relative flex items-center justify-center pointer-events-none select-none"
@@ -83,12 +79,11 @@ function LangSelect() {
                     backgroundClip: "text",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
-                    textShadow:
-                      "0 1px 2px rgba(0,0,0,0.6), 0 2px 6px rgba(200,169,106,0.25)",
+                    textShadow: "0 1px 2px rgba(0,0,0,0.6), 0 2px 6px rgba(200,169,106,0.25)",
                     animation: "eid-ambient-shimmer 6s ease-in-out infinite",
                     transition:
                       "opacity 800ms cubic-bezier(0.22,1,0.36,1), transform 800ms cubic-bezier(0.22,1,0.36,1)",
-                    opacity: isCurrent ? (leaving ? 0 : 1) : (leaving ? 1 : 0),
+                    opacity: isCurrent ? (leaving ? 0 : 1) : leaving ? 1 : 0,
                     transform: isCurrent
                       ? leaving
                         ? "translateY(-12px) scale(0.97)"
@@ -130,7 +125,10 @@ function LangSelect() {
                   {o.glyph}
                 </span>
 
-                <span dir={o.code === "ar" ? "rtl" : "ltr"} className="flex-1 text-left font-medium tracking-wide rtl:text-right">
+                <span
+                  dir={o.code === "ar" ? "rtl" : "ltr"}
+                  className="flex-1 text-left font-medium tracking-wide rtl:text-right"
+                >
                   {o.label}
                 </span>
 
