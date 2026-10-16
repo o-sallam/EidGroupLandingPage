@@ -576,26 +576,6 @@ function VideoPage() {
             ))}
           </div>
 
-          {/* Hidden doc preloaders (load in background for when overlay opens) */}
-          {docCandidates.map((src) => (
-            <img
-              key={src}
-              src={src}
-              alt=""
-              className="hidden"
-              loading="lazy"
-              onLoad={() => {
-                if (!docLoadedRef.current.has(src)) {
-                  docLoadedRef.current.add(src);
-                  setLoadedDocs((prev) => [...prev, src]);
-                }
-              }}
-              onError={() => {
-                console.warn(`Failed to load doc: ${src}`);
-              }}
-            />
-          ))}
-
           <div className="flex flex-col h-full px-6 pb-4 pt-12">
             {/* Top flex spacer — centers the logo + action group vertically
                 (paired with the matching spacer above the bottom action bar). */}
@@ -721,6 +701,26 @@ function VideoPage() {
           </div>
         </div>
       )}
+
+      {/* Hidden doc preloaders (load in background for when overlay opens) — always present */}
+      {docCandidates.map((src) => (
+        <img
+          key={src}
+          src={src}
+          alt=""
+          className="hidden"
+          loading="lazy"
+          onLoad={() => {
+            if (!docLoadedRef.current.has(src)) {
+              docLoadedRef.current.add(src);
+              setLoadedDocs((prev) => [...prev, src]);
+            }
+          }}
+          onError={() => {
+            console.warn(`Failed to load doc: ${src}`);
+          }}
+        />
+      ))}
 
       {/* Shared swipeable bottom sheet overlay — renders regardless of videoEnded */}
       {overlay && (
