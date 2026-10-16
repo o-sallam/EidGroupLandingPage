@@ -1,7 +1,31 @@
 {
-  "1": { "videos": [] },
-  "2": { "videos": ["الاستثمار الذكي", "الفرص ما بضل متاحة", "الاستثمار صح"] },
-  "3": { "videos": ["تحليل العروض", "الهدف من شراء العقار"] },
-  "4": { "videos": ["بعض الاراضي", "بعض الاراضي"] },
-  "5": { "videos": ["فحص الاوراق", "تدقيق قانوني وفني"] }
+  "1": { "videos": { "ar": [], "en": [], "nl": [] } },
+  "2": {
+    "videos": {
+      "ar": ["الاستثمار الذكي", "الفرص ما بضل متاحة", "الاستثمار صح"],
+      "en": ["Smart Investing", "Opportunities Don't Last", "Investing the Right Way"],
+      "nl": ["Slim beleggen", "Kansen blijven niet eeuwig", "Op de juiste manier beleggen"]
+    }
+  },
+  "3": {
+    "videos": {
+      "ar": ["تحليل العروض", "الهدف من شراء العقار"],
+      "en": ["Analyzing Offers", "The Goal of Buying Property"],
+      "nl": ["Aanbiedingen analyseren", "Het doel van vastgoed kopen"]
+    }
+  },
+  "4": {
+    "videos": {
+      "ar": ["بعض الاراضي", "بعض الاراضي"],
+      "en": ["Some Plots of Land", "Some Plots of Land"],
+      "nl": ["Enkele percelen grond", "Enkele percelen grond"]
+    }
+  },
+  "5": {
+    "videos": {
+      "ar": ["فحص الاوراق", "تدقيق قانوني وفني"],
+      "en": ["Document Review", "Legal & Technical Due Diligence"],
+      "nl": ["Documenten controleren", "Juridische en technische due diligence"]
+    }
+  }
 }

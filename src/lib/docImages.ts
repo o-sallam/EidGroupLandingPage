@@ -5,18 +5,23 @@
 import { getDocImageUrls, getDocVideoUrls, DOC_COUNTS } from "./mediaManifest";
 import docTitlesData from "./docTitles.json";
 
-type DocTitlesConfig = Record<string, { videos: string[] }>;
+type DocTitlesConfig = Record<string, { videos: Record<string, string[]> }>;
 const docTitles = docTitlesData as DocTitlesConfig;
 
-// DEV-ONLY: Validate that title counts match DOC_COUNTS
+// DEV-ONLY: Validate that title counts match DOC_COUNTS for each language
 if (import.meta.env.DEV) {
+  const languages = ["ar", "en", "nl"];
   Object.entries(DOC_COUNTS).forEach(([num, counts]) => {
     const videoNum = parseInt(num, 10);
-    const titleList = docTitles[num]?.videos || [];
-    if (counts.videos > 0 && titleList.length !== counts.videos) {
-      console.warn(
-        `[docTitles] Mismatch for video ${videoNum}: DOC_COUNTS has ${counts.videos} videos but titles has ${titleList.length}`,
-      );
+    if (counts.videos > 0) {
+      languages.forEach((lang) => {
+        const titleList = docTitles[num]?.videos?.[lang] || [];
+        if (titleList.length !== counts.videos) {
+          console.warn(
+            `[docTitles] Mismatch for video ${videoNum} (${lang}): DOC_COUNTS has ${counts.videos} videos but titles has ${titleList.length}`,
+          );
+        }
+      });
     }
   });
 }
@@ -46,18 +51,36 @@ export function getVideoDocVideos(videoNum: number): string[] {
 }
 
 /**
- * Get the title for a specific doc video.
+ * Get the title for a specific doc video in the requested language.
  * Index is 1-based, matching getDocVideoUrl(videoNum, index).
+ * Falls back to Arabic if the requested language is missing.
  *
  * @param videoNum - The video number (1, 2, 3, etc.)
  * @param index - The video index (1, 2, 3, etc.) - 1-based
+ * @param lang - The language code (ar, en, nl, etc.)
  * @returns The title string, or undefined if not available
  */
-export function getDocVideoTitle(videoNum: number, index: number): string | undefined {
-  const titleList = docTitles[String(videoNum)]?.videos;
+export function getDocVideoTitle(
+  videoNum: number,
+  index: number,
+  lang: string,
+): string | undefined {
+  const videoEntry = docTitles[String(videoNum)]?.videos;
+  if (!videoEntry) {
+    return undefined;
+  }
+
+  // Try requested language first
+  let titleList = videoEntry[lang];
+  // Fall back to Arabic if requested language not found
+  if (!titleList || titleList.length === 0) {
+    titleList = videoEntry["ar"];
+  }
+  // Still nothing? Give up
   if (!titleList || titleList.length === 0) {
     return undefined;
   }
+
   const title = titleList[index - 1]; // Convert 1-based to 0-based
   return title && title.trim() ? title : undefined;
 }

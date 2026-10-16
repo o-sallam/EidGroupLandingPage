@@ -778,7 +778,8 @@ function VideoPage() {
                       </h4>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {videoDocs.map((src, i) => {
-                          const title = getDocVideoTitle(num, i + 1);
+                          const title = getDocVideoTitle(num, i + 1, lang);
+                          const titleDir = lang === "ar" ? "rtl" : "ltr";
                           return (
                             <button
                               key={src}
@@ -787,6 +788,15 @@ function VideoPage() {
                               aria-label={title || `${t("video.upNext")} ${i + 1}`}
                               title={title || undefined}
                             >
+                              <video
+                                src={`${src}#t=0.1`}
+                                preload="metadata"
+                                muted
+                                playsInline
+                                tabIndex={-1}
+                                aria-hidden="true"
+                                className="w-full h-full object-cover pointer-events-none"
+                              />
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white/90 backdrop-blur-sm transition group-hover:scale-110">
                                   <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
@@ -796,7 +806,7 @@ function VideoPage() {
                                 {title ? (
                                   <span
                                     className="text-[10px] text-white/90 line-clamp-2 font-medium"
-                                    dir="auto"
+                                    dir={titleDir}
                                   >
                                     {title}
                                   </span>
@@ -985,11 +995,12 @@ function VideoPage() {
           />
           <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-1">
             {(() => {
-              const title = getDocVideoTitle(num, videoIndex + 1);
+              const title = getDocVideoTitle(num, videoIndex + 1, lang);
+              const titleDir = lang === "ar" ? "rtl" : "ltr";
               return title ? (
                 <p
                   className="max-w-[80vw] rounded-full bg-black/50 px-3 py-1 text-xs text-white/90 backdrop-blur-md text-center line-clamp-2"
-                  dir="auto"
+                  dir={titleDir}
                 >
                   {title}
                 </p>
