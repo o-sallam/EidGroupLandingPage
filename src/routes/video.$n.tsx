@@ -583,6 +583,7 @@ function VideoPage() {
               src={src}
               alt=""
               className="hidden"
+              loading="lazy"
               onLoad={() => {
                 if (!docLoadedRef.current.has(src)) {
                   docLoadedRef.current.add(src);
@@ -764,6 +765,7 @@ function VideoPage() {
                             src={src}
                             alt={`${t("docs.title")} ${i + 1}`}
                             className="h-full w-full object-cover"
+                            loading="lazy"
                           />
                         </button>
                       ))}

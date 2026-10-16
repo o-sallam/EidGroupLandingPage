@@ -1,32 +1,30 @@
 /**
  * Media URL builder for remote server.
- * Server layout: {baseUrl}/v{N}docs/images/<file> and v{N}docs/videos/<file>
- * To change the layout (e.g., flat or different subfolder names), edit these constants.
+ * Server layout: {baseUrl}/v{N}docs/images/{i}.webp and v{N}docs/videos/{i}.mp4
+ * where i starts at 1 with no gaps.
  */
 
-// Server configuration - edit these to change the layout in one place
-// Vite exposes env vars via import.meta.env with VITE_ prefix
-const MEDIA_BASE_URL = "https://egroup.runasp.net/videosdocs";
+// Server configuration - can be overridden via VITE_MEDIA_BASE_URL env var
+const MEDIA_BASE_URL = (
+  import.meta.env.VITE_MEDIA_BASE_URL ?? "https://egroup.runasp.net/videosdocs"
+).replace(/\/+$/, "");
 export const IMAGES_FOLDER = "images";
 export const VIDEOS_FOLDER = "videos";
 
 /**
- * Build a full URL for a doc image.
+ * Build a full URL for a doc image by numeric index.
  * @param videoNum - The video number (1, 2, 3, etc.)
- * @param fileName - The image file name (e.g., "1.webp")
+ * @param index - The image index (1, 2, 3, etc.)
  */
-export function getDocImageUrl(videoNum: number, fileName: string): string {
-  const encodedName = encodeURIComponent(fileName);
-  // Remove trailing slash from base, add clean path with no double slashes
-  return `${MEDIA_BASE_URL}/v${videoNum}docs/${IMAGES_FOLDER}/${encodedName}`;
+export function getDocImageUrl(videoNum: number, index: number): string {
+  return `${MEDIA_BASE_URL}/v${videoNum}docs/${IMAGES_FOLDER}/${index}.webp`;
 }
 
 /**
- * Build a full URL for a doc video.
+ * Build a full URL for a doc video by numeric index.
  * @param videoNum - The video number (1, 2, 3, etc.)
- * @param fileName - The video file name (e.g., "doc-v1.mp4")
+ * @param index - The video index (1, 2, 3, etc.)
  */
-export function getDocVideoUrl(videoNum: number, fileName: string): string {
-  const encodedName = encodeURIComponent(fileName);
-  return `${MEDIA_BASE_URL}/v${videoNum}docs/${VIDEOS_FOLDER}/${encodedName}`;
+export function getDocVideoUrl(videoNum: number, index: number): string {
+  return `${MEDIA_BASE_URL}/v${videoNum}docs/${VIDEOS_FOLDER}/${index}.mp4`;
 }
