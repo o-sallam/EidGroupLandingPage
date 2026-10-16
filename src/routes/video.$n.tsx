@@ -17,7 +17,7 @@ import {
 } from "@/lib/watchProgress";
 import { usePageContent } from "@/hooks/usePageContent";
 import { VideoStage, type VideoStageHandle } from "@/components/VideoStage";
-import { getVideoDocImages, getVideoDocVideos } from "@/lib/docImages";
+import { getVideoDocImages, getVideoDocVideos, getDocVideoTitle } from "@/lib/docImages";
 import {
   Facebook,
   Instagram,
@@ -777,22 +777,38 @@ function VideoPage() {
                         {t("video.upNext")}
                       </h4>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {videoDocs.map((src, i) => (
-                          <button
-                            key={src}
-                            onClick={() => setVideoIndex(i)}
-                            className="group aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/50 transition hover:border-[color:var(--gold)] active:scale-95 relative"
-                          >
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white/90 backdrop-blur-sm transition group-hover:scale-110">
-                                <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
+                        {videoDocs.map((src, i) => {
+                          const title = getDocVideoTitle(num, i + 1);
+                          return (
+                            <button
+                              key={src}
+                              onClick={() => setVideoIndex(i)}
+                              className="group aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black/50 transition hover:border-[color:var(--gold)] active:scale-95 relative"
+                              aria-label={title || `${t("video.upNext")} ${i + 1}`}
+                              title={title || undefined}
+                            >
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white/90 backdrop-blur-sm transition group-hover:scale-110">
+                                  <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
+                                </div>
                               </div>
-                            </div>
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-                              <span className="text-[10px] text-white/80">{t("video.upNext")}</span>
-                            </div>
-                          </button>
-                        ))}
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                                {title ? (
+                                  <span
+                                    className="text-[10px] text-white/90 line-clamp-2 font-medium"
+                                    dir="auto"
+                                  >
+                                    {title}
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] text-white/80">
+                                    {t("video.upNext")}
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -967,9 +983,22 @@ function VideoPage() {
               setVideoIndex(null);
             }}
           />
-          <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white/80 backdrop-blur-md">
-            {videoIndex + 1} / {videoDocs.length}
-          </p>
+          <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-1">
+            {(() => {
+              const title = getDocVideoTitle(num, videoIndex + 1);
+              return title ? (
+                <p
+                  className="max-w-[80vw] rounded-full bg-black/50 px-3 py-1 text-xs text-white/90 backdrop-blur-md text-center line-clamp-2"
+                  dir="auto"
+                >
+                  {title}
+                </p>
+              ) : null;
+            })()}
+            <p className="rounded-full bg-black/50 px-3 py-1 text-xs text-white/80 backdrop-blur-md">
+              {videoIndex + 1} / {videoDocs.length}
+            </p>
+          </div>
         </div>
       )}
     </div>
