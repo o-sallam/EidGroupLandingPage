@@ -15,11 +15,11 @@ import { getDocImageUrl, getDocVideoUrl } from "./mediaUrl";
  * Defines how many image and video files exist on the server for each video.
  */
 const DOC_COUNTS: Record<number, { images: number; videos: number }> = {
-  1: { images: 5, videos: 3 },
-  2: { images: 0, videos: 5 },
-  3: { images: 2, videos: 0 },
-  4: { images: 0, videos: 2 },
-  5: { images: 4, videos: 2 },
+  1: { images: 5, videos: 0 },
+  2: { images: 0, videos: 3 },
+  3: { images: 0, videos: 2 },
+  4: { images: 0, videos: 4 },
+  5: { images: 0, videos: 2 },
 };
 
 /**
